@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @section('content')
-    <h1>Unit</h1>
+    <h1>Tower</h1>
     <div class="card mb-4">
         <div class="card-body">
             @if (session('status'))
@@ -10,26 +10,22 @@
                     {{ session('status') }}
                 </div>
             @endif
-            <a href="{{ route('unit.add') }}" type="button" class="btn btn-primary">Tambah Unit</a>
+            <a href="{{ route('tower.add') }}" type="button" class="btn btn-primary">Tambah Tower</a>
             <div class="mt-4">
                 <table id="unitTable" class="table table-striped table-hover text-center">
                     <thead>
                         <tr>
                             <th>No</th>
-                            <th>Tower</th>
-                            <th>Nomor Unit</th>
-                            <th>Nama Pemegang</th>
+                            <th>Nama Tower</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($units as $key => $unit)
+                        @foreach ($towers as $key => $tower)
                             <tr>
                                 <td>{{ $key + 1 }}</td>
-                                <td>{{ $unit->tower->name }}</td>
-                                <td>{{ $unit->unit_no }}</td>
-                                <td>{{ $unit->holder_name }}</td>
-                                <td><a href="{{ route('unit.edit', $unit->id) }}" type="button" class="btn btn-secondary">Edit</a></td>
+                                <td>{{ $tower->name }}</td>
+                                <td><a href="{{ route('tower.edit', $tower->id) }}" type="button" class="btn btn-secondary">Edit</a></td>
                             </tr>
                         @endforeach
                     </tbody>

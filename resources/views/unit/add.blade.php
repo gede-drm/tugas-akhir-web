@@ -31,14 +31,14 @@
                     <div class="col-12">
                         <label for="txtUnitNo" class="form-label">Nomor Unit & Username</label>
                         <input type="text" class="form-control" id="txtUnitNo" name="unit_no"
-                            placeholder="Contoh: C01-02" required>
+                            placeholder="C01-02" required>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-12">
                         <label for="txtHolderName" class="form-label">Nama Penghuni</label>
                         <input type="text" class="form-control" id="txtHolderName" name="holder_name"
-                            placeholder="Contoh: Jason Tan" required>
+                            placeholder="Jason Tan" required>
                     </div>
                 </div>
                 <div class="row mb-3">

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Tower extends Model
 {
     use HasFactory;
+    public $timestamps = false;
     public function units(){
         return $this->hasMany(Unit::class, 'tower_id', 'id');
     }

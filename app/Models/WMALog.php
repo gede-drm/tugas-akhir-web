@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class WMALog extends Model
 {
     use HasFactory;
+    public $timestamps = false;
 }
