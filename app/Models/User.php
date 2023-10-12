@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'username', 'password','role', 'fcm_token'
     ];
 
     /**
@@ -26,7 +26,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
     ];
 
     /**
@@ -37,4 +37,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public $timestamps = false;
+    public function unit(){
+        return $this->hasOne(Unit::class);
+    }
+    public function security(){
+        return $this->hasOne(SecurityOfficer::class);
+    }
+    public function tenant(){
+        return $this->hasOne(Tenant::class);
+    }
 }
