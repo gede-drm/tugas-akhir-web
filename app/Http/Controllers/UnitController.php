@@ -71,6 +71,7 @@ class UnitController extends Controller
 
     public function towerEdit(Tower $tower)
     {
+        return view('tower.edit', compact('tower'));
     }
 
     public function towerStore(Request $request)
@@ -86,6 +87,12 @@ class UnitController extends Controller
 
     public function towerUpdate(Request $request, Tower $tower)
     {
+        $request->validate(["tower" => "required"]);
+
+        $tower->name = $request->get('tower');
+        $tower->save();
+
+        return redirect()->route('tower.index')->with('status', 'Data tower ' . $request->get('tower') . ' Berhasil diperbarui!');
     }
 
 
