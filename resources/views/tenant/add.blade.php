@@ -109,28 +109,26 @@
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <div class="row mb-3">
-                        <div class="col-4">
-                            <label for="txtUsername" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="txtUsername" name="username"
-                                placeholder="galonbirusandiego" required>
-                        </div>
-                        <div class="col-4">
-                            <label for="txtPass" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="txtPass" name="password"
-                                placeholder="••••••••" required>
-                        </div>
-                        <div class="col-4">
-                            <label for="txtPass" class="form-label">Konfirmasi Password</label>
-                            <input type="password" class="form-control" id="txtConfPass" name="conf_pass"
-                                placeholder="••••••••" required>
-                        </div>
+                    <div class="col-4">
+                        <label for="txtUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="txtUsername" name="username"
+                            placeholder="galonbirusandiego" required>
                     </div>
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                            <a href="{{ route('tenant.index') }}"type="button" class="btn btn-secondary">Batal</a>
-                        </div>
+                    <div class="col-4">
+                        <label for="txtPass" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="txtPass" name="password"
+                            placeholder="••••••••" required>
+                    </div>
+                    <div class="col-4">
+                        <label for="txtPass" class="form-label">Konfirmasi Password</label>
+                        <input type="password" class="form-control" id="txtConfPass" name="conf_pass"
+                            placeholder="••••••••" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <a href="{{ route('tenant.index') }}"type="button" class="btn btn-secondary">Batal</a>
                     </div>
                 </div>
             </form>

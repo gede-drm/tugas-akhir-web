@@ -30,9 +30,23 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col-12">
+                        <label for="txtOwnerName" class="form-label">Nama Penghuni</label>
+                        <input type="text" class="form-control" id="txtHolderName" name="owner_name"
+                            value="{{ $unit->owner_name }}" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
                         <label for="txtHolderName" class="form-label">Nama Penghuni</label>
                         <input type="text" class="form-control" id="txtHolderName" name="holder_name"
                             value="{{ $unit->holder_name }}" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="txtHolderPhoneNumber" class="form-label">Nomor HP Penghuni</label>
+                        <input type="tel" class="form-control" id="txtHolderPhoneNumber" name="holder_ph_number" maxlength="15"
+                            value="{{ $unit->holder_ph_number }}" required>
                     </div>
                 </div>
                 <div class="row mb-3">

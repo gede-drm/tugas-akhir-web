@@ -12,4 +12,7 @@ class Tower extends Model
     public function units(){
         return $this->hasMany(Unit::class, 'tower_id', 'id');
     }
+    public function checkins(){
+        return $this->hasMany(SecurityOfficerCheckin::class, 'tower_id', 'id');
+    }
 }

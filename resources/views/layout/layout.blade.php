@@ -70,12 +70,24 @@
                 <div class="menu-inner-shadow"></div>
 
                 <ul class="menu-inner py-1">
-                    <!-- Satpam -->
+                    {{-- Satpam --}}
                     <li class="menu-item {{ request()->is('satpam*') ? ' active' : '' }}">
-                        <a href="{{ route('security.index') }}" class="menu-link">
+                        <a href="javascript:void(0);" class="menu-link menu-toggle">
                             <i class="menu-icon tf-icons bx bx-check-shield"></i>
-                            <div>Satpam</div>
+                            <div data-i18n="Account Settings">Satpam</div>
                         </a>
+                        <ul class="menu-sub">
+                            <li class="menu-item">
+                                <a href="{{ route('security.checkin') }}" class="menu-link">
+                                    <div data-i18n="Account">Checkin/out Satpam</div>
+                                </a>
+                            </li>
+                            <li class="menu-item">
+                                <a href="{{ route('security.index') }}" class="menu-link">
+                                    <div data-i18n="Notifications">Daftar Satpam</div>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
 
                     {{-- Perizinan --}}

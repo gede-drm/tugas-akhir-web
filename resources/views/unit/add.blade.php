@@ -36,9 +36,23 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col-12">
+                        <label for="txtOwnerName" class="form-label">Nama Pemilik</label>
+                        <input type="text" class="form-control" id="txtOwnerName" name="owner_name"
+                            placeholder="Justin Tan" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
                         <label for="txtHolderName" class="form-label">Nama Penghuni</label>
                         <input type="text" class="form-control" id="txtHolderName" name="holder_name"
                             placeholder="Jason Tan" required>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <label for="txtHolderPhoneNumber" class="form-label">Nomor HP Penghuni</label>
+                        <input type="tel" class="form-control" id="txtHolderPhoneNumber" name="holder_ph_number" maxlength="15"
+                            placeholder="6281234567890" required>
                     </div>
                 </div>
                 <div class="row mb-3">

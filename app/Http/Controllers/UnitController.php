@@ -12,17 +12,18 @@ class UnitController extends Controller
 {
     public function index()
     {
-        $units = Unit::all();
-        return view('unit.index', compact('units'));
+        $activeUnits = Unit::where('active_status', 1)->orderBy('unit_no', 'asc')->get();
+        $nonactiveUnits = Unit::where('active_status', 0)->orderBy('unit_no', 'asc')->get();
+        return view('unit.index', compact('activeUnits', 'nonactiveUnits'));
     }
     public function add()
     {
-        $towers = Tower::all();
+        $towers = Tower::where('active_status', 1)->get();
         return view('unit.add', compact('towers'));
     }
     public function store(Request $request)
     {
-        $request->validate(["tower" => "required", "unit_no" => "required|unique:units", "holder_name" => "required", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!", "unit_no.unique" => "Nomor Unit Terkait Telah Terdaftar!"]);
+        $request->validate(["tower" => "required", "unit_no" => "required|unique:units", "owner_name"=>"required", "holder_name" => "required", "holder_ph_number"=>"required", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!", "unit_no.unique" => "Nomor Unit Terkait Telah Terdaftar!"]);
 
         User::create([
             "username" => $request->get('unit_no'),
@@ -34,7 +35,9 @@ class UnitController extends Controller
         $newUnit = new Unit();
         $newUnit->tower_id = $request->get('tower');
         $newUnit->unit_no = $request->get('unit_no');
+        $newUnit->owner_name = $request->get('owner_name');
         $newUnit->holder_name = $request->get('holder_name');
+        $newUnit->holder_ph_number = $request->get('holder_ph_number');
         $newUnit->wma_preference = 3;
         $newUnit->user_id = $userId->id;
         $newUnit->save();
@@ -47,22 +50,41 @@ class UnitController extends Controller
     }
     public function update(Request $request, Unit $unit)
     {
-        $request->validate(["holder_name" => "required", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!"]);
+        $request->validate(["owner_name"=>"required","holder_name" => "required", "holder_ph_number"=>"required", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!"]);
         $user = User::find($unit->user_id);
         $user->password = Hash::make($request->get('password'));
+        $unit->owner_name = $request->get('owner_name');
         $unit->holder_name = $request->get('holder_name');
+        $unit->holder_ph_number = $request->get('holder_ph_number');
         $user->save();
         $unit->save();
 
         return redirect()->route('unit.index')->with('status', 'Data unit ' . $request->get('unit_no') . ' Berhasil diperbarui!');
+    }
+    public function deactivateUnit(Request $request){
+        $unit_id = $request->get('unit_id');
+        $unit = Unit::find($unit_id);
+        $unit->active_status = 0;
+        $unit->save();
+
+        return redirect()->route('unit.index')->with('status', 'Unit ' . $unit->unit_no . ' Berhasil dinonaktifkan!');
+    }
+    public function activateUnit(Request $request){
+        $unit_id = $request->get('unit_id');
+        $unit = Unit::find($unit_id);
+        $unit->active_status = 1;
+        $unit->save();
+
+        return redirect()->route('unit.index')->with('status', 'Unit ' . $unit->unit_no . ' Berhasil diaktifkan kembali!');
     }
 
 
     // Tower
     public function towerIndex()
     {
-        $towers = Tower::all();
-        return view('tower.index', compact('towers'));
+        $activeTowers = Tower::where('active_status', 1)->orderBy('name', 'asc')->get();;
+        $nonactiveTowers = Tower::where('active_status', 0)->orderBy('name', 'asc')->get();;
+        return view('tower.index', compact('activeTowers', 'nonactiveTowers'));
     }
     public function towerAdd()
     {
@@ -93,6 +115,23 @@ class UnitController extends Controller
         $tower->save();
 
         return redirect()->route('tower.index')->with('status', 'Data tower ' . $request->get('tower') . ' Berhasil diperbarui!');
+    }
+
+    public function deactivateTower(Request $request){
+        $tower_id = $request->get('tower_id');
+        $tower = Tower::find($tower_id);
+        $tower->active_status = 0;
+        $tower->save();
+
+        return redirect()->route('tower.index')->with('status', 'Tower ' . $tower->name . ' Berhasil dinonaktifkan!');
+    }
+    public function activateTower(Request $request){
+        $tower_id = $request->get('tower_id');
+        $tower = Tower::find($tower_id);
+        $tower->active_status = 1;
+        $tower->save();
+
+        return redirect()->route('tower.index')->with('status', 'Tower ' . $tower->name . ' Berhasil diaktifkan kembali!');
     }
 
 
