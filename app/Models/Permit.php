@@ -9,4 +9,11 @@ class Permit extends Model
 {
     use HasFactory;
     public $timestamps = false;
+
+    public function permission(){
+        return $this->belongsTo(Permission::class, 'permission_id');
+    }
+    public function worker(){
+        return $this->belongsTo(Worker::class, 'worker_id');
+    }
 }

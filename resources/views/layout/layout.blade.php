@@ -92,7 +92,7 @@
 
                     {{-- Perizinan --}}
                     <li class="menu-item {{ request()->is('perizinan*') ? ' active' : '' }}">
-                        <a href="{{ route('permit.index') }}" class="menu-link">
+                        <a href="{{ route('permission.index') }}" class="menu-link">
                             <i class="menu-icon tf-icons bx bx-file"></i>
                             <div>Perizinan</div>
                         </a>

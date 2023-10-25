@@ -16,4 +16,10 @@ class SecurityOfficer extends Model
     public function checkins(){
         return $this->hasMany(SecurityOfficerCheckin::class, 'security_officer_id', 'id');
     }
+    public function receivePackages(){
+        return $this->hasMany(IncomingPackage::class, 'receiving_security_officer_id', 'id');
+    }
+    public function pickupPackages(){
+        return $this->hasMany(IncomingPackage::class, 'pickup_security_officer_id', 'id');
+    }
 }

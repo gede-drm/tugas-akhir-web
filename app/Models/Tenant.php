@@ -12,4 +12,10 @@ class Tenant extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+    public function products(){
+        return $this->hasMany(Product::class, 'tenant_id', 'id');
+    }
+    public function services(){
+        return $this->hasMany(Service::class, 'tenant_id', 'id');
+    }
 }

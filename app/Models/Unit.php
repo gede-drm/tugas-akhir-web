@@ -15,4 +15,7 @@ class Unit extends Model
     public function tower(){
         return $this->belongsTo(Tower::class, 'tower_id');
     }
+    public function wmalogs(){
+        return $this->hasMany(WMALog::class, 'unit_id', 'id');
+    }
 }

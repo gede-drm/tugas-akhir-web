@@ -9,4 +9,10 @@ class Worker extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    public function permission(){
+        return $this->belongsTo(Permission::class, 'permission_id');
+    }
+    public function permits(){
+        return $this->hasMany(Permission::class, 'permit_id', 'id');
+    }
 }

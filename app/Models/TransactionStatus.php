@@ -9,4 +9,8 @@ class TransactionStatus extends Model
 {
     use HasFactory;
     public $timestamps = false;
+
+    public function transaction(){
+        return $this->belongsTo(Transaction::class);
+    }
 }

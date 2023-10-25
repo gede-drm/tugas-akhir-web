@@ -9,4 +9,8 @@ class WMALog extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    
+    public function unit(){
+        return $this->belongsTo(Unit::class);
+    }
 }
