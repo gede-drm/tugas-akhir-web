@@ -15,7 +15,7 @@
                     <h4>Check In/Out</h4>
                 </div>
                 <div class="col-6 text-end">
-                    <a href="#" type="button" class="btn btn-primary btn-sm">History Check In/out</a>
+                    <a href="{{ route('security.checkinHistory') }}" type="button" class="btn btn-primary btn-sm">History Check In/out</a>
                 </div>
             </div>
             <h6>Tanggal Hari ini: <strong><span id="datetime"></span></strong></h6>

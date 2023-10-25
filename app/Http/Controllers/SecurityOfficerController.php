@@ -102,6 +102,9 @@ class SecurityOfficerController extends Controller
     }
 
     public function checkinHistory(){
+        $history = SecurityOfficerCheckin::orderBy('check_in', 'desc')->get();
+        $history->sortByDesc('tower.name');
 
+        return view('security.historycheckin', compact('history'));
     }
 }
