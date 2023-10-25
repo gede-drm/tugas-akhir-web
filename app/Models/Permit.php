@@ -16,4 +16,7 @@ class Permit extends Model
     public function worker(){
         return $this->belongsTo(Worker::class, 'worker_id');
     }
+    public function security(){
+        return $this->belongsTo(SecurityOfficer::class, 'security_officer_id');
+    }
 }

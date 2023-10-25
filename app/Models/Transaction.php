@@ -20,7 +20,7 @@ class Transaction extends Model
         return $this->belongsToMany(Product::class, 'product_transaction_detail', 'transaction_id', 'product_id')->withPivot('quantity', 'price', 'rating', 'review');
     }
     public function services(){
-        return $this->belongsToMany(Variant::class, 'service_transaction_detail', 'transaction_id', 'service_id')->withPivot('quantity', 'price', 'rating', 'review');
+        return $this->belongsToMany(Service::class, 'service_transaction_detail', 'transaction_id', 'service_id')->withPivot('quantity', 'price', 'rating', 'review');
     }
     public function statuses(){
         return $this->hasMany(TransactionStatus::class, 'transaction_id', 'id');

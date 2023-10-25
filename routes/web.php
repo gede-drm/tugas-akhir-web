@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\PermitController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SecurityOfficerController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\UnitController;
@@ -48,7 +48,11 @@ Route::middleware(['auth', 'management'])->group(function () {
     Route::post('satpam/checkout', [SecurityOfficerController::class, 'storeCheckout'])->name('security.storeCheckout');
 
 
-    Route::get('perizinan', [PermitController::class, 'index'])->name('permit.index');
+    Route::get('perizinan', [PermissionController::class, 'index'])->name('permission.index');
+    Route::get('perizinan/detail/{permission}', [PermissionController::class, 'detail'])->name('permission.detail');
+    Route::post('perizinan/accept', [PermissionController::class, 'accept'])->name('permission.accept');
+    Route::post('perizinan/reject', [PermissionController::class, 'reject'])->name('permission.reject');
+    Route::post('perizinan/downloadletter', [PermissionController::class, 'downloadApprovalLetter'])->name('permission.download');
 
     Route::get('tenant', [TenantController::class, 'index'])->name('tenant.index');
     Route::get('tenant/add', [TenantController::class, 'add'])->name('tenant.add');

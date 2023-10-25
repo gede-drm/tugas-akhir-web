@@ -32,9 +32,9 @@
                                 {{ date('Y-m-d H:i', strtotime($pPermission->end_date)) }}
                             </td>
                             <td>{{ $pPermission->serviceTransaction->unit->unit_no }}</td>
-                            <td>??</td>
+                            <td>{{ $pPermission->serviceTransaction->services[0]->tenant->name }}</td>
                             <td>{{ $pPermission->number_of_worker }}</td>
-                            <td><a href="#" type="button" class="btn btn-info">Detail</a></td>
+                            <td><a href="{{ route('permission.detail', $pPermission->id) }}" type="button" class="btn btn-info">Detail</a></td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -66,14 +66,14 @@
                                 {{ date('Y-m-d H:i', strtotime($hisPermission->end_date)) }}
                             </td>
                             <td>{{ $hisPermission->serviceTransaction->unit->unit_no }}</td>
-                            <td>??</td>
+                            <td>{{ $hisPermission->serviceTransaction->services[0]->tenant->name }}</td>
                             <td>{{ $hisPermission->number_of_worker }}</td>
                             @if ($hisPermission->status == 'accept')
-                                <td><span class="badge bg-success">Disetujui</span></td>
+                                <td><span class="badge rounded-pill bg-success">Disetujui</span></td>
                             @else
-                                <td><span class="badge bg-danger">Ditolak</span></td>
+                                <td><span class="badge rounded-pill bg-danger">Ditolak</span></td>
                             @endif
-                            <td><a href="#" type="button" class="btn btn-info">Detail</a></td>
+                            <td><a href="{{ route('permission.detail', $hisPermission->id) }}" type="button" class="btn btn-info">Detail</a></td>
                         </tr>
                     @endforeach
                 </tbody>

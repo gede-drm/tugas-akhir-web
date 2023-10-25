@@ -86,7 +86,7 @@ class SecurityOfficerController extends Controller
         $checkin->tower_id = $tower_id;
         $checkin->save();
 
-        return redirect()->route('security.checkin')->with('status', 'Checkin satpam ' . $security_name . ' Berhasil dilakukan!');
+        return redirect()->route('security.checkin')->with('status', 'Check In Satpam ' . $security_name . ' Berhasil dilakukan!');
     }
 
     public function storeCheckout(Request $request){
@@ -98,7 +98,7 @@ class SecurityOfficerController extends Controller
         $checkin->management_checkout_id = Auth::user()->id;
         $checkin->save();
 
-        return redirect()->route('security.checkin')->with('status', 'Checkout satpam ' . $security_name . ' Berhasil dilakukan!');
+        return redirect()->route('security.checkin')->with('status', 'Check Out Satpam ' . $security_name . ' Berhasil dilakukan!');
     }
 
     public function checkinHistory(){
