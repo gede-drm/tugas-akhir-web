@@ -43,6 +43,7 @@ Route::middleware(['auth', 'management'])->group(function () {
 
     Route::get('satpam/checkin', [SecurityOfficerController::class, 'checkin'])->name('security.checkin');
     Route::get('satpam/checkin/history', [SecurityOfficerController::class, 'checkinHistory'])->name('security.checkinHistory');
+    Route::post('satpam/checkin/history', [SecurityOfficerController::class, 'checkinHistoryFilter'])->name('security.checkinHistoryFilter');
     Route::post('satpam/checkin', [SecurityOfficerController::class, 'storeCheckin'])->name('security.storeCheckin');
     Route::post('satpam/checkin/modal', [SecurityOfficerController::class, 'modalCheckin'])->name('security.modalCheckin');
     Route::post('satpam/checkout', [SecurityOfficerController::class, 'storeCheckout'])->name('security.storeCheckout');
