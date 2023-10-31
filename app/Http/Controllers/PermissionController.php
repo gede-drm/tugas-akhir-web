@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Svg\Tag\Rect;
 
 class PermissionController extends Controller
 {
@@ -83,5 +84,19 @@ class PermissionController extends Controller
         $fileURL = $permission->approval_letter_url;
 
         return response()->download(public_path('/permissions/approval-letter/'.$fileURL), 'perizinan-' . $permission->status . '_' . $permission->serviceTransaction->unit->unit_no . '_' . $permission->id . '.pdf');
+    }
+
+    // API
+    public function secPermissionList(Request $request){
+
+    }
+    public function secPermissionDetail(Request $request){
+        
+    }
+    public function secPermissionScan(Request $request){
+        
+    }
+    public function secPermissionSaveScan(Request $request){
+        
     }
 }

@@ -37,4 +37,16 @@ class UserController extends Controller
         }
         return $arrResponse;
     }
+
+    public function checkshift(Request $request){
+        $username = $request->get('username');
+        $userSecurity = User::select('id')->where('username', $username)->first();
+        $shift = SecurityOfficerCheckin::where('check_in', 'like', '%' . date('Y-m-d') . '%')->whereNull('check_out')->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
+        if ($shift != null) {
+            $arrResponse = ['status' => 'exist'];
+        } else {
+            $arrResponse = ['status' => 'noshift'];
+        }
+        return $arrResponse;
+    }
 }

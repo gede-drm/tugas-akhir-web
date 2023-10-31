@@ -8,7 +8,7 @@ class PackageController extends Controller
 {
     // API
     public function secPackagePendingList(Request $request){
-
+        $tower = $request->get('tower');
     }
     public function secPackageDetail(Request $request){
 
