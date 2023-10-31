@@ -13,7 +13,8 @@ class PackageController extends Controller
     public function secPackagePendingList(Request $request)
     {
         $tower = $request->get('tower');
-        $packages = IncomingPackage::select('id', 'receive_date', 'photo_url')->where('tower_id', $tower)->whereNull('pickup_date')->get();
+        $packages = IncomingPackage::select('id', 'receive_date', 'photo_url', 'unit_id')->whereNull('pickup_date')->get();
+        $packages->where('unit.tower.id', $tower);
         $arrResponse = [];
         if (count($packages) > 0) {
             foreach ($packages as $package) {
