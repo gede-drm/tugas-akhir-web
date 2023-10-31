@@ -22,18 +22,15 @@ use Illuminate\Support\Facades\Route;
 // });
 
 // Security's App API
-Route::get('api/test', function(){
-    return ['result'=>'hello!'];
-});
-Route::post('api/security/login', [UserController::class, 'securityLogin']);
-Route::post('api/security/checkshift', [UserController::class, 'checkshift']);
+Route::post('security/login', [UserController::class, 'securityLogin']);
+Route::post('security/checkshift', [UserController::class, 'checkshift']);
 
-Route::post('api/security/package/pendinglist', [PackageController::class, 'secPackagePendingList']);
-Route::post('api/security/package/detail', [PackageController::class, 'secPackageDetail']);
-Route::post('api/security/package/entry', [PackageController::class, 'secPackageEntry']);
-Route::post('api/security/package/collection', [PackageController::class, 'secPackageCollection']);
+Route::post('security/package/pendinglist', [PackageController::class, 'secPackagePendingList']);
+Route::post('security/package/detail', [PackageController::class, 'secPackageDetail']);
+Route::post('security/package/entry', [PackageController::class, 'secPackageEntry']);
+Route::post('security/package/collection', [PackageController::class, 'secPackageCollection']);
 
-Route::post('api/security/permission/list', [PermissionController::class, 'secPermissionList']);
-Route::post('api/security/permission/detail', [PermissionController::class, 'secPermissionDetail']);
-Route::post('api/security/permission/scan', [PermissionController::class, 'secPermissionScan']);
-Route::post('api/security/permission/savescan', [PermissionController::class, 'secPermissionSaveScan']);
+Route::post('security/permission/list', [PermissionController::class, 'secPermissionList']);
+Route::post('security/permission/detail', [PermissionController::class, 'secPermissionDetail']);
+Route::post('security/permission/scan', [PermissionController::class, 'secPermissionScan']);
+Route::post('security/permission/savescan', [PermissionController::class, 'secPermissionSaveScan']);
