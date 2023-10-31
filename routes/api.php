@@ -1,6 +1,8 @@
 <?php
 
-use App\Http\Controllers\UnitController;
+use App\Http\Controllers\PackageController;
+use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,8 +17,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
-Route::post('testapi', [UnitController::class, 'testAPI']);
+// Security's App API
+Route::get('api/test', function(){
+    return ['result'=>'hello!'];
+});
+Route::post('api/security/login', [UserController::class, 'securityLogin']);
+Route::post('api/security/checkshift', [UserController::class, 'checkshift']);
+
+Route::post('api/security/package/pendinglist', [PackageController::class, 'secPackagePendingList']);
+Route::post('api/security/package/detail', [PackageController::class, 'secPackageDetail']);
+Route::post('api/security/package/entry', [PackageController::class, 'secPackageEntry']);
+Route::post('api/security/package/collection', [PackageController::class, 'secPackageCollection']);
+
+Route::post('api/security/permission/list', [PermissionController::class, 'secPermissionList']);
+Route::post('api/security/permission/detail', [PermissionController::class, 'secPermissionDetail']);
+Route::post('api/security/permission/scan', [PermissionController::class, 'secPermissionScan']);
+Route::post('api/security/permission/savescan', [PermissionController::class, 'secPermissionSaveScan']);
