@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,6 +21,10 @@ use Illuminate\Support\Facades\Route;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+// API General
+Route::get('towerlist', [UnitController::class, 'getTower']);
+Route::post('unitbytower', [UnitController::class, 'getUnitNoByTower']);
 
 // Security's App API
 Route::post('security/login', [UserController::class, 'securityLogin']);

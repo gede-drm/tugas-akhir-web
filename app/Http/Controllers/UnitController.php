@@ -136,10 +136,27 @@ class UnitController extends Controller
 
 
     // API
-    public function testAPI(Request $request)
+    public function getTower()
     {
-        $request->validate(['id' => 'required']);
-        $id = $request->get('id');
-        return ["status" => "OK", "data" => "Hello, This is Laravel API!\nID: " . $id];
+        $towers = Tower::select('id', 'name')->get();
+        return ["status" => "success", "data" => $towers];
+    }
+    public function getUnitNo()
+    {
+        $units = Unit::select('id', 'unit_no')->get();
+        return ["status" => "success", "data" => $units];
+    }
+    public function getUnitNoByTower(Request $request)
+    {
+        $tower_id = $request->get('tower');
+        $units = Unit::select('id', 'unit_no')->where('tower_id', $tower_id)->get();
+        $arrResponse = [];
+        if(count($units)>0){
+            $arrResponse = ["status" => "success", "data" => $units];
+        }
+        else{
+            $arrResponse = ["status" => "empty"];
+        }
+        return $arrResponse;
     }
 }
