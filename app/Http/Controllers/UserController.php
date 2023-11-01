@@ -38,15 +38,22 @@ class UserController extends Controller
         return $arrResponse;
     }
 
-    public function checkshift(Request $request){
+    public function checkshift(Request $request)
+    {
         $username = $request->get('username');
+        $tower = $request->get('tower');
         $userSecurity = User::select('id')->where('username', $username)->first();
-        $shift = SecurityOfficerCheckin::where('check_in', 'like', '%' . date('Y-m-d') . '%')->whereNull('check_out')->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
+        $shift = SecurityOfficerCheckin::where('check_in', 'like', '%' . date('Y-m-d') . '%')->whereNull('check_out')->whereRelation('tower', 'tower_id', $tower)->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
         $arrResponse = [];
         if ($shift != null) {
             $arrResponse = ['status' => 'exist'];
         } else {
-            $arrResponse = ['status' => 'noshift'];
+            $otherShift = SecurityOfficerCheckin::where('check_in', 'like', '%' . date('Y-m-d') . '%')->whereNull('check_out')->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
+            if ($otherShift != null) {
+                $arrResponse = ['status' => 'othershift'];
+            } else {
+                $arrResponse = ['status' => 'noshift'];
+            }
         }
         return $arrResponse;
     }
