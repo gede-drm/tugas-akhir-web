@@ -52,7 +52,7 @@
                                     @endif
 
                                     @if ($security->check->management_checkout_id == null)
-                                        @if ($security->check->checkout != null)
+                                        @if ($security->check->check_out < date('Y-m-d H:i'))
                                             <td>{{ date('H:i', strtotime($security->check->check_out)) }}</td>
                                         @else
                                             <td>--</td>
