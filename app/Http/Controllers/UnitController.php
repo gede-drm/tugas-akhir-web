@@ -143,7 +143,7 @@ class UnitController extends Controller
     }
     public function getUnitNo()
     {
-        $units = Unit::select('id', 'unit_no')->orderBy('unit_no', 'asc')->get();
+        $units = Unit::select('id', 'unit_no')->where('active_status', 1)->orderBy('unit_no', 'asc')->get();
         return ["status" => "success", "data" => $units];
     }
     public function getUnitNoByTower(Request $request)
