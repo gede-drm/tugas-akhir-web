@@ -130,6 +130,14 @@
                         </a>
                     </li>
 
+                    {{-- Setting --}}
+                    <li class="menu-item {{ request()->is('setting*') ? ' active' : '' }}">
+                        <a href="{{ route('setting.index') }}" class="menu-link">
+                            <i class="menu-icon tf-icons bx bxs-cog"></i>
+                            <div>Setting</div>
+                        </a>
+                    </li>
+
                     {{-- Logout --}}
                     <li class="menu-header small text-uppercase"><span class="menu-header-text">Logout</span></li>
                     <li class="menu-item">
