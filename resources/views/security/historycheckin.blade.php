@@ -84,7 +84,7 @@
                             @endif
                             <td>{{ $his->security->name }} ({{ $his->security->employeeid }})</td>
                             <td>{{ $his->managementIn->username }}</td>
-                            @if ($his->check_out < date('Y-m-d H:i'))
+                            @if ($his->check_out < date('Y-m-d H:i:s'))
                                 @if ($his->managementOut != null)
                                     <td>{{ $his->managementOut->username }}</td>
                                 @else

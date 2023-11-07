@@ -52,7 +52,7 @@
                                     @endif
 
                                     @if ($security->check->management_checkout_id == null)
-                                        @if ($security->check->check_out < date('Y-m-d H:i'))
+                                        @if ($security->check->check_out <= date('Y-m-d H:i:s'))
                                             <td>{{ date('H:i', strtotime($security->check->check_out)) }}</td>
                                         @else
                                             <td>--</td>
@@ -72,7 +72,7 @@
                                             data-bs-target="#modalCheckIn">Check In</button></td>
                                 @else
                                     @if ($security->check->management_checkout_id == null)
-                                        @if ($security->check->checkout != null)
+                                        @if ($security->check->check_out <= date('Y-m-d H:i:s'))
                                             <td><button type="button" class="btn btn-success"
                                                     onclick="getCheckIn({{ $security->id }})" data-bs-toggle="modal"
                                                     data-bs-target="#modalCheckIn">Check In</button></td>
