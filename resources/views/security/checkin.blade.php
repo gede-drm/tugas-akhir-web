@@ -15,7 +15,8 @@
                     <h4>Check In/Out</h4>
                 </div>
                 <div class="col-6 text-end">
-                    <a href="{{ route('security.checkinHistory') }}" type="button" class="btn btn-primary btn-sm">History Check In/out</a>
+                    <a href="{{ route('security.checkinHistory') }}" type="button" class="btn btn-primary btn-sm">History
+                        Check In/out</a>
                 </div>
             </div>
             <h6>Tanggal Hari ini: <strong><span id="datetime"></span></strong></h6>
@@ -50,10 +51,14 @@
                                         <td>--</td>
                                     @endif
 
-                                    @if ($security->check->check_out != null)
-                                        <td>{{ date('H:i', strtotime($security->check->check_out)) }}</td>
+                                    @if ($security->check->management_checkout_id == null)
+                                        @if ($security->check->checkout != null)
+                                            <td>{{ date('H:i', strtotime($security->check->check_out)) }}</td>
+                                        @else
+                                            <td>--</td>
+                                        @endif
                                     @else
-                                        <td>--</td>
+                                        <td>{{ date('H:i', strtotime($security->check->check_out)) }}</td>
                                     @endif
                                 @else
                                     <td>--</td>
@@ -66,15 +71,21 @@
                                             onclick="getCheckIn({{ $security->id }})" data-bs-toggle="modal"
                                             data-bs-target="#modalCheckIn">Check In</button></td>
                                 @else
-                                    @if ($security->check->check_in != null && $security->check->check_out == null)
-                                        <td>
-                                            <form action="{{ route('security.storeCheckout') }}" method="post"
-                                                onclick="if(!confirm('Apakah anda yakin untuk melakukan checkout pada satpam ini?')) return false;">
-                                                @csrf
-                                                <input type="hidden" name="satpam_id" value="{{ $security->id }}">
-                                                <button type="submit" class="btn btn-danger">Check Out</button>
-                                            </form>
-                                        </td>
+                                    @if ($security->check->management_checkout_id == null)
+                                        @if ($security->check->checkout != null)
+                                            <td><button type="button" class="btn btn-success"
+                                                    onclick="getCheckIn({{ $security->id }})" data-bs-toggle="modal"
+                                                    data-bs-target="#modalCheckIn">Check In</button></td>
+                                        @else
+                                            <td>
+                                                <form action="{{ route('security.storeCheckout') }}" method="post"
+                                                    onclick="if(!confirm('Apakah anda yakin untuk melakukan checkout pada satpam ini?')) return false;">
+                                                    @csrf
+                                                    <input type="hidden" name="satpam_id" value="{{ $security->id }}">
+                                                    <button type="submit" class="btn btn-danger">Check Out</button>
+                                                </form>
+                                            </td>
+                                        @endif
                                     @else
                                         <td><button type="button" class="btn btn-success"
                                                 onclick="getCheckIn({{ $security->id }})" data-bs-toggle="modal"

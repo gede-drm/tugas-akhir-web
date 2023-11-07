@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SecurityOfficer;
 use App\Models\SecurityOfficerCheckin;
+use App\Models\SystemSetting;
 use App\Models\Tower;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -63,9 +64,9 @@ class SecurityOfficerController extends Controller
 
     public function checkin()
     {
-        $securities = SecurityOfficer::all();
+        $securities = SecurityOfficer::where('active_status', 1)->get();
         foreach ($securities as $security) {
-            $checkin = SecurityOfficerCheckin::where('check_in', 'like', '%' . date('Y-m-d') . '%')->orderBy('check_in', 'desc')->where('security_officer_id', $security->id)->first();
+            $checkin = SecurityOfficerCheckin::whereRaw("(check_in like '%".date('Y-m-d')."%' or timestampdiff(minute, now(), check_out)>0)")->where("security_officer_id", $security->id)->orderBy('check_in', 'desc')->first();
             $security->check = $checkin;
         }
         return view('security.checkin', compact('securities'));
@@ -87,8 +88,11 @@ class SecurityOfficerController extends Controller
         $security_id = $request->get('satpam_id');
         $security_name = SecurityOfficer::select('name')->where('id', $security_id)->first()->name;
 
+        $date = date('Y-m-d H:i');
+        $shift_duration = SystemSetting::select('value')->where('configuration_name', 'security_shift')->first();
         $checkin = new SecurityOfficerCheckin();
-        $checkin->check_in = date('Y-m-d H:i:s');
+        $checkin->check_in = $date;
+        $checkin->check_out = date('Y-m-d H:i', (strtotime($date."+".$shift_duration->value." hours")));
         $checkin->management_checkin_id = Auth::user()->id;
         $checkin->security_officer_id = $security_id;
         $checkin->tower_id = $tower_id;
@@ -102,7 +106,7 @@ class SecurityOfficerController extends Controller
         $request->validate(['satpam_id' => 'required']);
         $security_id = $request->get('satpam_id');
         $security_name = SecurityOfficer::select('name')->where('id', $security_id)->first()->name;
-        $checkin = SecurityOfficerCheckin::where('check_in', 'like', '%' . date('Y-m-d') . '%')->whereNull('check_out')->where('security_officer_id', $security_id)->first();
+        $checkin = SecurityOfficerCheckin::where('security_officer_id', $security_id)->orderBy('check_in', 'desc')->first();
         $checkin->check_out =  date('Y-m-d H:i:s');
         $checkin->management_checkout_id = Auth::user()->id;
         $checkin->save();

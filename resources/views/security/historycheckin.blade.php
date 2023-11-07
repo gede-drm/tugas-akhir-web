@@ -43,7 +43,8 @@
                                 <div class="col-12">
                                     <label for="txtSecurityName" class="form-label mb-0">Nama Security</label>
                                     <input type="text" class="form-control form-control-sm" id="txtSecurityName"
-                                        name="security_name" placeholder="Suparno" value="{{ $security_name != null ? $security_name : '' }}">
+                                        name="security_name" placeholder="Suparno"
+                                        value="{{ $security_name != null ? $security_name : '' }}">
                                 </div>
                             </div>
                         </div>
@@ -83,8 +84,12 @@
                             @endif
                             <td>{{ $his->security->name }} ({{ $his->security->employeeid }})</td>
                             <td>{{ $his->managementIn->username }}</td>
-                            @if ($his->managementOut != null)
-                                <td>{{ $his->managementOut->username }}</td>
+                            @if ($his->check_out < date('Y-m-d H:i'))
+                                @if ($his->managementOut != null)
+                                    <td>{{ $his->managementOut->username }}</td>
+                                @else
+                                    <td>Checkout Sistem</td>
+                                @endif
                             @else
                                 <td>Belum Check Out</td>
                             @endif

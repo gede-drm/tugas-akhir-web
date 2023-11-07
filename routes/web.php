@@ -3,6 +3,7 @@
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SecurityOfficerController;
+use App\Http\Controllers\SystemSettingController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Auth;
@@ -83,4 +84,6 @@ Route::middleware(['auth', 'management'])->group(function () {
     Route::post('tower/deactivate', [UnitController::class, 'deactivateTower'])->name('tower.deactivate');
     Route::post('tower/activate', [UnitController::class, 'activateTower'])->name('tower.activate');
     
+    Route::get('setting', [SystemSettingController::class, 'index'])->name('setting.index');
+    Route::post('setting/update', [SystemSettingController::class, 'updateSetting'])->name('setting.update');
 });
