@@ -90,6 +90,14 @@
                         </ul>
                     </li>
 
+                    {{-- Paket --}}
+                    <li class="menu-item {{ request()->is('paket*') ? ' active' : '' }}">
+                        <a href="{{ route('package.index') }}" class="menu-link">
+                            <i class="menu-icon tf-icons bx bxs-package"></i>
+                            <div>Paket</div>
+                        </a>
+                    </li>
+
                     {{-- Perizinan --}}
                     <li class="menu-item {{ request()->is('perizinan*') ? ' active' : '' }}">
                         <a href="{{ route('permission.index') }}" class="menu-link">

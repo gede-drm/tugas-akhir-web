@@ -9,6 +9,19 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class PackageController extends Controller
 {
+    // Web
+    public function index(){
+        $incomingPkgs = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'pickup_date', 'unit_id', 'receiving_security_officer_id', 'pickup_security_officer_id')->orderBy('receive_date', 'desc')->get();
+        return view('package.index', compact('incomingPkgs'));
+    }
+    
+    public function modalPhoto(Request $request){
+        $package_id = $request->get('package_id');
+        $package = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'pickup_date', 'unit_id', 'receiving_security_officer_id', 'pickup_security_officer_id')->where('id', $package_id)->first();
+
+        return response()->json(array('data' => view('package.modalphoto', compact('package'))->render()), 200);
+    }
+
     // API
     public function secPackagePendingList(Request $request)
     {

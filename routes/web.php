@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SecurityOfficerController;
 use App\Http\Controllers\TenantController;
@@ -54,6 +55,9 @@ Route::middleware(['auth', 'management'])->group(function () {
     Route::post('perizinan/accept', [PermissionController::class, 'accept'])->name('permission.accept');
     Route::post('perizinan/reject', [PermissionController::class, 'reject'])->name('permission.reject');
     Route::post('perizinan/downloadletter', [PermissionController::class, 'downloadApprovalLetter'])->name('permission.download');
+
+    Route::get('paket', [PackageController::class, 'index'])->name('package.index');
+    Route::post('paket/modal', [PackageController::class, 'modalPhoto'])->name('package.modalPhoto');
 
     Route::get('tenant', [TenantController::class, 'index'])->name('tenant.index');
     Route::get('tenant/add', [TenantController::class, 'add'])->name('tenant.add');
