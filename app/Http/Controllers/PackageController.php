@@ -141,13 +141,20 @@ class PackageController extends Controller
         if ($tokenValidation == true) {
             $statusSecurity = Helper::checkSecurityShift($officer_id, $tower_id);
             if ($statusSecurity == 'exist') {
-                $package = IncomingPackage::where('verification_code', $verification_code)->first();
+                $package = IncomingPackage::where('verification_code', $verification_code)->whereNull('pickup_date')->first();
                 if ($package != null) {
                     $package->pickup_date = date('Y-m-d H:i:s');
                     $package->pickup_security_officer_id = $officer_id;
+                    $package->save();
                     $arrResponse = ["status" => "success", "unit_no"=>$package->unit->unit_no];
                 } else {
-                    $arrResponse = ["status" => "notfound"];
+                    $packagePicked = IncomingPackage::where('verification_code', $verification_code)->whereNotNull('pickup_date')->first();
+                    if($packagePicked != null){
+                        $arrResponse = ["status" => "picked"];
+                    }
+                    else{
+                        $arrResponse = ["status" => "notfound"];
+                    }
                 }
             }
             else{
