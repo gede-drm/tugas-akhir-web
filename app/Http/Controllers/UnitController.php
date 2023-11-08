@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Helper;
 use App\Models\Tower;
 use App\Models\Unit;
 use App\Models\User;
@@ -23,7 +24,7 @@ class UnitController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate(["tower" => "required", "unit_no" => "required|unique:units", "owner_name"=>"required", "holder_name" => "required", "holder_ph_number"=>"required", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!", "unit_no.unique" => "Nomor Unit Terkait Telah Terdaftar!"]);
+        $request->validate(["tower" => "required", "unit_no" => "required|unique:units", "owner_name" => "required", "holder_name" => "required", "holder_ph_number" => "required", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!", "unit_no.unique" => "Nomor Unit Terkait Telah Terdaftar!"]);
 
         User::create([
             "username" => $request->get('unit_no'),
@@ -50,7 +51,7 @@ class UnitController extends Controller
     }
     public function update(Request $request, Unit $unit)
     {
-        $request->validate(["owner_name"=>"required","holder_name" => "required", "holder_ph_number"=>"required", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!"]);
+        $request->validate(["owner_name" => "required", "holder_name" => "required", "holder_ph_number" => "required", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!"]);
         $user = User::find($unit->user_id);
         $user->password = Hash::make($request->get('password'));
         $unit->owner_name = $request->get('owner_name');
@@ -61,7 +62,8 @@ class UnitController extends Controller
 
         return redirect()->route('unit.index')->with('status', 'Data unit ' . $request->get('unit_no') . ' Berhasil diperbarui!');
     }
-    public function deactivateUnit(Request $request){
+    public function deactivateUnit(Request $request)
+    {
         $unit_id = $request->get('unit_id');
         $unit = Unit::find($unit_id);
         $unit->active_status = 0;
@@ -69,7 +71,8 @@ class UnitController extends Controller
 
         return redirect()->route('unit.index')->with('status', 'Unit ' . $unit->unit_no . ' Berhasil dinonaktifkan!');
     }
-    public function activateUnit(Request $request){
+    public function activateUnit(Request $request)
+    {
         $unit_id = $request->get('unit_id');
         $unit = Unit::find($unit_id);
         $unit->active_status = 1;
@@ -117,7 +120,8 @@ class UnitController extends Controller
         return redirect()->route('tower.index')->with('status', 'Data tower ' . $request->get('tower') . ' Berhasil diperbarui!');
     }
 
-    public function deactivateTower(Request $request){
+    public function deactivateTower(Request $request)
+    {
         $tower_id = $request->get('tower_id');
         $tower = Tower::find($tower_id);
         $tower->active_status = 0;
@@ -125,7 +129,8 @@ class UnitController extends Controller
 
         return redirect()->route('tower.index')->with('status', 'Tower ' . $tower->name . ' Berhasil dinonaktifkan!');
     }
-    public function activateTower(Request $request){
+    public function activateTower(Request $request)
+    {
         $tower_id = $request->get('tower_id');
         $tower = Tower::find($tower_id);
         $tower->active_status = 1;
@@ -148,14 +153,21 @@ class UnitController extends Controller
     }
     public function getUnitNoByTower(Request $request)
     {
+        $token = $request->get('token');
         $tower_id = $request->get('tower');
-        $units = Unit::select('id', 'unit_no')->where('tower_id', $tower_id)->get();
-        $arrResponse = [];
-        if(count($units)>0){
-            $arrResponse = ["status" => "success", "data" => $units];
+
+        $tokenValidation = Helper::validateToken($token);
+        if ($tokenValidation == true) {
+            $units = Unit::select('id', 'unit_no')->where('tower_id', $tower_id)->get();
+            $arrResponse = [];
+            if (count($units) > 0) {
+                $arrResponse = ["status" => "success", "data" => $units];
+            } else {
+                $arrResponse = ["status" => "empty"];
+            }
         }
         else{
-            $arrResponse = ["status" => "empty"];
+            $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
     }

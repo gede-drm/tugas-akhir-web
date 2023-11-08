@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 // });
 
 // API General
-Route::get('towerlist', [UnitController::class, 'getTower']);
+// Route::get('towerlist', [UnitController::class, 'getTower']);
 Route::post('unitbytower', [UnitController::class, 'getUnitNoByTower']);
 
 // Security's App API

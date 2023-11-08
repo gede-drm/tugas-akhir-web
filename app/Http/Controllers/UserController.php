@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Helper;
 use App\Models\SecurityOfficerCheckin;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -22,7 +23,10 @@ class UserController extends Controller
                 if (Hash::check($password, $userSecurity->password)) {
                     $shift = SecurityOfficerCheckin::whereRaw("(timestampdiff(minute, now(), check_in) < 0 and timestampdiff(minute, now(), check_out)>0)")->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
                     if ($shift != null) {
-                        $arrResponse = ['status' => 'success', 'data' => ['security_id' => $userSecurity->security->id, 'security_name' => $userSecurity->security->name, 'username' => $username, 'tower_id' => $shift->tower->id, 'tower_name' => $shift->tower->name]];
+                        $token = Helper::generateToken();
+                        $userSecurity->api_token = $token;
+                        $userSecurity->save();
+                        $arrResponse = ['status' => 'success', 'data' => ['security_id' => $userSecurity->security->id, 'security_name' => $userSecurity->security->name, 'username' => $username, 'tower_id' => $shift->tower->id, 'tower_name' => $shift->tower->name, 'token' => $token]];
                     } else {
                         $arrResponse = ['status' => 'noshift'];
                     }
@@ -40,20 +44,17 @@ class UserController extends Controller
 
     public function checkshift(Request $request)
     {
-        $username = $request->get('username');
+        $securityId = $request->get('security');
         $tower = $request->get('tower');
-        $userSecurity = User::select('id')->where('username', $username)->first();
-        $shift = SecurityOfficerCheckin::whereRaw("(timestampdiff(minute, now(), check_in) < 0 and timestampdiff(minute, now(), check_out)>0)")->whereRelation('tower', 'tower_id', $tower)->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
+        $token = $request->get('token');
+
         $arrResponse = [];
-        if ($shift != null) {
-            $arrResponse = ['status' => 'exist'];
+        $tokenValidation = Helper::validateToken($token);
+        if ($tokenValidation == true) {
+            $status = Helper::checkSecurityShift($securityId, $tower);
+            $arrResponse = ["status" => $status];
         } else {
-            $otherShift = SecurityOfficerCheckin::whereRaw("(timestampdiff(minute, now(), check_in) < 0 and timestampdiff(minute, now(), check_out)>0)")->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
-            if ($otherShift != null) {
-                $arrResponse = ['status' => 'othershift'];
-            } else {
-                $arrResponse = ['status' => 'noshift'];
-            }
+            $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
     }

@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username', 'password','role', 'fcm_token'
+        'username', 'password','role', 'api_token', 'fcm_token'
     ];
 
     /**
@@ -47,5 +47,9 @@ class User extends Authenticatable
     }
     public function tenant(){
         return $this->hasOne(Tenant::class);
+    }
+    public function routeNotificationForFcm()
+    {
+        return $this->fcm_token;
     }
 }
