@@ -60,7 +60,7 @@ class PackageController extends Controller
         $img = str_replace(' ', '+', $img);
         $imgData = base64_decode($img);
         $strCode = $officer_id . $unitNo . $date . 'package';
-        $imgFileName = 'img-qr-' . $unitNo . md5($strCode) . '.png';
+        $imgFileName = 'img-package-' . $unitNo . md5($strCode) . '.png';
         $imgFileDirectory = '../public/packages/photos/' . $imgFileName;
         file_put_contents($imgFileDirectory, $imgData);
 

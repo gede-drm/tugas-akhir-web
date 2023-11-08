@@ -11,7 +11,7 @@
                 </div>
             @endif
             <h4>Daftar Paket Masuk</h4>
-            <table id="pkgTable" class="table table-striped table-hover nowrap text-center">
+            <table id="pkgTable" class="table table-striped table-hover text-center">
                 <thead>
                     <tr>
                         <th>No</th>
