@@ -56,7 +56,7 @@ class PackageController extends Controller
         $tokenValidation = Helper::validateToken($token);
 
         if ($tokenValidation == true) {
-            $package = IncomingPackage::select('id', 'receive_date', 'photo_url', 'unit_id')->where('id', $idPackage)->first();
+            $package = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'unit_id')->where('id', $idPackage)->first();
             $package['unit_no'] = $package->unit->unit_no;
             $package->photo_url = "https://gede-darma.my.id/packages/photos/" . $package->photo_url;
             $arrResponse = ['status' => 'success', 'data' => $package];
