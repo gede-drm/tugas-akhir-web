@@ -111,7 +111,7 @@ class SecurityOfficerController extends Controller
         $checkin->management_checkout_id = Auth::user()->id;
         $checkin->save();
 
-        $userSecurity = User::select('id', 'api_token')->where('id', $security->id)->first();
+        $userSecurity = User::where('id', $security->id)->first();
         $userSecurity->api_token = null;
         $userSecurity->save();
 

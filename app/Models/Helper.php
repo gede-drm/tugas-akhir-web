@@ -29,7 +29,7 @@ class Helper extends Model
     }
     public static function checkSecurityShift($securityId, $towerId)
     {
-        $userSecurity = User::select('id', 'username', 'api_token')->whereRelation('security','id', $securityId)->first();
+        $userSecurity = User::whereRelation('security','id', $securityId)->first();
         if ($userSecurity != null) {
             $shift = SecurityOfficerCheckin::whereRaw("(timestampdiff(minute, now(), check_in) < 0 and timestampdiff(minute, now(), check_out)>0)")->whereRelation('tower', 'tower_id', $towerId)->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
             $status = "";
