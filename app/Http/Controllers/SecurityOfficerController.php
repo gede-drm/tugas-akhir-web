@@ -105,13 +105,17 @@ class SecurityOfficerController extends Controller
     {
         $request->validate(['satpam_id' => 'required']);
         $security_id = $request->get('satpam_id');
-        $security_name = SecurityOfficer::select('name')->where('id', $security_id)->first()->name;
+        $security = SecurityOfficer::select('name', 'user_id')->where('id', $security_id)->first();
         $checkin = SecurityOfficerCheckin::where('security_officer_id', $security_id)->orderBy('check_in', 'desc')->first();
         $checkin->check_out =  date('Y-m-d H:i:s');
         $checkin->management_checkout_id = Auth::user()->id;
         $checkin->save();
 
-        return redirect()->route('security.checkin')->with('status', 'Check Out Satpam ' . $security_name . ' Berhasil dilakukan!');
+        $userSecurity = User::select('id', 'api_token')->where('id', $security->id)->first();
+        $userSecurity->api_token = null;
+        $userSecurity->save();
+
+        return redirect()->route('security.checkin')->with('status', 'Check Out Satpam ' . $security->name . ' Berhasil dilakukan!');
     }
 
     public function checkinHistory()
