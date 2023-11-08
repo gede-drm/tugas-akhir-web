@@ -143,21 +143,23 @@ class PackageController extends Controller
             if ($statusSecurity == 'exist') {
                 $package = IncomingPackage::where('verification_code', $verification_code)->whereNull('pickup_date')->first();
                 if ($package != null) {
-                    $package->pickup_date = date('Y-m-d H:i:s');
-                    $package->pickup_security_officer_id = $officer_id;
-                    $package->save();
-                    $arrResponse = ["status" => "success", "unit_no"=>$package->unit->unit_no];
+                    if ($package->unit->tower_id == $tower_id) {
+                        $package->pickup_date = date('Y-m-d H:i:s');
+                        $package->pickup_security_officer_id = $officer_id;
+                        $package->save();
+                        $arrResponse = ["status" => "success", "unit_no" => $package->unit->unit_no];
+                    } else {
+                        $arrResponse = ["status" => "othertower"];
+                    }
                 } else {
                     $packagePicked = IncomingPackage::where('verification_code', $verification_code)->whereNotNull('pickup_date')->first();
-                    if($packagePicked != null){
+                    if ($packagePicked != null) {
                         $arrResponse = ["status" => "picked"];
-                    }
-                    else{
+                    } else {
                         $arrResponse = ["status" => "notfound"];
                     }
                 }
-            }
-            else{
+            } else {
                 $arrResponse = ['status' => 'securityprob', 'securitystatus' => $statusSecurity];
             }
         } else {
