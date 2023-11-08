@@ -120,9 +120,8 @@ class PackageController extends Controller
                         $arrResponse = ['status' => 'notfound'];
                     }
                 }
-            }
-            else{
-                $arrResponse = ['status'=>'securityprob', 'securitystatus'=>$statusSecurity];
+            } else {
+                $arrResponse = ['status' => 'securityprob', 'securitystatus' => $statusSecurity];
             }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
@@ -132,5 +131,31 @@ class PackageController extends Controller
     }
     public function secPackageCollection(Request $request)
     {
+        $verification_code = $request->get('code');
+        $officer_id = $request->get('officer');
+        $tower_id = $request->get('tower');
+
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        if ($tokenValidation == true) {
+            $statusSecurity = Helper::checkSecurityShift($officer_id, $tower_id);
+            if ($statusSecurity == 'exist') {
+                $package = IncomingPackage::where('verification_code', $verification_code)->first();
+                if ($package != null) {
+                    $package->pickup_date = date('Y-m-d H:i:s');
+                    $package->pickup_security_officer_id = $officer_id;
+                    $arrResponse = ["status" => "success", "unit_no"=>$package->unit->unit_no];
+                } else {
+                    $arrResponse = ["status" => "notfound"];
+                }
+            }
+            else{
+                $arrResponse = ['status' => 'securityprob', 'securitystatus' => $statusSecurity];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
     }
 }
