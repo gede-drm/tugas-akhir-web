@@ -32,9 +32,11 @@ class PackageController extends Controller
         $tower = $request->get('tower');
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+
         if ($tokenValidation == true) {
             $packages = IncomingPackage::select('id', 'receive_date', 'photo_url', 'unit_id')->whereRelation('unit', 'tower_id', $tower)->whereNull('pickup_date')->orderBy('receive_date', 'desc')->get();
-            $arrResponse = [];
             if (count($packages) > 0) {
                 foreach ($packages as $package) {
                     $package['unit_no'] = $package->unit->unit_no;
@@ -54,6 +56,8 @@ class PackageController extends Controller
         $idPackage = $request->get('package_id');
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
 
         if ($tokenValidation == true) {
             $package = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'unit_id')->where('id', $idPackage)->first();
@@ -77,6 +81,8 @@ class PackageController extends Controller
 
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
 
         if ($tokenValidation == true) {
             $statusSecurity = Helper::checkSecurityShift($officer_id, $tower_id);
@@ -137,6 +143,8 @@ class PackageController extends Controller
 
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
 
         if ($tokenValidation == true) {
             $statusSecurity = Helper::checkSecurityShift($officer_id, $tower_id);
