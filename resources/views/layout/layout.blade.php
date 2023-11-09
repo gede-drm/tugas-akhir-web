@@ -13,7 +13,7 @@
     <meta name="author" content="Gede Darma (160420008)">
 
     <!-- Favicon -->
-    <link rel="icon" href="#" />
+    <link rel="icon" href="{{asset('assets/ApartemenKu-icon.png')}}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
