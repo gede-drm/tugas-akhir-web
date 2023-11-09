@@ -14,6 +14,7 @@
         @else
             <p class="mb-0 mt-2">Tanggal Pengambilan: Belum diambil</p>
         @endif
-        <p class="mb-0 mt-2">Deskripsi: {{ $package->description }}</p>
+        <p class="mb-0 mt-3 fw-bolder">Deskripsi Paket</p>
+        <p class="mb-0 mt-0">{!! nl2br($package->description) !!}</p>
     </div>
 </div>
