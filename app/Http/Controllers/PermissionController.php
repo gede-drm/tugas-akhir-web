@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Helper;
 use App\Models\Permission;
+use App\Models\Permit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -37,7 +39,7 @@ class PermissionController extends Controller
         $verificationCode = hash('sha256', $strCode);
         $qrFileName = 'permission-qr-' . $permission->id . md5($strCode) . '.png';
         $qrFileDirectory = '../public/permissions/qr-code/' . $qrFileName;
-        QrCode::size(500)->margin(2)->color(0,33,71)->format('png')->generate($verificationCode, $qrFileDirectory);
+        QrCode::size(500)->margin(2)->color(0, 33, 71)->format('png')->generate($verificationCode, $qrFileDirectory);
 
         $permission->verification_code = $verificationCode;
         $permission->qr_url = $qrFileName;
@@ -83,20 +85,54 @@ class PermissionController extends Controller
         $permission = Permission::find($permisssionId);
         $fileURL = $permission->approval_letter_url;
 
-        return response()->download(public_path('/permissions/approval-letter/'.$fileURL), 'perizinan-' . $permission->status . '_' . $permission->serviceTransaction->unit->unit_no . '_' . $permission->id . '.pdf');
+        return response()->download(public_path('/permissions/approval-letter/' . $fileURL), 'perizinan-' . $permission->status . '_' . $permission->serviceTransaction->unit->unit_no . '_' . $permission->id . '.pdf');
     }
 
     // API
-    public function secPermissionList(Request $request){
+    public function secPermissionList(Request $request)
+    {
+        $tower = $request->get('tower');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
 
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $permissions = Permission::where('status', 'accept')->whereRaw('(date(start_date) <=\'' . date('Y-m-d') . '\') and (date(end_date) >=\'' . date('Y-m-d') . '\')')->get();
+            if (count($permissions) > 0) {
+                foreach ($permissions as $key => $permission) {
+                    if ($permission->serviceTransaction->unit->tower_id != $tower) {
+                        $permissions->forget($key);
+                    } else {
+                        $permitsTodayCount = Permit::where('permission_id', $permission->id)->whereRaw('date(date) = \'' . date('Y-m-d') . '\'')->count();
+                        if ($permitsTodayCount > 0) {
+                            $permission['unit_no'] = $permission->serviceTransaction->unit->unit_no;
+                            $permission['tenant'] = $permission->serviceTransaction->services[0]->tenant->name;
+                            $permission['workPermitsCount'] = $permitsTodayCount;
+                        } else {
+                            $permissions->forget($key);
+                        }
+                    }
+                }
+                if (count($permissions) > 0) {
+                    $arrResponse = ['status' => 'success', 'data' => $permissions];
+                } else {
+                    $arrResponse = ['status' => 'empty'];
+                }
+            } else {
+                $arrResponse = ['status' => 'empty'];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
     }
-    public function secPermissionDetail(Request $request){
-        
+    public function secPermissionDetail(Request $request)
+    {
     }
-    public function secPermissionScan(Request $request){
-        
+    public function secPermissionScan(Request $request)
+    {
     }
-    public function secPermissionSaveScan(Request $request){
-        
+    public function secPermissionSaveScan(Request $request)
+    {
     }
 }
