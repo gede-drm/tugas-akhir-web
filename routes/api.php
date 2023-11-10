@@ -41,3 +41,6 @@ Route::post('security/permission/detail', [PermissionController::class, 'secPerm
 Route::post('security/permission/scan', [PermissionController::class, 'secPermissionScan']);
 Route::post('security/permission/workersdetail', [PermissionController::class, 'secPermissionWorkersDetail']);
 Route::post('security/permission/addpermits', [PermissionController::class, 'secPermissionAddPermits']);
+
+// Tenant's App API
+Route::post('tenant/login', [UserController::class, 'tenantLogin']);

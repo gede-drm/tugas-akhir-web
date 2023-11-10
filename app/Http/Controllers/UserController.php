@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    // API
+    // API Security
     public function securityLogin(Request $request)
     {
         $username = $request->get('username');
@@ -74,6 +74,32 @@ class UserController extends Controller
             $arrResponse = ["status" => "success"];
         } else {
             $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    // API Tenant
+    public function tenantLogin(Request $request){
+        $username = $request->get('username');
+        $password = $request->get('password');
+
+        $userTenant = User::select('id', 'password', 'role')->where('username', $username)->first();
+        $arrResponse = [];
+        if ($userTenant != null) {
+            if ($userTenant->role == 'tenant') {
+                if (Hash::check($password, $userTenant->password)) {
+                        $token = Helper::generateToken();
+                        $userTenant->api_token = $token;
+                        $userTenant->save();
+                        $arrResponse = ['status' => 'success', 'data' => ['tenant_id' => $userTenant->security->id, 'tenant_name' => $userTenant->tenant->name, 'username' => $username, 'token' => $token]];
+                } else {
+                    $arrResponse = ['status' => 'failed'];
+                }
+            } else {
+                $arrResponse = ['status' => 'failed'];
+            }
+        } else {
+            $arrResponse = ['status' => 'failed'];
         }
         return $arrResponse;
     }
