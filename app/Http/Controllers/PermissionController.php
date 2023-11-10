@@ -148,7 +148,7 @@ class PermissionController extends Controller
                     $permission->makeHidden('serviceTransaction');
 
                     $permission['permits'] = $permits;
-                    
+
                     $arrResponse = ['status' => 'success', 'data' => $permission];
                 } else {
                     $arrResponse = ["status" => "nopermit"];
@@ -220,9 +220,41 @@ class PermissionController extends Controller
             $arrResponse = ["status" => "notauthenticated"];
         }
 
-        return response()->json($arrResponse);
+        return $arrResponse;
     }
     public function secPermissionAddPermits(Request $request)
     {
+        $idPermission = $request->get('permission_id');
+        $workers_ids = $request->get('workers_ids');
+        $tower_id = $request->get('tower');
+        $officer_id = $request->get('officer');
+
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        if ($tokenValidation == true) {
+            $statusSecurity = Helper::checkSecurityShift($officer_id, $tower_id);
+            if ($statusSecurity == 'exist') {
+                $date = date('Y-m-d H:i:s');
+                foreach($workers_ids as $key=>$worker_id){
+                    $permit = new Permit();
+                    $permit->date = $date;
+                    $permit->permission_id = $idPermission;
+                    $permit->worker_id = $worker_id;
+                    $permit->security_officer_id = $officer_id;
+                    $permit->save();
+
+                    $arrResponse = ["status" => "success"];
+                }
+            }
+            else{
+                $arrResponse = ['status' => 'securityprob', 'securitystatus' => $statusSecurity];
+            }
+        }
+        else{
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+
+        return $arrResponse;
     }
 }
