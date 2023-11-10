@@ -145,7 +145,6 @@ class PermissionController extends Controller
                         $permit['worker_name'] = $permit->worker->worker_name;
                         $permit['idcard_number'] = $permit->worker->idcard_number;
                     }
-                    $permission->makeHidden('permits');
                     $permission->makeHidden('serviceTransaction');
 
                     $permission['permits'] = $permits;
