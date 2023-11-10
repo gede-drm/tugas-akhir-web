@@ -128,11 +128,36 @@ class PermissionController extends Controller
     }
     public function secPermissionDetail(Request $request)
     {
+        $idPermission = $request->get('permission_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $permission = Permission::select('id','description','start_date', 'end_date', 'number_of_worker', 'service_transaction_id')->where('id', $idPermission)->first();
+            if ($permission != null) {
+                $permission['unit_no'] = $permission->serviceTransaction->unit->unit_no;
+                $permission['tenant'] = $permission->serviceTransaction->services[0]->tenant->name;
+                $permits = Permit::where('permission_id', $permission->id)->where('date', 'like', date('Y-m-d') . '%')->get();
+                $permission['officer'] = $permits[0]->security->name .' ('. $permits[0]->security->employeeid.')';
+                foreach ($permits as $permit) {
+                    $permit['worker_name'] = $permit->worker->worker_name;
+                    $permit['idcard_number'] = $permit->worker->idcard_number;
+                }
+                $permission['permits'] = $permits;
+                $arrResponse = ['status' => 'success', 'data' => $permission];
+            } else {
+                $arrResponse = ["status" => "notfound"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
     }
     public function secPermissionScan(Request $request)
     {
     }
-    public function secPermissionSaveScan(Request $request)
+    public function secPermissionAddPermits(Request $request)
     {
     }
 }
