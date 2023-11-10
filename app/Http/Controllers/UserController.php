@@ -91,7 +91,7 @@ class UserController extends Controller
                         $token = Helper::generateToken();
                         $userTenant->api_token = $token;
                         $userTenant->save();
-                        $arrResponse = ['status' => 'success', 'data' => ['tenant_id' => $userTenant->security->id, 'tenant_name' => $userTenant->tenant->name, 'username' => $username, 'token' => $token]];
+                        $arrResponse = ['status' => 'success', 'data' => ['tenant_id' => $userTenant->tenant->id, 'tenant_name' => $userTenant->tenant->name, 'username' => $username, 'token' => $token]];
                 } else {
                     $arrResponse = ['status' => 'failed'];
                 }
