@@ -26,7 +26,7 @@ class UserController extends Controller
                         $token = Helper::generateToken();
                         $userSecurity->api_token = $token;
                         $userSecurity->save();
-                        $arrResponse = ['status' => 'success', 'data' => ['security_id' => $userSecurity->security->id, 'security_name' => $userSecurity->security->name, 'username' => $username, 'tower_id' => $shift->tower->id, 'tower_name' => $shift->tower->name, 'token' => $token]];
+                        $arrResponse = ['status' => 'success', 'data' => ['security_id' => $userSecurity->security->id, 'security_name' => $userSecurity->security->name, 'username' => $username, 'tower_id' => $shift->tower->id, 'tower_name' => $shift->tower->name, 'token' => $token], 'datetime'=>date('Y-m-d H:i:s')];
                     } else {
                         $arrResponse = ['status' => 'noshift'];
                     }
