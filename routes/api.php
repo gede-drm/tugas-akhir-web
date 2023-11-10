@@ -38,4 +38,4 @@ Route::post('security/package/collection', [PackageController::class, 'secPackag
 Route::post('security/permission/list', [PermissionController::class, 'secPermissionList']);
 Route::post('security/permission/detail', [PermissionController::class, 'secPermissionDetail']);
 Route::post('security/permission/scan', [PermissionController::class, 'secPermissionScan']);
-Route::post('security/permission/savescan', [PermissionController::class, 'secPermissionSaveScan']);
+Route::post('security/permission/addpermits', [PermissionController::class, 'secPermissionAddPermits']);
