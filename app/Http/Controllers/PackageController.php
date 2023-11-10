@@ -42,6 +42,7 @@ class PackageController extends Controller
                     $package['unit_no'] = $package->unit->unit_no;
                     $package->photo_url = "https://gede-darma.my.id/packages/photos/" . $package->photo_url;
                 }
+                $packages->makeHidden('unit');
                 $arrResponse = ['status' => 'success', 'data' => $packages];
             } else {
                 $arrResponse = ['status' => 'empty'];
@@ -63,6 +64,8 @@ class PackageController extends Controller
             $package = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'unit_id')->where('id', $idPackage)->first();
             $package['unit_no'] = $package->unit->unit_no;
             $package->photo_url = "https://gede-darma.my.id/packages/photos/" . $package->photo_url;
+            
+            $package->makeHidden('unit');
             $arrResponse = ['status' => 'success', 'data' => $package];
         } else {
             $arrResponse = ["status" => "notauthenticated"];
