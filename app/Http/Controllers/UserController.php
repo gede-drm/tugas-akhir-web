@@ -58,4 +58,23 @@ class UserController extends Controller
         }
         return $arrResponse;
     }
+
+    public function clearToken(Request $request)
+    {
+        $username = $request->get('username');
+        $token = $request->get('token');
+
+        $arrResponse = [];
+        $tokenValidation = Helper::validateToken($token);
+        if ($tokenValidation == true) {
+            $user = User::select('id', 'api_token')->where('username', $username)->where('api_token', $token)->first();
+            $user->api_token = null;
+            $user->save();
+
+            $arrResponse = ["status" => "success"];
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
 }

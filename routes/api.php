@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 // API General
 // Route::get('towerlist', [UnitController::class, 'getTower']);
 Route::post('unitbytower', [UnitController::class, 'getUnitNoByTower']);
+Route::post('cleartoken', [UserController::class, 'cleartoken']);
 
 // Security's App API
 Route::post('security/login', [UserController::class, 'securityLogin']);
@@ -38,4 +39,5 @@ Route::post('security/package/collection', [PackageController::class, 'secPackag
 Route::post('security/permission/list', [PermissionController::class, 'secPermissionList']);
 Route::post('security/permission/detail', [PermissionController::class, 'secPermissionDetail']);
 Route::post('security/permission/scan', [PermissionController::class, 'secPermissionScan']);
+Route::post('security/permission/workersdetail', [PermissionController::class, 'secPermissionWorkersDetail']);
 Route::post('security/permission/addpermits', [PermissionController::class, 'secPermissionAddPermits']);

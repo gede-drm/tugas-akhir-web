@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Svg\Tag\Rect;
 
 class PermissionController extends Controller
 {
@@ -134,18 +133,26 @@ class PermissionController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $permission = Permission::select('id','description','start_date', 'end_date', 'number_of_worker', 'service_transaction_id')->where('id', $idPermission)->first();
+            $permission = Permission::select('id', 'description', 'start_date', 'end_date', 'number_of_worker', 'service_transaction_id')->where('id', $idPermission)->first();
             if ($permission != null) {
                 $permission['unit_no'] = $permission->serviceTransaction->unit->unit_no;
                 $permission['tenant'] = $permission->serviceTransaction->services[0]->tenant->name;
                 $permits = Permit::where('permission_id', $permission->id)->whereRaw('date(date) = \'' . date('Y-m-d') . '\'')->get();
-                $permission['officer'] = $permits[0]->security->name .' ('. $permits[0]->security->employeeid.')';
-                foreach ($permits as $permit) {
-                    $permit['worker_name'] = $permit->worker->worker_name;
-                    $permit['idcard_number'] = $permit->worker->idcard_number;
+                if (count($permits) > 0) {
+                    $permission['officer'] = $permits[0]->security->name . ' (' . $permits[0]->security->employeeid . ')';
+                    foreach ($permits as $permit) {
+                        $permit['worker_name'] = $permit->worker->worker_name;
+                        $permit['idcard_number'] = $permit->worker->idcard_number;
+                    }
+                    $permission->makeHidden('permits');
+                    $permission->makeHidden('serviceTransaction');
+
+                    $permission['permits'] = $permits;
+                    
+                    $arrResponse = ['status' => 'success', 'data' => $permission];
+                } else {
+                    $arrResponse = ["status" => "nopermit"];
                 }
-                $permission['permits'] = $permits;
-                $arrResponse = ['status' => 'success', 'data' => $permission];
             } else {
                 $arrResponse = ["status" => "notfound"];
             }
@@ -156,6 +163,64 @@ class PermissionController extends Controller
     }
     public function secPermissionScan(Request $request)
     {
+        $verification_code = $request->get('code');
+        $officer_id = $request->get('officer');
+        $tower_id = $request->get('tower');
+
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $statusSecurity = Helper::checkSecurityShift($officer_id, $tower_id);
+            if ($statusSecurity == 'exist') {
+                $permission = Permission::select('id', 'service_transaction_id')->where('status', 'accept')->whereRaw('(date(start_date) <=\'' . date('Y-m-d') . '\') and (date(end_date) >=\'' . date('Y-m-d') . '\')')->where('verification_code', $verification_code)->first();
+                if ($permission != null) {
+                    $countPermits = Permit::where('permission_id', $permission->id)->whereRaw('date(date) = \'' . date('Y-m-d') . '\'')->count();
+                    if ($countPermits == 0) {
+                        if ($permission->serviceTransaction->unit->tower_id != $tower_id) {
+                            $arrResponse = ["status" => "othertower"];
+                        } else {
+                            $arrResponse = ["status" => "success", "id" => $permission->id];
+                        }
+                    } else {
+                        $arrResponse = ["status" => "permitted"];
+                    }
+                } else {
+                    $arrResponse = ["status" => "notfound"];
+                }
+            } else {
+                $arrResponse = ['status' => 'securityprob', 'securitystatus' => $statusSecurity];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+
+        return $arrResponse;
+    }
+    public function secPermissionWorkersDetail(Request $request)
+    {
+        $idPermission = $request->get('permission_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $permission = Permission::select('id', 'description', 'start_date', 'end_date', 'number_of_worker', 'service_transaction_id')->where('id', $idPermission)->with('workers')->first();
+            if ($permission != null) {
+                $permission['unit_no'] = $permission->serviceTransaction->unit->unit_no;
+                $permission['tenant'] = $permission->serviceTransaction->services[0]->tenant->name;
+                $permission->makeHidden('serviceTransaction');
+
+                $arrResponse = ['status' => 'success', 'data' => $permission];
+            } else {
+                $arrResponse = ["status" => "notfound"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+
+        return response()->json($arrResponse);
     }
     public function secPermissionAddPermits(Request $request)
     {
