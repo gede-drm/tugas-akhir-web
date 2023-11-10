@@ -96,7 +96,7 @@ class PermissionController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $permissions = Permission::where('status', 'accept')->whereRaw('(date(start_date) <=\'' . date('Y-m-d') . '\') and (date(end_date) >=\'' . date('Y-m-d') . '\')')->get();
+            $permissions = Permission::select('id', 'description', 'start_date', 'end_date', 'number_of_worker','service_transaction_id')->where('status', 'accept')->whereRaw('(date(start_date) <=\'' . date('Y-m-d') . '\') and (date(end_date) >=\'' . date('Y-m-d') . '\')')->get();
             if (count($permissions) > 0) {
                 foreach ($permissions as $key => $permission) {
                     if ($permission->serviceTransaction->unit->tower_id != $tower) {
@@ -113,6 +113,7 @@ class PermissionController extends Controller
                     }
                 }
                 if (count($permissions) > 0) {
+                    $permission->makeHidden('serviceTransaction');
                     $arrResponse = ['status' => 'success', 'data' => $permissions];
                 } else {
                     $arrResponse = ['status' => 'empty'];
