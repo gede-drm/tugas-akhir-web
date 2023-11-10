@@ -114,7 +114,7 @@ class PermissionController extends Controller
                 }
                 if (count($permissions) > 0) {
                     $permission->makeHidden('serviceTransaction');
-                    $arrResponse = ['status' => 'success', 'data' => $permissions];
+                    $arrResponse = ['status' => 'success', 'data' => $permissions, 'datetime'=>date('Y-m-d H:i:s')];
                 } else {
                     $arrResponse = ['status' => 'empty'];
                 }
