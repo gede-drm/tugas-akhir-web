@@ -48,3 +48,4 @@ Route::post('tenant/login', [UserController::class, 'tenantLogin']);
 
 Route::post('tenant/getprofile', [TenantController::class, 'getTenantProfile']);
 Route::post('tenant/getstatus', [TenantController::class, 'getTenantStatus']);
+Route::post('tenant/changestatus', [TenantController::class, 'changeTenantStatus']);

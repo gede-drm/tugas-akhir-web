@@ -151,6 +151,7 @@ class TenantController extends Controller
 
         return $arrResponse;
     }
+
     public function getTenantStatus(Request $request)
     {
         $tenant_id = $request->get('tenant_id');
@@ -161,6 +162,32 @@ class TenantController extends Controller
         if ($tokenValidation == true) {
             $tenant = Tenant::select('status')->where('id', $tenant_id)->first();
             $arrResponse = ["status" => "success", "tenant_status" => $tenant->status];
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function changeTenantStatus(Request $request)
+    {
+        $tenant_id = $request->get('tenant_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $tenant = Tenant::select('id', 'status')->where('id', $tenant_id)->first();
+            if ($tenant != null) {
+                if ($tenant->status == 'open') {
+                    $tenant->status = 'close';
+                } else {
+                    $tenant->status = 'open';
+                }
+                $tenant->save();
+                $arrResponse = ["status" => "success"];
+            } else {
+                $arrResponse = ["status" => "notfound"];
+            }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
