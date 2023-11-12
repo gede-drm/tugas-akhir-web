@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\TenantController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -44,3 +45,6 @@ Route::post('security/permission/addpermits', [PermissionController::class, 'sec
 
 // Tenant's App API
 Route::post('tenant/login', [UserController::class, 'tenantLogin']);
+
+Route::post('tenant/getprofile', [TenantController::class, 'getTenantProfile']);
+Route::post('tenant/getstatus', [TenantController::class, 'getTenantStatus']);
