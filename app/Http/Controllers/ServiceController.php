@@ -18,7 +18,7 @@ class ServiceController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $services = Service::select('id', 'name', 'photo_url', 'pricePer', 'price', 'availability', 'rating')->where('active_status', 1)->where('tenant_id', $tenant_id)->get();
+            $services = Service::select('id', 'name', 'permit_need', 'photo_url', 'pricePer', 'price', 'availability', 'rating')->where('active_status', 1)->where('tenant_id', $tenant_id)->get();
             if(count($services)>0){
                 foreach($services as $svc){
                     $svc->photo_url = "https://gede-darma.my.id/tenants/services/".$svc->photo_url;
