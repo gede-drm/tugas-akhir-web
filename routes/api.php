@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
@@ -49,3 +51,8 @@ Route::post('tenant/login', [UserController::class, 'tenantLogin']);
 Route::post('tenant/getprofile', [TenantController::class, 'getTenantProfile']);
 Route::post('tenant/getstatus', [TenantController::class, 'getTenantStatus']);
 Route::post('tenant/changestatus', [TenantController::class, 'changeTenantStatus']);
+
+Route::post('tenant/getproducts', [ProductController::class, 'tenProductsList']);
+Route::post('tenant/getservices', [ServiceController::class, 'tenServicesList']);
+Route::post('tenant/addproduct', [ProductController::class, 'tenAddProduct']);
+Route::post('tenant/addservice', [ServiceController::class, 'tenAddService']);
