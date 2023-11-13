@@ -6,6 +6,7 @@ use App\Models\Helper;
 use App\Models\Product;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -23,6 +24,11 @@ class ProductController extends Controller
             if (count($products) > 0) {
                 foreach ($products as $pro) {
                     $pro->photo_url = "https://gede-darma.my.id/tenants/products/" . $pro->photo_url;
+                    $sold = DB::select(DB::raw("select sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where ptd.product_id = 1 and ts.status='done';"))[0]['sold'];
+                    if($sold == null){
+                        $sold = 0;
+                    }
+                    $pro->sold = $sold;
                 }
                 $arrResponse = ["status" => "success", "data" => $products];
             } else {
