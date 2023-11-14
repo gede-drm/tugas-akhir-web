@@ -6,6 +6,7 @@ use App\Models\Helper;
 use App\Models\Service;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ServiceController extends Controller
 {
@@ -23,6 +24,11 @@ class ServiceController extends Controller
             if(count($services)>0){
                 foreach($services as $svc){
                     $svc->photo_url = "https://gede-darma.my.id/tenants/services/".$svc->photo_url;
+                    $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '".$svc->id."' and ts.status='done';"))[0]->sold;
+                    if ($sold == null) {
+                        $sold = 0;
+                    }
+                    $svc->sold = $sold;
                 }
                 $arrResponse = ["status" => "success", "data"=>$services];
             }
@@ -85,6 +91,29 @@ class ServiceController extends Controller
                 $arrResponse = ["status" => "tenantnotfound"];
             }
         } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function tenGetServiceDetail(Request $request){
+        $service_id = $request->get('service_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $service = Service::select('id', 'name', 'description', 'permit_need', 'photo_url', 'pricePer', 'price', 'availability', 'rating')->where('id', $service_id)->first();
+            $service->photo_url = "https://gede-darma.my.id/tenants/services/".$service->photo_url;
+            $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '".$service->id."' and ts.status='done';"))[0]->sold;
+            if ($sold == null) {
+                $sold = 0;
+            }
+            $service->sold = $sold;
+
+            $arrResponse = ["status" => "success", "data" => $service];
+        }
+        else{
             $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
