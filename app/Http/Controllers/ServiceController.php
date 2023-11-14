@@ -21,22 +21,20 @@ class ServiceController extends Controller
         $arrResponse = [];
         if ($tokenValidation == true) {
             $services = Service::select('id', 'name', 'permit_need', 'photo_url', 'pricePer', 'price', 'availability', 'rating')->where('active_status', 1)->where('tenant_id', $tenant_id)->get();
-            if(count($services)>0){
-                foreach($services as $svc){
-                    $svc->photo_url = "https://gede-darma.my.id/tenants/services/".$svc->photo_url;
-                    $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '".$svc->id."' and ts.status='done';"))[0]->sold;
+            if (count($services) > 0) {
+                foreach ($services as $svc) {
+                    $svc->photo_url = "https://gede-darma.my.id/tenants/services/" . $svc->photo_url;
+                    $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $svc->id . "' and ts.status='done';"))[0]->sold;
                     if ($sold == null) {
                         $sold = 0;
                     }
                     $svc->sold = $sold;
                 }
-                $arrResponse = ["status" => "success", "data"=>$services];
-            }
-            else{
+                $arrResponse = ["status" => "success", "data" => $services];
+            } else {
                 $arrResponse = ["status" => "empty"];
             }
-        }
-        else{
+        } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
@@ -61,10 +59,9 @@ class ServiceController extends Controller
             if ($tenantName != null) {
                 $service = new Service();
                 $service->name = $name;
-                if($permit_need == "true"){
+                if ($permit_need == "true") {
                     $permit_need = 1;
-                }
-                else{
+                } else {
                     $permit_need = 0;
                 }
                 $service->permit_need = $permit_need;
@@ -96,7 +93,8 @@ class ServiceController extends Controller
         return $arrResponse;
     }
 
-    public function tenGetServiceDetail(Request $request){
+    public function tenGetServiceDetail(Request $request)
+    {
         $service_id = $request->get('service_id');
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
@@ -104,16 +102,55 @@ class ServiceController extends Controller
         $arrResponse = [];
         if ($tokenValidation == true) {
             $service = Service::select('id', 'name', 'description', 'permit_need', 'photo_url', 'pricePer', 'price', 'availability', 'rating')->where('id', $service_id)->first();
-            $service->photo_url = "https://gede-darma.my.id/tenants/services/".$service->photo_url;
-            $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '".$service->id."' and ts.status='done';"))[0]->sold;
+            $service->photo_url = "https://gede-darma.my.id/tenants/services/" . $service->photo_url;
+            $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $service->id . "' and ts.status='done';"))[0]->sold;
             if ($sold == null) {
                 $sold = 0;
             }
             $service->sold = $sold;
 
             $arrResponse = ["status" => "success", "data" => $service];
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
         }
-        else{
+        return $arrResponse;
+    }
+
+    public function tenChangeServiceAvailaibility(Request $request)
+    {
+        $service_id = $request->get('service_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $service = Service::find($service_id);
+            if ($service->availability == 0) {
+                $service->availability = 1;
+            } else {
+                $service->availability = 0;
+            }
+            $service->save();
+            $arrResponse = ["status" => "success"];
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function tenDeleteService(Request $request)
+    {
+        $service_id = $request->get('service_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $service = Service::find($service_id);
+            $service->active_status = 0;
+            $service->save();
+            $arrResponse = ["status" => "success"];
+        } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
