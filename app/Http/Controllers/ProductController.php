@@ -103,7 +103,8 @@ class ProductController extends Controller
         }
         return $arrResponse;
     }
-    public function tenAddProductStock(Request $request){
+    public function tenAddProductStock(Request $request)
+    {
         $product_id = $request->get('product_id');
         $stockValue = $request->get('stock_added');
         $token = $request->get('token');
@@ -112,16 +113,16 @@ class ProductController extends Controller
         $arrResponse = [];
         if ($tokenValidation == true) {
             $product = Product::find($product_id);
-            $product->stock = $product->stock + ($stockValue*1);
+            $product->stock = $product->stock + ($stockValue * 1);
             $product->save();
             $arrResponse = ["status" => "success"];
-        }
-        else{
+        } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
     }
-    public function tenDeleteProduct(Request $request){
+    public function tenDeleteProduct(Request $request)
+    {
         $product_id = $request->get('product_id');
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
@@ -132,6 +133,47 @@ class ProductController extends Controller
             $product->active_status = 0;
             $product->save();
             $arrResponse = ["status" => "success"];
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+    public function tenUpdateProduct(Request $request)
+    {
+        $product_id = $request->get('product_id');
+        $name = $request->get('name');
+        $description = $request->get('description');
+        $price = $request->get('price');
+        $base64Image = $request->get('image');
+
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $product = Product::find($product_id);
+            if ($product != null) {
+                $product->name = $name;
+                $product->description = $description;
+                $product->price = $price;
+                if ($base64Image != "") {
+                    unlink("../public/tenants/products/" . $product->photo_url);
+
+                    $img = str_replace('data:image/jpeg;base64,', '', $base64Image);
+                    $img = str_replace(' ', '+', $img);
+                    $imgData = base64_decode($img);
+                    $name = str_replace(' ', '-', $name);
+                    $tenantName = str_replace(' ', '-', $product->tenant->name);
+                    $imgFileName = 'img-product-' . $tenantName . '-' . $name . strtotime('now') . '.png';
+                    $imgFileDirectory = '../public/tenants/products/' . $imgFileName;
+                    file_put_contents($imgFileDirectory, $imgData);
+                    $product->photo_url = $imgFileName;
+                }
+                $product->save();
+                $arrResponse = ["status" => "success"];
+            } else {
+                $arrResponse = ["status" => "notfound"];
+            }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
         }

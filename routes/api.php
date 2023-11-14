@@ -53,9 +53,11 @@ Route::post('tenant/getstatus', [TenantController::class, 'getTenantStatus']);
 Route::post('tenant/changestatus', [TenantController::class, 'changeTenantStatus']);
 
 Route::post('tenant/getproducts', [ProductController::class, 'tenProductsList']);
-Route::post('tenant/getservices', [ServiceController::class, 'tenServicesList']);
 Route::post('tenant/addproduct', [ProductController::class, 'tenAddProduct']);
-Route::post('tenant/addservice', [ServiceController::class, 'tenAddService']);
 Route::post('tenant/getproductdetail', [ProductController::class, 'tenGetProductDetail']);
 Route::post('tenant/addproductstock', [ProductController::class, 'tenAddProductStock']);
 Route::post('tenant/deleteproduct', [ProductController::class, 'tenDeleteProduct']);
+Route::post('tenant/updateproduct', [ProductController::class, 'tenUpdateProduct']);
+
+Route::post('tenant/getservices', [ServiceController::class, 'tenServicesList']);
+Route::post('tenant/addservice', [ServiceController::class, 'tenAddService']);
