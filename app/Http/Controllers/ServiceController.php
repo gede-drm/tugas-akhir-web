@@ -74,6 +74,7 @@ class ServiceController extends Controller
                 $imgData = base64_decode($img);
                 $name = str_replace(' ', '-', $name);
                 $tenantName = str_replace(' ', '-', $tenantName->name);
+                $tenantName = str_replace('/', '-', $tenantName);
                 $imgFileName = 'img-service-' . $tenantName . '-' . $name . strtotime('now') . '.png';
                 $imgFileDirectory = '../public/tenants/services/' . $imgFileName;
                 file_put_contents($imgFileDirectory, $imgData);
