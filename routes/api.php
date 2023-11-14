@@ -64,3 +64,4 @@ Route::post('tenant/addservice', [ServiceController::class, 'tenAddService']);
 Route::post('tenant/getservicedetail', [ServiceController::class, 'tenGetServiceDetail']);
 Route::post('tenant/changeserviceavailability', [ServiceController::class, 'tenChangeServiceAvailaibility']);
 Route::post('tenant/deleteservice', [ServiceController::class, 'tenDeleteService']);
+Route::post('tenant/updateservice', [ServiceController::class, 'tenUpdateService']);
