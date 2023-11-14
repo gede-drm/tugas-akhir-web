@@ -57,3 +57,5 @@ Route::post('tenant/getservices', [ServiceController::class, 'tenServicesList'])
 Route::post('tenant/addproduct', [ProductController::class, 'tenAddProduct']);
 Route::post('tenant/addservice', [ServiceController::class, 'tenAddService']);
 Route::post('tenant/getproductdetail', [ProductController::class, 'tenGetProductDetail']);
+Route::post('tenant/addproductstock', [ProductController::class, 'tenAddProductStock']);
+Route::post('tenant/deleteproduct', [ProductController::class, 'tenDeleteProduct']);

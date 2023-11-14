@@ -103,4 +103,38 @@ class ProductController extends Controller
         }
         return $arrResponse;
     }
+    public function tenAddProductStock(Request $request){
+        $product_id = $request->get('product_id');
+        $stockValue = $request->get('stock_added');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $product = Product::find($product_id);
+            $product->stock = $product->stock + ($stockValue*1);
+            $product->save();
+            $arrResponse = ["status" => "success"];
+        }
+        else{
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+    public function tenDeleteProduct(Request $request){
+        $product_id = $request->get('product_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $product = Product::find($product_id);
+            $product->active_status = 0;
+            $product->save();
+            $arrResponse = ["status" => "success"];
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
 }
