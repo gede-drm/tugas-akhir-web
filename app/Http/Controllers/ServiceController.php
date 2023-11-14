@@ -157,4 +157,58 @@ class ServiceController extends Controller
         }
         return $arrResponse;
     }
+
+    public function tenUpdateService(Request $request)
+    {
+        $service_id = $request->get('service_id');
+        $name = $request->get('name');
+        $description = $request->get('description');
+        $price = $request->get('price');
+        $pricePer = $request->get('pricePer');
+        $permit_need = $request->get('permit_need');
+        $base64Image = $request->get('image');
+
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $service = Service::find($service_id);
+            if ($service != null) {
+                $service->name = $name;
+                if ($permit_need == "true") {
+                    $permit_need = 1;
+                } else {
+                    $permit_need = 0;
+                }
+                $service->permit_need = $permit_need;
+                $service->description = $description;
+                $service->price = $price;
+                $service->pricePer = $pricePer;
+
+                if ($base64Image != "") {
+                    unlink("../public/tenants/services/" . $service->photo_url);
+
+                    $img = str_replace('data:image/jpeg;base64,', '', $base64Image);
+                    $img = str_replace(' ', '+', $img);
+                    $imgData = base64_decode($img);
+                    $name = str_replace(' ', '-', $name);
+                    $name = str_replace('/', '-', $name);
+                    $tenantName = str_replace(' ', '-', $service->tenant->name);
+                    $tenantName = str_replace('/', '-', $tenantName);
+                    $imgFileName = 'img-service-' . $tenantName . '-' . $name . strtotime('now') . '.png';
+                    $imgFileDirectory = '../public/tenants/services/' . $imgFileName;
+                    file_put_contents($imgFileDirectory, $imgData);
+                    $service->photo_url = $imgFileName;
+                }
+                $service->save();
+                $arrResponse = ["status" => "success"];
+            } else {
+                $arrResponse = ["status" => "notfound"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
 }
