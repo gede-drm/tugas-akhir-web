@@ -14,8 +14,9 @@ class PackageController extends Controller
     // Web
     public function index()
     {
-        $incomingPkgs = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'pickup_date', 'unit_id', 'receiving_security_officer_id', 'pickup_security_officer_id')->orderBy('receive_date', 'desc')->get();
-        return view('package.index', compact('incomingPkgs'));
+        $incomingPkgs = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'pickup_date', 'unit_id', 'receiving_security_officer_id', 'pickup_security_officer_id')->whereNull('pickup_date')->orderBy('receive_date', 'desc')->get();
+        $incomingPkgsPicked = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'pickup_date', 'unit_id', 'receiving_security_officer_id', 'pickup_security_officer_id')->whereNotNull('pickup_date')->orderBy('receive_date', 'desc')->get();
+        return view('package.index', compact('incomingPkgs', 'incomingPkgsPicked'));
     }
 
     public function modalPhoto(Request $request)

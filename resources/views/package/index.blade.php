@@ -10,8 +10,8 @@
                     {{ session('status') }}
                 </div>
             @endif
-            <h4>Daftar Paket Masuk</h4>
-            <table id="pkgTable" class="table table-striped table-hover text-center">
+            <h4>Daftar Paket Belum diambil</h4>
+            <table id="pkgPickedTable" class="table table-striped table-hover text-center">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -29,13 +29,40 @@
                             <td>{{ $iPkg->receive_date }} ({{ $iPkg->receivingSecurity->name }})</td>
                             <td>{{ $iPkg->unit->unit_no }}</td>
                             <td>{{ $iPkg->description }}</td>
-                            @if($iPkg->pickup_date != null)
-                            <td>{{ $iPkg->pickup_date }} ({{ $iPkg->pickupSecurity->name }})</td>
-                            @else
                             <td>Belum diambil</td>
-                            @endif
                             <td><button type="button" class="btn btn-info"
                                 onclick="getPackagePhoto({{ $iPkg->id }})" data-bs-toggle="modal"
+                                data-bs-target="#modalPackage">Lihat</button></td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h4>Daftar Paket Sudah diambil</h4>
+            <table id="pkgTable" class="table table-striped table-hover text-center">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal Masuk</th>
+                        <th>Unit</th>
+                        <th>Deskripsi</th>
+                        <th>Tanggal Pengambilan</th>
+                        <th>Foto Paket</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($incomingPkgsPicked as $key => $iPkgPicked)
+                        <tr>
+                            <td>{{ $key+1 }}</td>
+                            <td>{{ $iPkgPicked->receive_date }} ({{ $iPkgPicked->receivingSecurity->name }})</td>
+                            <td>{{ $iPkgPicked->unit->unit_no }}</td>
+                            <td>{{ $iPkgPicked->description }}</td>
+                            <td>{{ $iPkgPicked->pickup_date }} ({{ $iPkgPicked->pickupSecurity->name }})</td>
+                            <td><button type="button" class="btn btn-info"
+                                onclick="getPackagePhoto({{ $iPkgPicked->id }})" data-bs-toggle="modal"
                                 data-bs-target="#modalPackage">Lihat</button></td>
                         </tr>
                     @endforeach
@@ -65,6 +92,7 @@
     <script>
         $(document).ready(function() {
             $('#pkgTable').DataTable({});
+            $('#pkgPickedTable').DataTable({});
         });
 
         function getPackagePhoto(package_id) {
