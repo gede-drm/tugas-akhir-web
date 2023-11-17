@@ -37,10 +37,10 @@ return [
             'driver' => 'apc',
         ],
 
-        'array' => [
-            'driver' => 'array',
-            'serialize' => false,
-        ],
+        // 'array' => [
+        //     'driver' => 'array',
+        //     'serialize' => false,
+        // ],
 
         'database' => [
             'driver' => 'database',
