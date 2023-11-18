@@ -23,7 +23,7 @@ class ServiceController extends Controller
             $services = Service::select('id', 'name', 'permit_need', 'photo_url', 'pricePer', 'price', 'availability', 'rating')->where('active_status', 1)->where('tenant_id', $tenant_id)->get();
             if (count($services) > 0) {
                 foreach ($services as $svc) {
-                    $svc->photo_url = "https://gede-darma.my.id/tenants/services/" . $svc->photo_url;
+                    $svc->photo_url = Helper::$base_url."tenants/services/" . $svc->photo_url;
                     $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $svc->id . "' and ts.status='done';"))[0]->sold;
                     if ($sold == null) {
                         $sold = 0;
@@ -104,7 +104,7 @@ class ServiceController extends Controller
         $arrResponse = [];
         if ($tokenValidation == true) {
             $service = Service::select('id', 'name', 'description', 'permit_need', 'photo_url', 'pricePer', 'price', 'availability', 'rating')->where('id', $service_id)->first();
-            $service->photo_url = "https://gede-darma.my.id/tenants/services/" . $service->photo_url;
+            $service->photo_url = Helper::$base_url."tenants/services/" . $service->photo_url;
             $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $service->id . "' and ts.status='done';"))[0]->sold;
             if ($sold == null) {
                 $sold = 0;

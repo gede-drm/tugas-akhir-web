@@ -41,7 +41,7 @@ class PackageController extends Controller
             if (count($packages) > 0) {
                 foreach ($packages as $package) {
                     $package['unit_no'] = $package->unit->unit_no;
-                    $package->photo_url = "https://gede-darma.my.id/packages/photos/" . $package->photo_url;
+                    $package->photo_url = Helper::$base_url."packages/photos/" . $package->photo_url;
                 }
                 $packages->makeHidden('unit');
                 $arrResponse = ['status' => 'success', 'data' => $packages];
@@ -64,7 +64,7 @@ class PackageController extends Controller
         if ($tokenValidation == true) {
             $package = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'unit_id')->where('id', $idPackage)->first();
             $package['unit_no'] = $package->unit->unit_no;
-            $package->photo_url = "https://gede-darma.my.id/packages/photos/" . $package->photo_url;
+            $package->photo_url = Helper::$base_url."packages/photos/" . $package->photo_url;
             
             $package->makeHidden('unit');
             $arrResponse = ['status' => 'success', 'data' => $package];
