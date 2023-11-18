@@ -33,7 +33,7 @@ class TransactionController extends Controller
                         $rt->unit_no = $rt->unit->unit_no;
                         unset($rt->unit_id);
                         $rt->status = TransactionStatus::select('description')->where('transaction_id', $rt->id)->orderBy('date', 'desc')->first()->description;
-                        $rt->product = ['name' => $rt->products[0]->name, 'quantity' => $rt->products[0]->pivot->quantity];
+                        $rt->item = ['name' => $rt->products[0]->name, 'quantity' => $rt->products[0]->pivot->quantity];
                         $rt->itemcount = count($rt->products) - 1;
                     }
                     $runningProTrx->makeHidden('unit');
@@ -70,7 +70,7 @@ class TransactionController extends Controller
                         $rt->unit_no = $rt->unit->unit_no;
                         unset($rt->unit_id);
                         $rt->status = TransactionStatus::select('description')->where('transaction_id', $rt->id)->orderBy('date', 'desc')->first()->description;
-                        $rt->service = ['name' => $rt->services[0]->name, 'quantity' => $rt->services[0]->pivot->quantity];
+                        $rt->item = ['name' => $rt->services[0]->name, 'quantity' => $rt->services[0]->pivot->quantity];
                         $rt->itemcount = count($rt->services) - 1;
                     }
                     $runningSvcTrx->makeHidden('unit');
@@ -107,7 +107,7 @@ class TransactionController extends Controller
                         $rt->unit_no = $rt->unit->unit_no;
                         unset($rt->unit_id);
                         $rt->status = TransactionStatus::select('description')->where('transaction_id', $rt->id)->orderBy('date', 'desc')->first()->description;
-                        $rt->product = ['name' => $rt->products[0]->name, 'quantity' => $rt->products[0]->pivot->quantity];
+                        $rt->item = ['name' => $rt->products[0]->name, 'quantity' => $rt->products[0]->pivot->quantity];
                         $rt->itemcount = count($rt->products) - 1;
                     }
                     $historyProTrx->makeHidden('unit');
@@ -144,7 +144,7 @@ class TransactionController extends Controller
                         $rt->unit_no = $rt->unit->unit_no;
                         unset($rt->unit_id);
                         $rt->status = TransactionStatus::select('description')->where('transaction_id', $rt->id)->orderBy('date', 'desc')->first()->description;
-                        $rt->service = ['name' => $rt->services[0]->name, 'quantity' => $rt->services[0]->pivot->quantity];
+                        $rt->item = ['name' => $rt->services[0]->name, 'quantity' => $rt->services[0]->pivot->quantity];
                         $rt->itemcount = count($rt->services) - 1;
                     }
                     $historySvcTrx->makeHidden('unit');
