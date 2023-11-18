@@ -5,6 +5,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TenantController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -20,10 +21,6 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 
 // API General
 // Route::get('towerlist', [UnitController::class, 'getTower']);
@@ -65,3 +62,10 @@ Route::post('tenant/getservicedetail', [ServiceController::class, 'tenGetService
 Route::post('tenant/changeserviceavailability', [ServiceController::class, 'tenChangeServiceAvailaibility']);
 Route::post('tenant/deleteservice', [ServiceController::class, 'tenDeleteService']);
 Route::post('tenant/updateservice', [ServiceController::class, 'tenUpdateService']);
+
+Route::post('tenant/transaction/prorunning', [TransactionController::class, 'tenTrxProductList']);
+Route::post('tenant/transaction/svcrunning', [TransactionController::class, 'tenTrxServiceList']);
+Route::post('tenant/transaction/prohistory', [TransactionController::class, 'tenTrxProductHistory']);
+Route::post('tenant/transaction/svchistory', [TransactionController::class, 'tenTrxServiceHistory']);
+Route::post('tenant/transaction/productdetail', [TransactionController::class, 'tenTrxProductDetail']);
+Route::post('tenant/transaction/servicedetail', [TransactionController::class, 'tenTrxServiceDetail']);
