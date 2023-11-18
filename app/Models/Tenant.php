@@ -18,4 +18,7 @@ class Tenant extends Model
     public function services(){
         return $this->hasMany(Service::class, 'tenant_id', 'id');
     }
+    public function transactions(){
+        return $this->hasMany(Transaction::class, 'tenant_id', 'id');
+    }
 }

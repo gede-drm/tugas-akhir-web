@@ -13,6 +13,9 @@ class Transaction extends Model
     public function unit(){
         return $this->belongsTo(Unit::class);
     }
+    public function tenant(){
+        return $this->belongsTo(Tenant::class);
+    }
     public function servicePermission(){
         return $this->hasOne(Permission::class);
     }
