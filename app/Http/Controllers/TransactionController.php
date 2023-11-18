@@ -27,7 +27,7 @@ class TransactionController extends Controller
                 return $arrResponse;
             }
             if ($tenant_type->type == 'product') {
-                $runningProTrx = Transaction::select('id', 'transaction_date', 'total_payment', 'unit_id')->where('tenant_id', $tenant_id)->where('status', 0)->get();
+                $runningProTrx = Transaction::select('id', 'transaction_date', 'total_payment', 'unit_id')->where('tenant_id', $tenant_id)->where('status', 0)->orderBy('transaction_date', 'asc')->get();
                 if (count($runningProTrx) > 0) {
                     foreach ($runningProTrx as $rt) {
                         $rt->unit_no = $rt->unit->unit_no;
@@ -64,7 +64,7 @@ class TransactionController extends Controller
                 return $arrResponse;
             }
             if ($tenant_type->type == 'service') {
-                $runningSvcTrx = Transaction::select('id', 'transaction_date', 'total_payment', 'unit_id')->where('tenant_id', $tenant_id)->where('status', 0)->get();
+                $runningSvcTrx = Transaction::select('id', 'transaction_date', 'total_payment', 'unit_id')->where('tenant_id', $tenant_id)->where('status', 0)->orderBy('transaction_date', 'asc')->get();
                 if (count($runningSvcTrx) > 0) {
                     foreach ($runningSvcTrx as $rt) {
                         $rt->unit_no = $rt->unit->unit_no;
@@ -101,7 +101,7 @@ class TransactionController extends Controller
                 return $arrResponse;
             }
             if ($tenant_type->type == 'product') {
-                $historyProTrx = Transaction::select('id', 'transaction_date', 'total_payment', 'unit_id')->where('tenant_id', $tenant_id)->where('status', 1)->get();
+                $historyProTrx = Transaction::select('id', 'transaction_date', 'total_payment', 'unit_id')->where('tenant_id', $tenant_id)->where('status', 1)->orderBy('transaction_date', 'desc')->get();
                 if (count($historyProTrx) > 0) {
                     foreach ($historyProTrx as $rt) {
                         $rt->unit_no = $rt->unit->unit_no;
@@ -138,7 +138,7 @@ class TransactionController extends Controller
                 return $arrResponse;
             }
             if ($tenant_type->type == 'service') {
-                $historySvcTrx = Transaction::select('id', 'transaction_date', 'total_payment', 'unit_id')->where('tenant_id', $tenant_id)->where('status', 1)->get();
+                $historySvcTrx = Transaction::select('id', 'transaction_date', 'total_payment', 'unit_id')->where('tenant_id', $tenant_id)->where('status', 1)->orderBy('transaction_date', 'desc')->get();
                 if (count($historySvcTrx) > 0) {
                     foreach ($historySvcTrx as $rt) {
                         $rt->unit_no = $rt->unit->unit_no;
