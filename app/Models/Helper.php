@@ -53,4 +53,5 @@ class Helper extends Model
         }
         return $status;
     }
+    public static $base_url = "https://gede-darma.my.id/";
 }
