@@ -69,3 +69,6 @@ Route::post('tenant/transaction/prohistory', [TransactionController::class, 'ten
 Route::post('tenant/transaction/svchistory', [TransactionController::class, 'tenTrxServiceHistory']);
 Route::post('tenant/transaction/productdetail', [TransactionController::class, 'tenTrxProductDetail']);
 Route::post('tenant/transaction/servicedetail', [TransactionController::class, 'tenTrxServiceDetail']);
+
+// Resident's App API
+Route::post('resident/login', [UserController::class, 'residentLogin']);

@@ -10,6 +10,26 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
+    // General
+    public function clearToken(Request $request)
+    {
+        $username = $request->get('username');
+        $token = $request->get('token');
+
+        $arrResponse = [];
+        $tokenValidation = Helper::validateToken($token);
+        if ($tokenValidation == true) {
+            $user = User::select('id', 'api_token')->where('username', $username)->where('api_token', $token)->first();
+            $user->api_token = null;
+            $user->save();
+
+            $arrResponse = ["status" => "success"];
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
     // API Security
     public function securityLogin(Request $request)
     {
@@ -59,27 +79,9 @@ class UserController extends Controller
         return $arrResponse;
     }
 
-    public function clearToken(Request $request)
-    {
-        $username = $request->get('username');
-        $token = $request->get('token');
-
-        $arrResponse = [];
-        $tokenValidation = Helper::validateToken($token);
-        if ($tokenValidation == true) {
-            $user = User::select('id', 'api_token')->where('username', $username)->where('api_token', $token)->first();
-            $user->api_token = null;
-            $user->save();
-
-            $arrResponse = ["status" => "success"];
-        } else {
-            $arrResponse = ["status" => "notauthenticated"];
-        }
-        return $arrResponse;
-    }
-
     // API Tenant
-    public function tenantLogin(Request $request){
+    public function tenantLogin(Request $request)
+    {
         $username = $request->get('username');
         $password = $request->get('password');
 
@@ -88,12 +90,43 @@ class UserController extends Controller
         if ($userTenant != null) {
             if ($userTenant->role == 'tenant') {
                 if (Hash::check($password, $userTenant->password)) {
-                        $token = Helper::generateToken();
-                        $userTenant->api_token = $token;
-                        $userTenant->save();
-                        $arrResponse = ['status' => 'success', 'data' => ['tenant_id' => $userTenant->tenant->id, 'tenant_name' => $userTenant->tenant->name, 'tenant_type'=>$userTenant->tenant->type, 'token' => $token]];
+                    $token = Helper::generateToken();
+                    $userTenant->api_token = $token;
+                    $userTenant->save();
+                    $arrResponse = ['status' => 'success', 'data' => ['tenant_id' => $userTenant->tenant->id, 'tenant_name' => $userTenant->tenant->name, 'tenant_type' => $userTenant->tenant->type, 'token' => $token]];
                 } else {
                     $arrResponse = ['status' => 'failed'];
+                }
+            } else {
+                $arrResponse = ['status' => 'failed'];
+            }
+        } else {
+            $arrResponse = ['status' => 'failed'];
+        }
+        return $arrResponse;
+    }
+
+    // API Resident
+    public function residentLogin(Request $request)
+    {
+        $username = $request->get('username');
+        $password = $request->get('password');
+
+        $userResident = User::select('id', 'password', 'role')->where('username', $username)->first();
+        $arrResponse = [];
+        if ($userResident != null) {
+            if ($userResident->role == 'resident') {
+                if ($userResident->unit->active_status == 1) {
+                    if (Hash::check($password, $userResident->password)) {
+                        $token = Helper::generateToken();
+                        $userResident->api_token = $token;
+                        $userResident->save();
+                        $arrResponse = ['status' => 'success', 'data' => ['user_id' => $userResident->unit->id, 'unit_no' => $userResident->unit->unit_no, 'holder_name' => $userResident->unit->holder_name, 'token' => $token]];
+                    } else {
+                        $arrResponse = ['status' => 'wrongpass'];
+                    }
+                } else {
+                    $arrResponse = ['status' => 'notactive'];
                 }
             } else {
                 $arrResponse = ['status' => 'failed'];
