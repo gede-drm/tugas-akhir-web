@@ -195,6 +195,7 @@ class PackageController extends Controller
                 foreach ($pendingPackages as $pendingPkg) {
                     $detail = explode("Detail Paket: ", $pendingPkg->description);
                     $pendingPkg->detail = $detail[1];
+                    $pendingPkg->receive_date = date('d-m-Y H:i', strtotime($pendingPkg->receive_date));
                     $pendingPkg->pickup_date = "";
                     $pendingPkg->photo_url = Helper::$base_url . "packages/photos/" . $pendingPkg->photo_url;
                     unset($pendingPkg->description);
@@ -203,6 +204,8 @@ class PackageController extends Controller
                 foreach ($pickedPackages as $pickedPkg) {
                     $detail = explode("Detail Paket: ", $pickedPkg->description);
                     $pickedPkg->detail = $detail[1];
+                    $pickedPkg->receive_date = date('d-m-Y H:i', strtotime($pickedPkg->receive_date));
+                    $pickedPkg->pickup_date = date('d-m-Y H:i', strtotime($pickedPkg->pickup_date));
                     $pickedPkg->photo_url = Helper::$base_url . "packages/photos/" . $pickedPkg->photo_url;
                     unset($pickedPkg->description);
                 }
@@ -214,6 +217,7 @@ class PackageController extends Controller
                 foreach ($pendingPackages as $pendingPkg) {
                     $detail = explode("Detail Paket: ", $pendingPkg->description);
                     $pendingPkg->detail = $detail[1];
+                    $pendingPkg->receive_date = date('d-m-Y H:i', strtotime($pendingPkg->receive_date));
                     $pendingPkg->pickup_date = "";
                     $pendingPkg->photo_url = Helper::$base_url . "packages/photos/" . $pendingPkg->photo_url;
                     unset($pendingPkg->description);
@@ -224,6 +228,8 @@ class PackageController extends Controller
                 foreach ($pickedPackages as $pickedPkg) {
                     $detail = explode("Detail Paket: ", $pickedPkg->description);
                     $pickedPkg->detail = $detail[1];
+                    $pickedPkg->receive_date = date('d-m-Y H:i', strtotime($pickedPkg->receive_date));
+                    $pickedPkg->pickup_date = date('d-m-Y H:i', strtotime($pickedPkg->pickup_date));
                     $pickedPkg->photo_url = Helper::$base_url . "packages/photos/" . $pickedPkg->photo_url;
                     unset($pickedPkg->description);
                 }
