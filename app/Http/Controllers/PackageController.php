@@ -41,7 +41,7 @@ class PackageController extends Controller
             if (count($packages) > 0) {
                 foreach ($packages as $package) {
                     $package['unit_no'] = $package->unit->unit_no;
-                    $package->photo_url = Helper::$base_url."packages/photos/" . $package->photo_url;
+                    $package->photo_url = Helper::$base_url . "packages/photos/" . $package->photo_url;
                 }
                 $packages->makeHidden('unit');
                 $arrResponse = ['status' => 'success', 'data' => $packages];
@@ -64,8 +64,8 @@ class PackageController extends Controller
         if ($tokenValidation == true) {
             $package = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'unit_id')->where('id', $idPackage)->first();
             $package['unit_no'] = $package->unit->unit_no;
-            $package->photo_url = Helper::$base_url."packages/photos/" . $package->photo_url;
-            
+            $package->photo_url = Helper::$base_url . "packages/photos/" . $package->photo_url;
+
             $package->makeHidden('unit');
             $arrResponse = ['status' => 'success', 'data' => $package];
         } else {
@@ -173,6 +173,64 @@ class PackageController extends Controller
                 }
             } else {
                 $arrResponse = ['status' => 'securityprob', 'securitystatus' => $statusSecurity];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    // Resident's App API
+    public function rdtPackageList(Request $request)
+    {
+        $unit_id = $request->get('unit_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $pendingPackages = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url')->whereNull('pickup_date')->where('unit_id', $unit_id)->orderBy('receive_date', 'desc')->get();
+            $pickedPackages = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'pickup_date')->whereNotNull('pickup_date')->where('unit_id', $unit_id)->orderBy('receive_date', 'desc')->get();
+            if (count($pendingPackages) > 0 && count($pickedPackages) > 0) {
+                foreach ($pendingPackages as $pendingPkg) {
+                    $detail = explode("Detail Paket: ", $pendingPkg->description);
+                    $pendingPkg->detail = $detail[1];
+                    $pendingPkg->pickup_date = "";
+                    $pendingPkg->photo_url = Helper::$base_url . "packages/photos/" . $pendingPkg->photo_url;
+                    unset($pendingPkg->description);
+                }
+
+                foreach ($pickedPackages as $pickedPkg) {
+                    $detail = explode("Detail Paket: ", $pickedPkg->description);
+                    $pickedPkg->detail = $detail[1];
+                    $pickedPkg->photo_url = Helper::$base_url . "packages/photos/" . $pickedPkg->photo_url;
+                    unset($pickedPkg->description);
+                }
+
+                $packages = $pendingPackages->merge($pickedPackages);
+                $arrResponse = ["status" => "success", "data" => $packages];
+            }
+            else if(count($pendingPackages) > 0 && count($pickedPackages) == 0){
+                foreach ($pendingPackages as $pendingPkg) {
+                    $detail = explode("Detail Paket: ", $pendingPkg->description);
+                    $pendingPkg->detail = $detail[1];
+                    $pendingPkg->pickup_date = "";
+                    $pendingPkg->photo_url = Helper::$base_url . "packages/photos/" . $pendingPkg->photo_url;
+                    unset($pendingPkg->description);
+                }
+                $arrResponse = ["status" => "success", "data" => $pendingPackages];
+            }
+            else if(count($pendingPackages) == 0 && count($pickedPackages) > 0){
+                foreach ($pickedPackages as $pickedPkg) {
+                    $detail = explode("Detail Paket: ", $pickedPkg->description);
+                    $pickedPkg->detail = $detail[1];
+                    $pickedPkg->photo_url = Helper::$base_url . "packages/photos/" . $pickedPkg->photo_url;
+                    unset($pickedPkg->description);
+                }
+                $arrResponse = ["status" => "success", "data" => $pickedPackages];
+            }
+            else{
+                $arrResponse = ["status" => "empty"];
             }
         } else {
             $arrResponse = ["status" => "notauthenticated"];

@@ -72,3 +72,5 @@ Route::post('tenant/transaction/servicedetail', [TransactionController::class, '
 
 // Resident's App API
 Route::post('resident/login', [UserController::class, 'residentLogin']);
+
+Route::post('resident/package/list', [PackageController::class, 'rdtPackageList']);
