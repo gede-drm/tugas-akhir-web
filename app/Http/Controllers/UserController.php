@@ -121,7 +121,7 @@ class UserController extends Controller
                         $token = Helper::generateToken();
                         $userResident->api_token = $token;
                         $userResident->save();
-                        $arrResponse = ['status' => 'success', 'data' => ['user_id' => $userResident->unit->id, 'unit_no' => $userResident->unit->unit_no, 'holder_name' => $userResident->unit->holder_name, 'token' => $token]];
+                        $arrResponse = ['status' => 'success', 'data' => ['resident_id' => $userResident->unit->id, 'unit_no' => $userResident->unit->unit_no, 'holder_name' => $userResident->unit->holder_name, 'token' => $token]];
                     } else {
                         $arrResponse = ['status' => 'wrongpass'];
                     }
