@@ -212,8 +212,7 @@ class PackageController extends Controller
 
                 $packages = $pendingPackages->merge($pickedPackages);
                 $arrResponse = ["status" => "success", "data" => $packages];
-            }
-            else if(count($pendingPackages) > 0 && count($pickedPackages) == 0){
+            } else if (count($pendingPackages) > 0 && count($pickedPackages) == 0) {
                 foreach ($pendingPackages as $pendingPkg) {
                     $detail = explode("Detail Paket: ", $pendingPkg->description);
                     $pendingPkg->detail = $detail[1];
@@ -223,8 +222,7 @@ class PackageController extends Controller
                     unset($pendingPkg->description);
                 }
                 $arrResponse = ["status" => "success", "data" => $pendingPackages];
-            }
-            else if(count($pendingPackages) == 0 && count($pickedPackages) > 0){
+            } else if (count($pendingPackages) == 0 && count($pickedPackages) > 0) {
                 foreach ($pickedPackages as $pickedPkg) {
                     $detail = explode("Detail Paket: ", $pickedPkg->description);
                     $pickedPkg->detail = $detail[1];
@@ -234,10 +232,46 @@ class PackageController extends Controller
                     unset($pickedPkg->description);
                 }
                 $arrResponse = ["status" => "success", "data" => $pickedPackages];
-            }
-            else{
+            } else {
                 $arrResponse = ["status" => "empty"];
             }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function rdtPackageDetail(Request $request)
+    {
+        $package_id = $request->get('package_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $package = IncomingPackage::select('id', 'receive_date', 'description', 'photo_url', 'qr_url', 'receiving_security_officer_id', 'pickup_date', 'pickup_security_officer_id')->where('id', $package_id)->first();
+            $package->rcv_officer = $package->receivingSecurity->name;
+            $package->receive_date = date('d-m-Y H:i', strtotime($package->receive_date));
+            if($package->pickup_date == null){
+                $package->pickup_date = "";
+            }
+            else{
+                $package->pickup_date = date('d-m-Y H:i', strtotime($package->pickup_date));
+            }
+            if($package->pickupSecurity != null){
+                $package->pick_officer = $package->pickupSecurity->name;
+            }
+            else{
+                $package->pick_officer = "";
+            }
+            $package->photo_url = Helper::$base_url . "packages/photos/" . $package->photo_url;
+            $package->qr_url = Helper::$base_url . "packages/qr-code/" . $package->qr_url;
+
+            unset($package->receiving_security_officer_id);
+            unset($package->pickup_security_officer_id);
+            $package->makeHidden('receivingSecurity');
+            $package->makeHidden('pickupSecurity');
+            $arrResponse = ['status' => 'success', 'data' => $package];
         } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
