@@ -238,7 +238,7 @@ class TenantController extends Controller
                     $to->status = 'open';
                 }
             }
-            $tenantsClose = Tenant::select('id', 'name', 'address', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'service')->where('active_status', 1)->whereRaw("((service_hour_start > time(now()) or service_hour_end < time(now())) or status ='close')")->orWhere('status', 'close')->get();
+            $tenantsClose = Tenant::select('id', 'name', 'address', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'service')->where('active_status', 1)->whereRaw("((service_hour_start > time(now()) or service_hour_end < time(now())) or status ='close')")->get();
             if (count($tenantsClose) > 0) {
                 foreach ($tenantsClose as $tc) {
                     $tc->status = 'close';
