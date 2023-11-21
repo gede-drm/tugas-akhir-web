@@ -75,3 +75,6 @@ Route::post('resident/login', [UserController::class, 'residentLogin']);
 
 Route::post('resident/package/list', [PackageController::class, 'rdtPackageList']);
 Route::post('resident/package/detail', [PackageController::class, 'rdtPackageDetail']);
+
+Route::post('resident/tenant/producttenlist', [TenantController::class, 'rdtProductTenantList']);
+Route::post('resident/tenant/servicetenlist', [TenantController::class, 'rdtServiceTenantList']);

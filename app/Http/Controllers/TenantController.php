@@ -193,4 +193,66 @@ class TenantController extends Controller
         }
         return $arrResponse;
     }
+
+    // Resident's App API
+    public function rdtProductTenantList(Request $request)
+    {
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $tenantsOpen = Tenant::select('id', 'name', 'address', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'product')->where('active_status', 1)->whereRaw('service_hour_start <= time(now()) and service_hour_end >= time(now())')->where('status', 'open')->get();
+            if (count($tenantsOpen) > 0) {
+                foreach ($tenantsOpen as $to) {
+                    $to->status = 'open';
+                }
+            }
+            $tenantsClose = Tenant::select('id', 'name', 'address', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'product')->where('active_status', 1)->whereRaw("((service_hour_start > time(now()) or service_hour_end < time(now())) or status ='close')")->get();
+            if (count($tenantsClose) > 0) {
+                foreach ($tenantsClose as $tc) {
+                    $tc->status = 'close';
+                }
+            }
+            $tenants = $tenantsOpen->merge($tenantsClose);
+            if (count($tenants) > 0) {
+                $arrResponse = ["status" => "success", "data" => $tenants];
+            } else {
+                $arrResponse = ["status" => "empty"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+    public function rdtServiceTenantList(Request $request)
+    {
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $tenantsOpen = Tenant::select('id', 'name', 'address', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'service')->where('active_status', 1)->whereRaw('service_hour_start <= time(now()) and service_hour_end >= time(now())')->where('status', 'open')->get();
+            if (count($tenantsOpen) > 0) {
+                foreach ($tenantsOpen as $to) {
+                    $to->status = 'open';
+                }
+            }
+            $tenantsClose = Tenant::select('id', 'name', 'address', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'service')->where('active_status', 1)->whereRaw("((service_hour_start > time(now()) or service_hour_end < time(now())) or status ='close')")->orWhere('status', 'close')->get();
+            if (count($tenantsClose) > 0) {
+                foreach ($tenantsClose as $tc) {
+                    $tc->status = 'close';
+                }
+            }
+            $tenants = $tenantsOpen->merge($tenantsClose);
+            if (count($tenants) > 0) {
+                $arrResponse = ["status" => "success", "data" => $tenants];
+            } else {
+                $arrResponse = ["status" => "empty"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
 }
