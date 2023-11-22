@@ -302,7 +302,7 @@ class TenantController extends Controller
                 if (count($services) > 0) {
                     foreach ($services as $svc) {
                         $svc->photo_url = Helper::$base_url."tenants/services/" . $svc->photo_url;
-                        $sold = $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $svc->id . "' and ts.status='done';"))[0]->sold;
+                        $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $svc->id . "' and ts.status='done';"))[0]->sold;
                         if ($sold == null) {
                             $sold = 0;
                         }
