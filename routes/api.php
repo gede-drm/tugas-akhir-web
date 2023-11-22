@@ -78,4 +78,4 @@ Route::post('resident/package/detail', [PackageController::class, 'rdtPackageDet
 
 Route::post('resident/tenant/producttenlist', [TenantController::class, 'rdtProductTenantList']);
 Route::post('resident/tenant/servicetenlist', [TenantController::class, 'rdtServiceTenantList']);
-Route::post('resident/tenant/itemdetail', [TenantController::class, 'rdtTenantItemList']);
+Route::post('resident/tenant/tenantitems', [TenantController::class, 'rdtTenantItemList']);
