@@ -281,7 +281,7 @@ class TenantController extends Controller
         $arrResponse = [];
         if ($tokenValidation == true) {
             $tenant_type = Tenant::select('type')->where('id', $tenant_id)->first();
-            if ($tenant_type == "product") {
+            if ($tenant_type->type == "product") {
                 $products = Product::select('id', 'name', 'photo_url', 'price', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('active_status', 1)->get();
                 if (count($products) > 0) {
                     foreach ($products as $pro) {
