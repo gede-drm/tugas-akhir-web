@@ -216,6 +216,8 @@ class TenantController extends Controller
             $tenantsOpen = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'product')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw('service_hour_start <= time(now()) and service_hour_end >= time(now())')->where('status', 'open')->get();
             if (count($tenantsOpen) > 0) {
                 foreach ($tenantsOpen as $to) {
+                    $to->service_hour_start = date("H:i", strtotime($to->service_hour_start));
+                    $to->service_hour_end = date("H:i", strtotime($to->service_hour_end));
                     $to->rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from products where tenant_id='" . $to->id . "'"))[0]->rating;
                     $to->status = 'open';
                 }
@@ -223,6 +225,8 @@ class TenantController extends Controller
             $tenantsClose = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'product')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw("((service_hour_start > time(now()) or service_hour_end < time(now())) or status ='close')")->get();
             if (count($tenantsClose) > 0) {
                 foreach ($tenantsClose as $tc) {
+                    $tc->service_hour_start = date("H:i", strtotime($tc->service_hour_start));
+                    $tc->service_hour_end = date("H:i", strtotime($tc->service_hour_end));
                     $tc->rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from products where tenant_id='" . $tc->id . "'"))[0]->rating;
                     $tc->status = 'close';
                 }
@@ -249,6 +253,8 @@ class TenantController extends Controller
             $tenantsOpen = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'service')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw('service_hour_start <= time(now()) and service_hour_end >= time(now())')->where('status', 'open')->get();
             if (count($tenantsOpen) > 0) {
                 foreach ($tenantsOpen as $to) {
+                    $to->service_hour_start = date("H:i", strtotime($to->service_hour_start));
+                    $to->service_hour_end = date("H:i", strtotime($to->service_hour_end));
                     $to->rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from services where tenant_id='" . $to->id . "'"))[0]->rating;
                     $to->status = 'open';
                 }
@@ -256,6 +262,8 @@ class TenantController extends Controller
             $tenantsClose = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'service')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw("((service_hour_start > time(now()) or service_hour_end < time(now())) or status ='close')")->get();
             if (count($tenantsClose) > 0) {
                 foreach ($tenantsClose as $tc) {
+                    $tc->service_hour_start = date("H:i", strtotime($tc->service_hour_start));
+                    $tc->service_hour_end = date("H:i", strtotime($tc->service_hour_end));
                     $tc->rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from services where tenant_id='" . $tc->id . "'"))[0]->rating;
                     $tc->status = 'close';
                 }
