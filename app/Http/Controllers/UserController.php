@@ -89,13 +89,17 @@ class UserController extends Controller
         $arrResponse = [];
         if ($userTenant != null) {
             if ($userTenant->role == 'tenant') {
-                if (Hash::check($password, $userTenant->password)) {
-                    $token = Helper::generateToken();
-                    $userTenant->api_token = $token;
-                    $userTenant->save();
-                    $arrResponse = ['status' => 'success', 'data' => ['tenant_id' => $userTenant->tenant->id, 'tenant_name' => $userTenant->tenant->name, 'tenant_type' => $userTenant->tenant->type, 'token' => $token]];
+                if ($userTenant->tenant->active_status == 1) {
+                    if (Hash::check($password, $userTenant->password)) {
+                        $token = Helper::generateToken();
+                        $userTenant->api_token = $token;
+                        $userTenant->save();
+                        $arrResponse = ['status' => 'success', 'data' => ['tenant_id' => $userTenant->tenant->id, 'tenant_name' => $userTenant->tenant->name, 'tenant_type' => $userTenant->tenant->type, 'token' => $token]];
+                    } else {
+                        $arrResponse = ['status' => 'failed'];
+                    }
                 } else {
-                    $arrResponse = ['status' => 'failed'];
+                    $arrResponse = ['status' => 'notactive'];
                 }
             } else {
                 $arrResponse = ['status' => 'failed'];
