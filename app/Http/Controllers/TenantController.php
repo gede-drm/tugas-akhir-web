@@ -290,23 +290,25 @@ class TenantController extends Controller
         if ($tokenValidation == true) {
             $tenant_type = Tenant::select('type')->where('id', $tenant_id)->first();
             if ($tenant_type->type == "product") {
-                $products = Product::select('id', 'name', 'photo_url', 'price', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('active_status', 1)->get();
+                $products = Product::select('id', 'name', 'photo_url', 'price', 'stock', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('active_status', 1)->get();
                 if (count($products) > 0) {
                     foreach ($products as $pro) {
                         $pro->photo_url = Helper::$base_url."tenants/products/" . $pro->photo_url;
                         $pro->pricePer = "";
+                        $pro->availability = $pro->stock;
                         $sold = DB::select(DB::raw("select sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where ptd.product_id = '" . $pro->id . "' and ts.status='done';"))[0]->sold;
                         if ($sold == null) {
                             $sold = 0;
                         }
                         $pro->sold = $sold;
+                        unset($pro->stock);
                     }
                     $arrResponse = ["status" => "success", "data" => $products];
                 } else {
                     $arrResponse = ["status" => "empty"];
                 }
             } else {
-                $services = Service::select('id', 'name', 'photo_url', 'price', 'pricePer', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('active_status', 1)->get();
+                $services = Service::select('id', 'name', 'photo_url', 'price', 'availability', 'pricePer', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('active_status', 1)->get();
                 if (count($services) > 0) {
                     foreach ($services as $svc) {
                         $svc->photo_url = Helper::$base_url."tenants/services/" . $svc->photo_url;
