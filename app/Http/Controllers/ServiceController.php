@@ -223,6 +223,7 @@ class ServiceController extends Controller
         if ($tokenValidation == true) {
             $service = Service::select('id', 'name', 'description', 'photo_url', 'permit_need', 'price','pricePer', 'availability', 'rating')->where('id', $service_id)->first();
             if ($service != null) {
+                $service->photo_url = Helper::$base_url."tenants/services/".$service->photo_url;
                 $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $service->id . "' and ts.status='done';"))[0]->sold;
                 if ($sold == null) {
                     $sold = 0;
