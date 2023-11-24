@@ -23,7 +23,7 @@ class ServiceController extends Controller
             $services = Service::select('id', 'name', 'permit_need', 'photo_url', 'pricePer', 'price', 'availability', 'rating')->where('active_status', 1)->where('tenant_id', $tenant_id)->get();
             if (count($services) > 0) {
                 foreach ($services as $svc) {
-                    $svc->photo_url = Helper::$base_url."tenants/services/" . $svc->photo_url;
+                    $svc->photo_url = Helper::$base_url . "tenants/services/" . $svc->photo_url;
                     $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $svc->id . "' and ts.status='done';"))[0]->sold;
                     if ($sold == null) {
                         $sold = 0;
@@ -104,7 +104,7 @@ class ServiceController extends Controller
         $arrResponse = [];
         if ($tokenValidation == true) {
             $service = Service::select('id', 'name', 'description', 'permit_need', 'photo_url', 'pricePer', 'price', 'availability', 'rating')->where('id', $service_id)->first();
-            $service->photo_url = Helper::$base_url."tenants/services/" . $service->photo_url;
+            $service->photo_url = Helper::$base_url . "tenants/services/" . $service->photo_url;
             $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $service->id . "' and ts.status='done';"))[0]->sold;
             if ($sold == null) {
                 $sold = 0;
@@ -205,6 +205,41 @@ class ServiceController extends Controller
                 $arrResponse = ["status" => "success"];
             } else {
                 $arrResponse = ["status" => "notfound"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    // Resident's App API
+    public function rdtTenServiceDetail(Request $request)
+    {
+        $service_id = $request->get('service_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $service = Service::select('id', 'name', 'description', 'photo_url', 'permit_need', 'price','pricePer', 'availability', 'rating')->where('id', $service_id)->first();
+            if ($service != null) {
+                $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $service->id . "' and ts.status='done';"))[0]->sold;
+                if ($sold == null) {
+                    $sold = 0;
+                }
+                $service->sold = $sold;
+
+                $reviews = DB::select(DB::raw("select rating, review from service_transaction_detail where service_id='" . $service->id . "' and rating is not null"));
+                if (count($reviews) > 0) {
+                    $service->reviewsStatus = "available";
+                    $service->reviews = $reviews;
+                } else {
+                    $service->reviewsStatus = "empty";
+                    $service->reviews = 'empty';
+                }
+                $arrResponse = ["status" => "success", "data" => $service];
+            } else {
+                $arrResponse = ["status" => "servicenull"];
             }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
