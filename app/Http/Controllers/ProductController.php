@@ -189,7 +189,7 @@ class ProductController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $product = Product::select('id', 'name', 'description', 'photo_url', 'price', 'stock', 'rating')->where('id', $product_id)->first();
+            $product = Product::select('id', 'name', 'description', 'photo_url', 'price', 'stock', 'rating')->where('id', $product_id)->where('active_status', 1)->first();
             if ($product != null) {
                 $product->photo_url = Helper::$base_url."tenants/products/".$product->photo_url;
                 $sold = DB::select(DB::raw("select sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where ptd.product_id = '" . $product->id . "' and ts.status='done';"))[0]->sold;
