@@ -42,7 +42,7 @@ class TenantController extends Controller
         if ($request->get('type') == 'product') {
             $newTenant->type = 'product';
         }
-        if ($request->get('type') == 'servive') {
+        if ($request->get('type') == 'service') {
             $newTenant->type = 'service';
         }
         $newTenant->service_hour_start = $request->get('opening_hour');
@@ -218,7 +218,12 @@ class TenantController extends Controller
                 foreach ($tenantsOpen as $to) {
                     $to->service_hour_start = date("H:i", strtotime($to->service_hour_start));
                     $to->service_hour_end = date("H:i", strtotime($to->service_hour_end));
-                    $to->rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from products where tenant_id='" . $to->id . "'"))[0]->rating;
+                    $rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from products where tenant_id='" . $to->id . "'"))[0];
+                    if ($rating != null) {
+                        $to->rating = $rating->rating ? $rating->rating : 0;
+                    } else {
+                        $to->rating = 0;
+                    }
                     $to->status = 'open';
                 }
             }
@@ -227,7 +232,12 @@ class TenantController extends Controller
                 foreach ($tenantsClose as $tc) {
                     $tc->service_hour_start = date("H:i", strtotime($tc->service_hour_start));
                     $tc->service_hour_end = date("H:i", strtotime($tc->service_hour_end));
-                    $tc->rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from products where tenant_id='" . $tc->id . "'"))[0]->rating;
+                    $rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from products where tenant_id='" . $tc->id . "'"))[0];
+                    if ($rating != null) {
+                        $tc->rating = $rating->rating ? $rating->rating : 0;
+                    } else {
+                        $tc->rating = 0;
+                    }
                     $tc->status = 'close';
                 }
             }
@@ -255,7 +265,12 @@ class TenantController extends Controller
                 foreach ($tenantsOpen as $to) {
                     $to->service_hour_start = date("H:i", strtotime($to->service_hour_start));
                     $to->service_hour_end = date("H:i", strtotime($to->service_hour_end));
-                    $to->rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from services where tenant_id='" . $to->id . "'"))[0]->rating;
+                    $rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from services where tenant_id='" . $to->id . "'"))[0];
+                    if ($rating != null) {
+                        $to->rating = $rating->rating ? $rating->rating : 0;
+                    } else {
+                        $to->rating = 0;
+                    }
                     $to->status = 'open';
                 }
             }
@@ -264,7 +279,12 @@ class TenantController extends Controller
                 foreach ($tenantsClose as $tc) {
                     $tc->service_hour_start = date("H:i", strtotime($tc->service_hour_start));
                     $tc->service_hour_end = date("H:i", strtotime($tc->service_hour_end));
-                    $tc->rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from services where tenant_id='" . $tc->id . "'"))[0]->rating;
+                    $rating = DB::select(DB::raw("select round(avg(rating), 2) as 'rating' from services where tenant_id='" . $tc->id . "'"))[0];
+                    if ($rating != null) {
+                        $tc->rating = $rating->rating ? $rating->rating : 0;
+                    } else {
+                        $tc->rating = 0;
+                    }
                     $tc->status = 'close';
                 }
             }
@@ -295,7 +315,7 @@ class TenantController extends Controller
                 $products = $products->merge($productsNotAvailable);
                 if (count($products) > 0) {
                     foreach ($products as $pro) {
-                        $pro->photo_url = Helper::$base_url."tenants/products/" . $pro->photo_url;
+                        $pro->photo_url = Helper::$base_url . "tenants/products/" . $pro->photo_url;
                         $pro->pricePer = "";
                         $pro->availability = $pro->stock;
                         $sold = DB::select(DB::raw("select sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where ptd.product_id = '" . $pro->id . "' and ts.status='done';"))[0]->sold;
@@ -315,7 +335,7 @@ class TenantController extends Controller
                 $services = $services->merge($servicesNotAvailable);
                 if (count($services) > 0) {
                     foreach ($services as $svc) {
-                        $svc->photo_url = Helper::$base_url."tenants/services/" . $svc->photo_url;
+                        $svc->photo_url = Helper::$base_url . "tenants/services/" . $svc->photo_url;
                         $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $svc->id . "' and ts.status='done';"))[0]->sold;
                         if ($sold == null) {
                             $sold = 0;
