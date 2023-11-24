@@ -88,7 +88,7 @@ class TenantController extends Controller
         if ($request->get('type') == 'product') {
             $tenant->type = 'product';
         }
-        if ($request->get('type') == 'servive') {
+        if ($request->get('type') == 'service') {
             $tenant->type = 'service';
         }
         $tenant->service_hour_start = $request->get('opening_hour');
