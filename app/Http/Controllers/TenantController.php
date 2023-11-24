@@ -290,7 +290,9 @@ class TenantController extends Controller
         if ($tokenValidation == true) {
             $tenant_type = Tenant::select('type')->where('id', $tenant_id)->first();
             if ($tenant_type->type == "product") {
-                $products = Product::select('id', 'name', 'photo_url', 'price', 'stock', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('active_status', 1)->get();
+                $products = Product::select('id', 'name', 'photo_url', 'price', 'stock', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('stock', '>', 0)->where('active_status', 1)->get();
+                $productsNotAvailable = Product::select('id', 'name', 'photo_url', 'price', 'stock', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('stock', '=', 0)->where('active_status', 1)->get();
+                $products = $products->merge($productsNotAvailable);
                 if (count($products) > 0) {
                     foreach ($products as $pro) {
                         $pro->photo_url = Helper::$base_url."tenants/products/" . $pro->photo_url;
@@ -308,7 +310,9 @@ class TenantController extends Controller
                     $arrResponse = ["status" => "empty"];
                 }
             } else {
-                $services = Service::select('id', 'name', 'photo_url', 'price', 'availability', 'pricePer', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('active_status', 1)->get();
+                $services = Service::select('id', 'name', 'photo_url', 'price', 'availability', 'pricePer', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('availability', 1)->where('active_status', 1)->get();
+                $servicesNotAvailable = Service::select('id', 'name', 'photo_url', 'price', 'availability', 'pricePer', 'rating')->where('tenant_id', $tenant_id)->where('name', 'like', $searchQuery)->where('availability', 0)->where('active_status', 1)->get();
+                $services = $services->merge($servicesNotAvailable);
                 if (count($services) > 0) {
                     foreach ($services as $svc) {
                         $svc->photo_url = Helper::$base_url."tenants/services/" . $svc->photo_url;
