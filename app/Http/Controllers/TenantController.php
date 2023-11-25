@@ -26,7 +26,7 @@ class TenantController extends Controller
     }
     public function store(Request $request)
     {
-        $request->validate(["tenant_name" => "required", "tenant_address" => "required", "phone_number" => "required", "type" => "required", "opening_hour" => "required", "closing_hour" => "required", "bank_name" => "required", "bank_account" => "required", "bank_holder" => "required", "delivery" => "required", "username" => "required|unique:users,username", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!"]);
+        $request->validate(["tenant_name" => "required", "tenant_address" => "required", "phone_number" => "required", "type" => "required", "opening_hour" => "required", "closing_hour" => "required|different:opening_hour", "bank_name" => "required", "bank_account" => "required", "bank_holder" => "required", "delivery" => "required", "username" => "required|unique:users,username", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!"]);
 
         User::create([
             "username" => $request->get('username'),

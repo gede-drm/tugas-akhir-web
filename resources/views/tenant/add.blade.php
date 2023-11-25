@@ -59,7 +59,7 @@
                     </div>
                     <div class="col-6">
                         <label for="txtCloseHour" class="form-label">Jam Tutup Tenant</label>
-                        <input type="time" class="form-control" id="txtCloseHour" name="closing_hour" value="17:00"
+                        <input type="time" class="form-control" id="txtCloseHour" name="closing_hour" value="17:00" min="00:01" max="23:59"
                             required>
                     </div>
                 </div>

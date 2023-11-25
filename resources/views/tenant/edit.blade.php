@@ -71,7 +71,7 @@
                     <div class="col-6">
                         <label for="txtCloseHour" class="form-label">Jam Tutup Tenant</label>
                         <input type="time" class="form-control" id="txtCloseHour" name="closing_hour"
-                            value="{{ $tenant->service_hour_end }}" required>
+                            value="{{ $tenant->service_hour_end }}" min="00:01" max="23:59" required>
                     </div>
                 </div>
                 <div class="row mb-3">
