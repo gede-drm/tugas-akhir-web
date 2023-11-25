@@ -158,7 +158,7 @@ class TenantController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $tenant = Tenant::select('id', 'name', 'address', 'phone_number', 'service_hour_start', 'service_hour_end', 'bank_name', 'bank_account', 'account_holder', 'delivery')->where('id', $tenant_id)->first();
+            $tenant = Tenant::select('id', 'name', 'address', 'phone_number', 'service_hour_start', 'service_hour_end', 'bank_name', 'bank_account', 'account_holder', 'delivery', 'cash')->where('id', $tenant_id)->first();
             $arrResponse = ["status" => "success", "data" => $tenant];
         } else {
             $arrResponse = ["status" => "notauthenticated"];
