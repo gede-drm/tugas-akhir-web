@@ -198,7 +198,7 @@ class ProductController extends Controller
                 }
                 $product->sold = $sold;
 
-                $reviews = DB::select(DB::raw("select rating, review from product_transaction_detail where product_id='" . $product->id . "' and rating is not null"));
+                $reviews = DB::select(DB::raw("select ptd.rating, ptd.review, u.unit_no from product_transaction_detail ptd inner join transactions t on t.id=ptd.transaction_id inner join units u on u.id=t.unit_id where ptd.product_id='" . $product->id . "' and ptd.rating is not null"));
                 if (count($reviews) > 0) {
                     $product->reviewsStatus = "available";
                     $product->reviews = $reviews;
