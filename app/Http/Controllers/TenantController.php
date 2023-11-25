@@ -225,7 +225,7 @@ class TenantController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $tenantsOpen = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'product')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw('service_hour_start <= time(now()) and service_hour_end >= time(now())')->where('status', 'open')->get();
+            $tenantsOpen = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery', 'cash')->where('type', 'product')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw('service_hour_start <= time(now()) and service_hour_end >= time(now())')->where('status', 'open')->get();
             if (count($tenantsOpen) > 0) {
                 foreach ($tenantsOpen as $to) {
                     $to->service_hour_start = date("H:i", strtotime($to->service_hour_start));
@@ -239,7 +239,7 @@ class TenantController extends Controller
                     $to->status = 'open';
                 }
             }
-            $tenantsClose = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'product')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw("((service_hour_start > time(now()) or service_hour_end < time(now())) or status ='close')")->get();
+            $tenantsClose = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery', 'cash')->where('type', 'product')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw("((service_hour_start > time(now()) or service_hour_end < time(now())) or status ='close')")->get();
             if (count($tenantsClose) > 0) {
                 foreach ($tenantsClose as $tc) {
                     $tc->service_hour_start = date("H:i", strtotime($tc->service_hour_start));
@@ -272,7 +272,7 @@ class TenantController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $tenantsOpen = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'service')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw('service_hour_start <= time(now()) and service_hour_end >= time(now())')->where('status', 'open')->get();
+            $tenantsOpen = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery', 'cash')->where('type', 'service')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw('service_hour_start <= time(now()) and service_hour_end >= time(now())')->where('status', 'open')->get();
             if (count($tenantsOpen) > 0) {
                 foreach ($tenantsOpen as $to) {
                     $to->service_hour_start = date("H:i", strtotime($to->service_hour_start));
@@ -286,7 +286,7 @@ class TenantController extends Controller
                     $to->status = 'open';
                 }
             }
-            $tenantsClose = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery')->where('type', 'service')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw("((service_hour_start > time(now()) or service_hour_end < time(now())) or status ='close')")->get();
+            $tenantsClose = Tenant::select('id', 'name', 'address', 'type', 'service_hour_start', 'service_hour_end', 'delivery', 'cash')->where('type', 'service')->where('name', 'like', $searchQuery)->where('active_status', 1)->whereRaw("((service_hour_start > time(now()) or service_hour_end < time(now())) or status ='close')")->get();
             if (count($tenantsClose) > 0) {
                 foreach ($tenantsClose as $tc) {
                     $tc->service_hour_start = date("H:i", strtotime($tc->service_hour_start));
