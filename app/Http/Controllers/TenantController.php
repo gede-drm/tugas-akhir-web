@@ -56,6 +56,12 @@ class TenantController extends Controller
         if ($request->get('delivery') == 'no') {
             $newTenant->delivery = 0;
         }
+        if ($request->get('cash') == 'yes') {
+            $newTenant->cash = 1;
+        }
+        if ($request->get('cash') == 'no') {
+            $newTenant->cash = 0;
+        }
         $newTenant->status = 'close';
         $newTenant->user_id = $userId->id;
         $newTenant->save();
@@ -101,6 +107,12 @@ class TenantController extends Controller
         }
         if ($request->get('delivery') == 'no') {
             $tenant->delivery = 0;
+        }
+        if ($request->get('cash') == 'yes') {
+            $tenant->cash = 1;
+        }
+        if ($request->get('cash') == 'no') {
+            $tenant->cash = 0;
         }
         $tenant->status = 'close';
         $tenant->save();

@@ -109,6 +109,22 @@
                     </div>
                 </div>
                 <div class="row mb-3">
+                    <label for="" class="form-label">Pembayaran Tunai</label>
+                    <br>
+                    <div class="col-12 d-flex align-items-center" style="height: 3em;">
+                        <div class="form-check-inline">
+                            <input type="radio" name="cash" id="rdoCashyYes" class="form-check-input"
+                                value="yes" checked>
+                            <label for="" class="form-check-label">Menyediakan</label>
+                        </div>
+                        <div class="form-check-inline">
+                            <input type="radio" name="cash" id="rdoCashNo" class="form-check-input"
+                                value="no">
+                            <label for="" class="form-check-label">Tidak Menyediakan</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
                     <div class="col-4">
                         <label for="txtUsername" class="form-label">Username</label>
                         <input type="text" class="form-control" id="txtUsername" name="username"

@@ -130,6 +130,32 @@
                     </div>
                 </div>
                 <div class="row mb-3">
+                    <label for="" class="form-label">Pembayaran Tunai</label>
+                    <br>
+                    <div class="col-12 d-flex align-items-center" style="height: 3em;">
+                        <div class="form-check-inline">
+                            @if ($tenant->cash == 1)
+                                <input type="radio" name="cash" id="rdoCashYes" class="form-check-input"
+                                    value="yes" checked>
+                            @else
+                                <input type="radio" name="cash" id="rdoCashYes" class="form-check-input"
+                                    value="yes">
+                            @endif
+                            <label for="" class="form-check-label">Menyediakan</label>
+                        </div>
+                        <div class="form-check-inline">
+                            @if ($tenant->cash == 0)
+                                <input type="radio" name="cash" id="rdoCashNo" class="form-check-input"
+                                    value="no" checked>
+                            @else
+                                <input type="radio" name="cash" id="rdoCashNo" class="form-check-input"
+                                    value="no">
+                            @endif
+                            <label for="" class="form-check-label">Tidak Menyediakan</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
                     <div class="row mb-3">
                         <div class="col-4">
                             <label for="txtUsername" class="form-label">Username</label>
