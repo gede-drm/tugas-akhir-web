@@ -218,6 +218,7 @@ class ProductController extends Controller
 
     public function rdtProShoppingCart(Request $request)
     {
+        // TODO: Kurang Check, Apa 1 Cart Tenant Bisa Bayar Tunai Semua?, If Not THEN turn off cash payment on Android
         $product_ids = $request->get('product_ids');
         $product_qtys = $request->get('product_qtys');
         $token = $request->get('token');
@@ -238,6 +239,7 @@ class ProductController extends Controller
                             $emptyStatus = 'true';
                         } else {
                             if ($product->stock >= $product_qtys[$key]) {
+                                $product->photo_url = Helper::$base_url . "tenants/products/" . $product->photo_url;
                                 $product->qty = $product_qtys[$key];
                                 $product->subtotal = $product->price * $product_qtys[$key];
                                 $product->tenant_name = $product->tenant->name;
