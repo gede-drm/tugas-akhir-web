@@ -244,7 +244,7 @@ class ProductController extends Controller
                                 $product->subtotal = $product->price * $product_qtys[$key];
                                 $product->tenant_name = $product->tenant->name;
                                 $product->cash = $product->tenant->cash;
-                                $tenant_delivery[] = ["id"=>$product->tenant_id, "tenant"=>$product->tenant->name, "cash"=>$product->tenant->cash, "delivery"=>$product->tenant->delivery, "open_hour"=>substr($product->tenant->service_hour_start, 0, 4), "close_hour"=>substr($product->tenant->service_hour_end, 0, 5)];
+                                $tenant_delivery[] = ["id"=>$product->tenant_id, "tenant"=>$product->tenant->name, "cash"=>$product->tenant->cash, "delivery"=>$product->tenant->delivery, "open_hour"=>substr($product->tenant->service_hour_start, 0, 5), "close_hour"=>substr($product->tenant->service_hour_end, 0, 5)];
                                 $product->makeHidden('tenant');
                                 $data[] = $product;
                                 $total += $product->subtotal;
