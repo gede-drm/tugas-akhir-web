@@ -227,9 +227,9 @@ class ProductController extends Controller
         if (isset($product_ids) && isset($product_qtys)) {
             if ($tokenValidation == true) {
                 $emptyStatus = 'empty';
-                $cashStatus = 'allowed';
                 $empty = [];
                 $data = [];
+                $tenant_delivery = [];
                 $total = 0;
                 foreach ($product_ids as $key => $id) {
                     $product = Product::select('id', 'name', 'photo_url', 'price', 'stock', 'tenant_id')->where('id', $id)->where('active_status', 1)->first();
@@ -244,9 +244,7 @@ class ProductController extends Controller
                                 $product->subtotal = $product->price * $product_qtys[$key];
                                 $product->tenant_name = $product->tenant->name;
                                 $product->cash = $product->tenant->cash;
-                                if($product->cash == 0){
-                                    $cashStatus = 'notallowed';
-                                }
+                                $tenant_delivery[] = ["id"=>$product->tenant_id, "tenant"=>$product->tenant->name, "cash"=>$product->tenant->cash, "delivery"=>$product->tenant->delivery];
                                 $product->makeHidden('tenant');
                                 $data[] = $product;
                                 $total += $product->subtotal;
@@ -263,7 +261,10 @@ class ProductController extends Controller
                 if (count($data) > 0) {
                     $data = collect($data);
                     $data->sortBy('tenant_name');
-                    $arrResponse = ["status" => "success", "emptyStatus" => $emptyStatus, "emptyids" => $empty, "data" => $data, "total" => $total, "cashStatus"=>$cashStatus];
+
+                    $tenant_delivery = collect($tenant_delivery);
+                    $tenant_delivery = $tenant_delivery->unique("id");
+                    $arrResponse = ["status" => "success", "emptyStatus" => $emptyStatus, "emptyids" => $empty, "data" => $data, "total" => $total, "delivery"=>$tenant_delivery];
                 } else {
                     $arrResponse = ["status" => "allempty"];
                 }
