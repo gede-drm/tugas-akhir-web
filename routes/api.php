@@ -83,3 +83,4 @@ Route::post('resident/tenant/productdetail', [ProductController::class, 'rdtTenP
 Route::post('resident/tenant/servicedetail', [ServiceController::class, 'rdtTenServiceDetail']);
 
 Route::post('resident/productcart', [ProductController::class, 'rdtProShoppingCart']);
+Route::post('resident/tenant/productcheckout', [TransactionController::class, 'rdtProCheckout']);
