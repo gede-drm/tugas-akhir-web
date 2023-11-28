@@ -327,4 +327,34 @@ class TransactionController extends Controller
         }
         return $arrResponse;
     }
+
+    public function rdtGetUnpaidTransferTrx(Request $request){
+        $unit_id = $request->get('unit_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $notPaidTransactions = Transaction::select('id', 'transaction_date', 'total_payment', 'finish_date', 'tenant_id')->where('payment', 'transfer')->whereNull('payment_proof_url')->where('status', 0)->where('unit_id', $unit_id)->get();
+            foreach($notPaidTransactions as $npt){
+                $npt->tenant_name = $npt->tenant->name;
+                $npt->transaction_date = date("d-m-Y H:i", strtotime($npt->transaction_date));
+                $npt->finish_date = date("d-m-Y H:i", strtotime($npt->finish_date));
+                $npt->bank_name = $npt->tenant->bank_name;
+                $npt->account_holder = $npt->tenant->account_holder;
+                $npt->account_number = $npt->tenant->bank_account;
+                $npt->makeHidden('tenant');
+            }
+            if(count($notPaidTransactions)>0){
+                $arrResponse = ["status" => "success", "data"=>$notPaidTransactions];
+            }
+            else{
+                $arrResponse = ["status" => "empty"];
+            }
+        }
+        else{
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
 }
