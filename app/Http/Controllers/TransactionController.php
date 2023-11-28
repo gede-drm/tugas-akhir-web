@@ -316,7 +316,7 @@ class TransactionController extends Controller
                     if ($e->getMessage() == 'nostock') {
                         $arrResponse = ["status" => "failednostock"];
                     } else {
-                        $arrResponse = ["status" => "failed", "message"=>$e->getMessage()];
+                        $arrResponse = ["status" => "failed"];
                     }
                 }
             } else {
