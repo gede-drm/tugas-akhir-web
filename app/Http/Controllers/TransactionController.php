@@ -305,7 +305,7 @@ class TransactionController extends Controller
                             $transactionStatus->description = 'Belum dikonfirmasi';
                         } else {
                             $transactionStatus->status = 'notransferproof';
-                            $transactionStatus->description = 'Belum Melakukan Pembayaran';
+                            $transactionStatus->description = 'Belum Pembayaran';
                         }
                         $transactionStatus->save();
                     }
