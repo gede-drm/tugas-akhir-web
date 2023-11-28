@@ -54,6 +54,7 @@ class UnitController extends Controller
         $request->validate(["owner_name" => "required", "holder_name" => "required", "holder_ph_number" => "required", "password" => "required|min:8", "conf_pass" => "required|same:password"], ["conf_pass.same" => "Konfirmasi Password Tidak Sesuai!"]);
         $user = User::find($unit->user_id);
         $user->password = Hash::make($request->get('password'));
+        $user->api_token = null;
         $unit->owner_name = $request->get('owner_name');
         $unit->holder_name = $request->get('holder_name');
         $unit->holder_ph_number = $request->get('holder_ph_number');
