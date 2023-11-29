@@ -51,6 +51,8 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mb-3" id="divServiceType">
+                </div>
                 <div class="row mb-3">
                     <div class="col-6">
                         <label for="txtOpenHour" class="form-label">Jam Buka Tenant</label>
@@ -59,8 +61,8 @@
                     </div>
                     <div class="col-6">
                         <label for="txtCloseHour" class="form-label">Jam Tutup Tenant</label>
-                        <input type="time" class="form-control" id="txtCloseHour" name="closing_hour" value="17:00" min="00:01" max="23:59"
-                            required>
+                        <input type="time" class="form-control" id="txtCloseHour" name="closing_hour" value="17:00"
+                            min="00:01" max="23:59" required>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -150,4 +152,15 @@
             </form>
         </div>
     </div>
+@endsection
+
+@section('script')
+    <script>
+        $('#rdoJasa').on('click', function() {
+            $('#divServiceType').html('<label for="" class="form-label">Jenis Jasa</label><br><div class="col-12 d-flex align-items-center" style="height: 3em;"><div class="form-check-inline"><input type="radio" name="svc_type" id="rdoSvcLaundry" class="form-check-input" value="laundry" checked><label for="" class="form-check-label">Laundry</label></div><div class="form-check-inline"><input type="radio" name="svc_type" id="rdoSvcOther" class="form-check-input" value="other"><label for="" class="form-check-label">Jasa Lainnya</label></div></div>');
+        });
+        $('#rdoBarang').on('click', function() {
+            $('#divServiceType').html('');
+        });
+    </script>
 @endsection

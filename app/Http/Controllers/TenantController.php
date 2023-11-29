@@ -44,6 +44,12 @@ class TenantController extends Controller
         }
         if ($request->get('type') == 'service') {
             $newTenant->type = 'service';
+            if($request->get('svc_type') == 'laundry'){
+                $newTenant->service_type = 'laundry';
+            }
+            else{
+                $newTenant->service_type = 'other';
+            }
         }
         $newTenant->service_hour_start = $request->get('opening_hour');
         $newTenant->service_hour_end = $request->get('closing_hour');
@@ -74,7 +80,7 @@ class TenantController extends Controller
     }
     public function update(Request $request, Tenant $tenant)
     {
-        $request->validate(["tenant_name" => "required", "tenant_address" => "required", "phone_number" => "required", "type" => "required", "opening_hour" => "required", "closing_hour" => "required", "bank_name" => "required", "bank_account" => "required", "bank_holder" => "required", "delivery" => "required", "username" => "required"]);
+        $request->validate(["tenant_name" => "required", "tenant_address" => "required", "phone_number" => "required", "opening_hour" => "required", "closing_hour" => "required", "bank_name" => "required", "bank_account" => "required", "bank_holder" => "required", "delivery" => "required", "username" => "required"]);
 
         if ($request->get('password') != null) {
             if (strlen($request->get('password')) < 8) {
@@ -91,11 +97,13 @@ class TenantController extends Controller
         $tenant->name = $request->get('tenant_name');
         $tenant->address = $request->get('tenant_address');
         $tenant->phone_number = $request->get('phone_number');
-        if ($request->get('type') == 'product') {
-            $tenant->type = 'product';
-        }
-        if ($request->get('type') == 'service') {
-            $tenant->type = 'service';
+        if($tenant->type == 'service'){
+            if($request->get('svc_type') == 'laundry'){
+                $tenant->service_type = 'laundry';
+            }
+            else{
+                $tenant->service_type = 'other';
+            }
         }
         $tenant->service_hour_start = $request->get('opening_hour');
         $tenant->service_hour_end = $request->get('closing_hour');

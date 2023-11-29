@@ -40,28 +40,41 @@
                     <label for="" class="form-label">Jenis Tenant</label>
                     <br>
                     <div class="col-12 d-flex align-items-center" style="height: 3em;">
-                        <div class="form-check-inline">
-                            @if ($tenant->type == 'product')
-                                <input type="radio" name="type" id="rdoBarang" class="form-check-input" value="product"
-                                    checked>
-                            @else
-                                <input type="radio" name="type" id="rdoBarang" class="form-check-input"
-                                    value="product">
-                            @endif
-                            <label for="" class="form-check-label">Barang</label>
-                        </div>
-                        <div class="form-check-inline">
-                            @if ($tenant->type == 'service')
-                                <input type="radio" name="type" id="rdoJasa" class="form-check-input" value="service"
-                                    checked>
-                            @else
-                                <input type="radio" name="type" id="rdoJasa" class="form-check-input"
-                                    value="service">
-                            @endif
-                            <label for="" class="form-check-label">Jasa</label>
-                        </div>
+                        @if ($tenant->type == 'product')
+                            <h6 class="mt-0">Barang</h6>
+                        @else
+                            <h6 class="mt-0">Jasa</h6>
+                        @endif
                     </div>
                 </div>
+                @if ($tenant->service_type != null)
+                    <div class="row mb-3">
+                        <label for="" class="form-label">Jenis Jasa</label>
+                        <br>
+                        <div class="col-12 d-flex align-items-center" style="height: 3em;">
+                            <div class="form-check-inline">
+                                @if ($tenant->service_type == 'laundry')
+                                    <input type="radio" name="svc_type" id="rdoSvcLaundry" class="form-check-input"
+                                        value="laundry" checked>
+                                @else
+                                    <input type="radio" name="svc_type" id="rdoSvcLaundry" class="form-check-input"
+                                        value="laundry">
+                                @endif
+                                <label for="" class="form-check-label">Laundry</label>
+                            </div>
+                            <div class="form-check-inline">
+                                @if ($tenant->service_type == 'other')
+                                    <input type="radio" name="svc_type" id="rdoSvcOther" class="form-check-input"
+                                        value="other" checked>
+                                @else
+                                    <input type="radio" name="svc_type" id="rdoSvcOther" class="form-check-input"
+                                        value="other">
+                                @endif
+                                <label for="" class="form-check-label">Jasa Lainnya</label>
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 <div class="row mb-3">
                     <div class="col-6">
                         <label for="txtOpenHour" class="form-label">Jam Buka Tenant</label>
