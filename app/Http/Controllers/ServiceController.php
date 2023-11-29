@@ -221,9 +221,9 @@ class ServiceController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $service = Service::select('id', 'name', 'description', 'photo_url', 'permit_need', 'price','pricePer', 'availability', 'rating')->where('id', $service_id)->where('active_status', 1)->first();
+            $service = Service::select('id', 'name', 'description', 'photo_url', 'permit_need', 'price', 'pricePer', 'availability', 'rating')->where('id', $service_id)->where('active_status', 1)->first();
             if ($service != null) {
-                $service->photo_url = Helper::$base_url."tenants/services/".$service->photo_url;
+                $service->photo_url = Helper::$base_url . "tenants/services/" . $service->photo_url;
                 $sold = DB::select(DB::raw("select sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where std.service_id = '" . $service->id . "' and ts.status='done';"))[0]->sold;
                 if ($sold == null) {
                     $sold = 0;
@@ -241,6 +241,47 @@ class ServiceController extends Controller
                 $arrResponse = ["status" => "success", "data" => $service];
             } else {
                 $arrResponse = ["status" => "servicenull"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function rdtSvcCheckoutList(Request $request)
+    {
+        $service_id = $request->get('service_id');
+        $service_qty = $request->get('service_qty');
+
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $service = Service::select('id', 'name', 'permit_need', 'photo_url', 'price', 'pricePer', 'tenant_id')->where('id', $service_id)->where('availability', 1)->where('active_status', 1)->first();
+            if ($service != null) {
+                $tenant_delivery = 0;
+                $tenant_cash = 0;
+                $total = 0;
+
+                if ($service->tenant->delivery == 1) {
+                    $tenant_delivery = 1;
+                }
+                if ($service->tenant->cash == 1) {
+                    $tenant_cash = 1;
+                }
+
+                $tenant_svctype = $service->tenant->service_type;
+                $tenant_openhour = substr($service->tenant->service_hour_start, 0, 5);
+                $tenant_closehour = substr($service->tenant->service_hour_end, 0, 5);
+                $total = $service->price * $service_qty;
+                $tenant = ["name"=>$service->tenant->name,'tenant_type' => $tenant_svctype, "open_hour"=>$tenant_openhour,"close_hour"=>$tenant_closehour, "delivery_status" => $tenant_delivery, "cash_status" => $tenant_cash];
+
+                $service->makeHidden('tenant');
+
+                $arrResponse = ["status" => "success", "data" => $service, "tenant" => $tenant, "total_payment" => $total];
+            } else {
+                $arrResponse = ["status" => "empty"];
             }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
