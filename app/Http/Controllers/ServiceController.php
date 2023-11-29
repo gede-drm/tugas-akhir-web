@@ -230,7 +230,7 @@ class ServiceController extends Controller
                 }
                 $service->sold = $sold;
 
-                $reviews = DB::select(DB::raw("select std.rating, std.review, u.unit_no from service_transaction_detail std inner join transactions t on t.id=ptd.transaction_id inner join units u on u.id=t.unit_id where std.service_id='" . $service->id . "' and std.rating is not null"));
+                $reviews = DB::select(DB::raw("select std.rating, std.review, u.unit_no from service_transaction_detail std inner join transactions t on t.id=std.transaction_id inner join units u on u.id=t.unit_id where std.service_id='" . $service->id . "' and std.rating is not null"));
                 if (count($reviews) > 0) {
                     $service->reviewsStatus = "available";
                     $service->reviews = $reviews;
