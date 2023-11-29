@@ -258,30 +258,36 @@ class ServiceController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $service = Service::select('id', 'name', 'permit_need', 'photo_url', 'price', 'pricePer', 'tenant_id')->where('id', $service_id)->where('availability', 1)->where('active_status', 1)->first();
-            if ($service != null) {
-                $tenant_delivery = 0;
-                $tenant_cash = 0;
-                $total = 0;
+            if (isset($service_id) && isset($service_qty)) {
+                $service = Service::select('id', 'name', 'permit_need', 'photo_url', 'price', 'pricePer', 'tenant_id')->where('id', $service_id)->where('availability', 1)->where('active_status', 1)->first();
+                if ($service != null) {
+                    $tenant_delivery = 0;
+                    $tenant_cash = 0;
+                    $total = 0;
 
-                if ($service->tenant->delivery == 1) {
-                    $tenant_delivery = 1;
+                    if ($service->tenant->delivery == 1) {
+                        $tenant_delivery = 1;
+                    }
+                    if ($service->tenant->cash == 1) {
+                        $tenant_cash = 1;
+                    }
+
+                    $service->quantity = $service_qty;
+
+                    $tenant_svctype = $service->tenant->service_type;
+                    $tenant_openhour = substr($service->tenant->service_hour_start, 0, 5);
+                    $tenant_closehour = substr($service->tenant->service_hour_end, 0, 5);
+                    $total = $service->price * $service_qty;
+                    $tenant = ["name" => $service->tenant->name, 'tenant_type' => $tenant_svctype, "open_hour" => $tenant_openhour, "close_hour" => $tenant_closehour, "delivery_status" => $tenant_delivery, "cash_status" => $tenant_cash];
+
+                    $service->makeHidden('tenant');
+
+                    $arrResponse = ["status" => "success", "data" => $service, "tenant" => $tenant, "total_payment" => $total];
+                } else {
+                    $arrResponse = ["status" => "empty"];
                 }
-                if ($service->tenant->cash == 1) {
-                    $tenant_cash = 1;
-                }
-
-                $tenant_svctype = $service->tenant->service_type;
-                $tenant_openhour = substr($service->tenant->service_hour_start, 0, 5);
-                $tenant_closehour = substr($service->tenant->service_hour_end, 0, 5);
-                $total = $service->price * $service_qty;
-                $tenant = ["name"=>$service->tenant->name,'tenant_type' => $tenant_svctype, "open_hour"=>$tenant_openhour,"close_hour"=>$tenant_closehour, "delivery_status" => $tenant_delivery, "cash_status" => $tenant_cash];
-
-                $service->makeHidden('tenant');
-
-                $arrResponse = ["status" => "success", "data" => $service, "tenant" => $tenant, "total_payment" => $total];
             } else {
-                $arrResponse = ["status" => "empty"];
+                $arrResponse = ["status" => "error"];
             }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
