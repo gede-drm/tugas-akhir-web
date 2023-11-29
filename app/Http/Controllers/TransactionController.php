@@ -328,7 +328,8 @@ class TransactionController extends Controller
         return $arrResponse;
     }
 
-    public function rdtGetUnpaidTransferTrx(Request $request){
+    public function rdtGetUnpaidTransferTrx(Request $request)
+    {
         $unit_id = $request->get('unit_id');
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
@@ -336,7 +337,7 @@ class TransactionController extends Controller
         $arrResponse = [];
         if ($tokenValidation == true) {
             $notPaidTransactions = Transaction::select('id', 'transaction_date', 'total_payment', 'finish_date', 'tenant_id')->where('payment', 'transfer')->whereNull('payment_proof_url')->where('status', 0)->where('unit_id', $unit_id)->get();
-            foreach($notPaidTransactions as $npt){
+            foreach ($notPaidTransactions as $npt) {
                 $npt->tenant_name = $npt->tenant->name;
                 $npt->transaction_date = date("d-m-Y H:i", strtotime($npt->transaction_date));
                 $npt->finish_date = date("d-m-Y H:i", strtotime($npt->finish_date));
@@ -345,14 +346,52 @@ class TransactionController extends Controller
                 $npt->account_number = $npt->tenant->bank_account;
                 $npt->makeHidden('tenant');
             }
-            if(count($notPaidTransactions)>0){
-                $arrResponse = ["status" => "success", "data"=>$notPaidTransactions];
-            }
-            else{
+            if (count($notPaidTransactions) > 0) {
+                $arrResponse = ["status" => "success", "data" => $notPaidTransactions];
+            } else {
                 $arrResponse = ["status" => "empty"];
             }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
         }
-        else{
+        return $arrResponse;
+    }
+
+    public function rdtUploadTransferProof(Request $request)
+    {
+        $transaction_id = $request->get('transaction_id');
+        $base64Image = $request->get('proof_image');
+
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $transactionData = Transaction::select('id', 'payment_proof_url')->where('id', $transaction_id)->whereNull('payment_proof_url')->first();
+            if($transactionData != null){
+                $date = date('Y-m-d H:i:s');
+                $img = str_replace('data:image/jpeg;base64,', '', $base64Image);
+                $img = str_replace(' ', '+', $img);
+                $imgData = base64_decode($img);
+                $imgFileName = 'transferproof-id'.$transactionData->id.'-' . strtotime($date) . '.png';
+                $imgFileDirectory = '../public/transactions/transfer-proofs/' . $imgFileName;
+                file_put_contents($imgFileDirectory, $imgData);
+                $transactionData->payment_proof_url = $imgFileName;
+                $transactionData->save();
+
+                $trxStatus = new TransactionStatus();
+                $trxStatus->date = $date;
+                $trxStatus->status = 'order';
+                $trxStatus->description = 'Belum dikonfirmasi';
+                $trxStatus->transaction_id = $transactionData->id;
+                $trxStatus->save();
+
+                $arrResponse = ["status" => "success"];
+            }
+            else{
+                $arrResponse = ["status" => "emptytrx"];
+            }
+        } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
