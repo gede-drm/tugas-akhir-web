@@ -272,6 +272,7 @@ class ServiceController extends Controller
                         $tenant_cash = 1;
                     }
 
+                    $service->photo_url = Helper::$base_url . "tenants/services/" . $service->photo_url;
                     $service->quantity = $service_qty;
 
                     $tenant_svctype = $service->tenant->service_type;
