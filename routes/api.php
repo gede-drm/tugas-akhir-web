@@ -84,7 +84,9 @@ Route::post('resident/tenant/servicedetail', [ServiceController::class, 'rdtTenS
 
 Route::post('resident/productcart', [ProductController::class, 'rdtProShoppingCart']);
 Route::post('resident/transaction/productcheckout', [TransactionController::class, 'rdtProCheckout']);
-Route::post('resident/transaction/getunpaidtransactions', [TransactionController::class, 'rdtGetUnpaidTransferTrx']);
-Route::post('resident/transaction/uploadtransferproof', [TransactionController::class, 'rdtUploadTransferProof']);
+Route::post('resident/transaction/getunpaidprotransactions', [TransactionController::class, 'rdtGetUnpaidTransferProTrx']);
 
 Route::post('resident/servicecheckoutlist', [ServiceController::class, 'rdtSvcCheckoutList']);
+Route::post('resident/transaction/servicecheckout', [ServiceController::class, 'rdtSvcCheckout']);
+
+Route::post('resident/transaction/uploadtransferproof', [TransactionController::class, 'rdtUploadTransferProof']);

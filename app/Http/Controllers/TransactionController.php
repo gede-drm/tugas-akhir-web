@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Helper;
 use App\Models\Product;
+use App\Models\Service;
 use App\Models\Tenant;
 use App\Models\Transaction;
 use App\Models\TransactionStatus;
@@ -328,7 +329,7 @@ class TransactionController extends Controller
         return $arrResponse;
     }
 
-    public function rdtGetUnpaidTransferTrx(Request $request)
+    public function rdtGetUnpaidTransferProTrx(Request $request)
     {
         $unit_id = $request->get('unit_id');
         $token = $request->get('token');
@@ -338,6 +339,9 @@ class TransactionController extends Controller
         if ($tokenValidation == true) {
             $notPaidTransactions = Transaction::select('id', 'transaction_date', 'total_payment', 'finish_date', 'tenant_id')->where('payment', 'transfer')->whereNull('payment_proof_url')->where('status', 0)->where('unit_id', $unit_id)->get();
             foreach ($notPaidTransactions as $npt) {
+                if($npt->tenant->type == 'service'){
+                    continue;
+                }
                 $npt->tenant_name = $npt->tenant->name;
                 $npt->transaction_date = date("d-m-Y H:i", strtotime($npt->transaction_date));
                 $npt->finish_date = date("d-m-Y H:i", strtotime($npt->finish_date));
@@ -368,12 +372,12 @@ class TransactionController extends Controller
         $arrResponse = [];
         if ($tokenValidation == true) {
             $transactionData = Transaction::select('id', 'payment_proof_url')->where('id', $transaction_id)->whereNull('payment_proof_url')->first();
-            if($transactionData != null){
+            if ($transactionData != null) {
                 $date = date('Y-m-d H:i:s');
                 $img = str_replace('data:image/jpeg;base64,', '', $base64Image);
                 $img = str_replace(' ', '+', $img);
                 $imgData = base64_decode($img);
-                $imgFileName = 'transferproof-id'.$transactionData->id.'-' . strtotime($date) . '.png';
+                $imgFileName = 'transferproof-id' . $transactionData->id . '-' . strtotime($date) . '.png';
                 $imgFileDirectory = '../public/transactions/transfer-proofs/' . $imgFileName;
                 file_put_contents($imgFileDirectory, $imgData);
                 $transactionData->payment_proof_url = $imgFileName;
@@ -387,9 +391,82 @@ class TransactionController extends Controller
                 $trxStatus->save();
 
                 $arrResponse = ["status" => "success"];
-            }
-            else{
+            } else {
                 $arrResponse = ["status" => "emptytrx"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function rdtSvcCheckout(Request $request)
+    {
+        $unit_id = $request->get('unit_id');
+        $service_id = $request->get('service_id');
+        $service_qty = $request->get('service_qty');
+        $service_price = $request->get('service_qty');
+        $delivery = $request->get('tenant_deliveries');
+        $datetime = $request->get('tenant_datetimes');
+        $paymethod = $request->get('tenant_paymethods');
+
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            if (isset($unit_id) && isset($service_id) && isset($service_qty) && isset($service_price) && isset($delivery) && isset($datetime) && isset($paymethod)) {
+                DB::beginTransaction();
+                try {
+                    $date = date('Y-m-d H:i:s');
+                    $totalPayment = 0;
+                    $service = Service::select('id', 'availability', 'tenant_id')->where('id', $service_id)->first();
+                    if ($service->availability == 1) {
+                        $transaction = new Transaction();
+                        $transaction->transaction_date = $date;
+                        if($service->tenant->service_type == 'laundry'){
+                            $transaction->delivery = $delivery;
+                        }
+                        else{
+                            $transaction->delivery = 'delivery';
+                        }
+                        $transaction->payment = $paymethod;
+                        $transaction->total_payment = $totalPayment;
+                        $transaction->finish_date = $datetime;
+                        $transaction->status = 0;
+                        $transaction->unit_id = $unit_id;
+                        $transaction->tenant_id = $service->tenant_id;
+                        $transaction->save();
+
+                        $transaction->services()->attach($service_id, ['quantity' => $service_qty, 'price' => $service_price]);
+                    } else {
+                        throw new Exception("notavailable", 1);
+                    }
+
+                    $transactionStatus = new TransactionStatus();
+                    $transactionStatus->transaction_id = $transaction->id;
+                    $transactionStatus->date = $date;
+
+                    if ($transaction->payment == 'cash') {
+                        $transactionStatus->status = 'order';
+                        $transactionStatus->description = 'Belum dikonfirmasi';
+                    } else {
+                        $transactionStatus->status = 'notransferproof';
+                        $transactionStatus->description = 'Belum Pembayaran';
+                    }
+                    $transactionStatus->save();
+
+                    DB::commit();
+                } catch (Exception $e) {
+                    DB::rollBack();
+                    if ($e->getMessage() == 'notavailable') {
+                        $arrResponse = ["status" => "failednotavailable"];
+                    } else {
+                        $arrResponse = ["status" => "failed"];
+                    }
+                }
+            } else {
+                $arrResponse = ["status" => "error"];
             }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
