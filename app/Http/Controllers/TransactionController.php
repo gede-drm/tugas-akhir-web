@@ -405,10 +405,10 @@ class TransactionController extends Controller
         $unit_id = $request->get('unit_id');
         $service_id = $request->get('service_id');
         $service_qty = $request->get('service_qty');
-        $service_price = $request->get('service_qty');
-        $delivery = $request->get('tenant_deliveries');
-        $datetime = $request->get('tenant_datetimes');
-        $paymethod = $request->get('tenant_paymethods');
+        $service_price = $request->get('service_price');
+        $delivery = $request->get('delivery');
+        $datetime = $request->get('datetime');
+        $paymethod = $request->get('paymethod');
 
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
@@ -457,6 +457,7 @@ class TransactionController extends Controller
                     $transactionStatus->save();
 
                     DB::commit();
+                    $arrResponse = ["status" => "success"];
                 } catch (Exception $e) {
                     DB::rollBack();
                     if ($e->getMessage() == 'notavailable') {
