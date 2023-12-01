@@ -434,6 +434,7 @@ class TransactionController extends Controller
                         } else {
                             $transaction->delivery = 'delivery';
                         }
+                        $totalPayment = $service_price * $service_qty;
                         $transaction->payment = $paymethod;
                         $transaction->total_payment = $totalPayment;
                         $transaction->finish_date = $datetime;
