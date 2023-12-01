@@ -202,7 +202,34 @@ class TransactionController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            // TODO
+            $transactions = Transaction::select('id', 'transaction_date', 'total_payment', 'tenant_id')->where('unit_id', $unit_id)->orderBy('transaction_date', 'desc')->get();
+            if (count($transactions) > 0) {
+                foreach ($transactions as $trx) {
+                    $trx->transaction_date = date('d-m-Y H:i', strtotime($trx->transaction_date));
+                    $trx->status = TransactionStatus::select('description')->where('transaction_id', $trx->id)->orderBy('date', 'desc')->first()->description;
+                    $trx->tenant_name = $trx->tenant->name;
+                    if ($trx->tenant->type == 'service') {
+                        $pricePer = $trx->services[0]->pricePer;
+                        if($pricePer == 'hour'){
+                            $pricePer = 'Jam';
+                        }
+                        else{
+                            $pricePer = 'Paket';
+                        }
+                        $trx->item = ['name' => $trx->services[0]->name, 'image' => Helper::$base_url . 'tenants/services/' . $trx->services[0]->photo_url, 'quantity' => $trx->services[0]->pivot->quantity.' '.$pricePer];
+                        $trx->itemcount = count($trx->services) - 1;
+                        $trx->makeHidden('services');
+                    } else {
+                        $trx->item = ['name' => $trx->products[0]->name, 'image' => Helper::$base_url . 'tenants/product/' . $trx->products[0]->photo_url, 'quantity' => $trx->products[0]->pivot->quantity];
+                        $trx->itemcount = count($trx->products) - 1;
+                        $trx->makeHidden('products');
+                    }
+                    $trx->makeHidden('tenant');
+                }
+                $arrResponse = ["status" => "success", "data"=>$transactions];
+            } else {
+                $arrResponse = ["status" => "empty"];
+            }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
