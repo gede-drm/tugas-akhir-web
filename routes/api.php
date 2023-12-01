@@ -88,5 +88,6 @@ Route::post('resident/transaction/getunpaidprotransactions', [TransactionControl
 
 Route::post('resident/servicecheckoutlist', [ServiceController::class, 'rdtSvcCheckoutList']);
 Route::post('resident/transaction/servicecheckout', [TransactionController::class, 'rdtSvcCheckout']);
+Route::post('resident/transaction/getunpaidsvctransaction', [TransactionController::class, 'rdtGetUnpaidTransferSvcTrx']);
 
 Route::post('resident/transaction/uploadtransferproof', [TransactionController::class, 'rdtUploadTransferProof']);

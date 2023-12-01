@@ -338,20 +338,25 @@ class TransactionController extends Controller
         $arrResponse = [];
         if ($tokenValidation == true) {
             $notPaidTransactions = Transaction::select('id', 'transaction_date', 'total_payment', 'finish_date', 'tenant_id')->where('payment', 'transfer')->whereNull('payment_proof_url')->where('status', 0)->where('unit_id', $unit_id)->get();
-            foreach ($notPaidTransactions as $npt) {
-                if($npt->tenant->type == 'service'){
-                    continue;
-                }
-                $npt->tenant_name = $npt->tenant->name;
-                $npt->transaction_date = date("d-m-Y H:i", strtotime($npt->transaction_date));
-                $npt->finish_date = date("d-m-Y H:i", strtotime($npt->finish_date));
-                $npt->bank_name = $npt->tenant->bank_name;
-                $npt->account_holder = $npt->tenant->account_holder;
-                $npt->account_number = $npt->tenant->bank_account;
-                $npt->makeHidden('tenant');
-            }
             if (count($notPaidTransactions) > 0) {
-                $arrResponse = ["status" => "success", "data" => $notPaidTransactions];
+                foreach ($notPaidTransactions as $key => $npt) {
+                    if ($npt->tenant->type == 'service') {
+                        $notPaidTransactions->forget($key);
+                        continue;
+                    }
+                    $npt->tenant_name = $npt->tenant->name;
+                    $npt->transaction_date = date("d-m-Y H:i", strtotime($npt->transaction_date));
+                    $npt->finish_date = date("d-m-Y H:i", strtotime($npt->finish_date));
+                    $npt->bank_name = $npt->tenant->bank_name;
+                    $npt->account_holder = $npt->tenant->account_holder;
+                    $npt->account_number = $npt->tenant->bank_account;
+                    $npt->makeHidden('tenant');
+                }
+                if (count($notPaidTransactions) > 0) {
+                    $arrResponse = ["status" => "success", "data" => $notPaidTransactions];
+                } else {
+                    $arrResponse = ["status" => "empty"];
+                }
             } else {
                 $arrResponse = ["status" => "empty"];
             }
@@ -424,10 +429,9 @@ class TransactionController extends Controller
                     if ($service->availability == 1) {
                         $transaction = new Transaction();
                         $transaction->transaction_date = $date;
-                        if($service->tenant->service_type == 'laundry'){
+                        if ($service->tenant->service_type == 'laundry') {
                             $transaction->delivery = $delivery;
-                        }
-                        else{
+                        } else {
                             $transaction->delivery = 'delivery';
                         }
                         $transaction->payment = $paymethod;
@@ -457,7 +461,7 @@ class TransactionController extends Controller
                     $transactionStatus->save();
 
                     DB::commit();
-                    $arrResponse = ["status" => "success"];
+                    $arrResponse = ["status" => "success", "id" => $transaction->id];
                 } catch (Exception $e) {
                     DB::rollBack();
                     if ($e->getMessage() == 'notavailable') {
@@ -468,6 +472,38 @@ class TransactionController extends Controller
                 }
             } else {
                 $arrResponse = ["status" => "error"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function rdtGetUnpaidTransferSvcTrx(Request $request)
+    {
+        $transaction_id = $request->get('transaction_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $notPaidTransaction = Transaction::select('id', 'transaction_date', 'total_payment', 'finish_date', 'tenant_id')->where('payment', 'transfer')->whereNull('payment_proof_url')->where('status', 0)->where('id', $transaction_id)->first();
+            if ($notPaidTransaction != null) {
+                if ($notPaidTransaction->tenant->type == 'service') {
+                    $notPaidTransaction->tenant_name = $notPaidTransaction->tenant->name;
+                    $notPaidTransaction->transaction_date = date("d-m-Y H:i", strtotime($notPaidTransaction->transaction_date));
+                    $notPaidTransaction->finish_date = date("d-m-Y H:i", strtotime($notPaidTransaction->finish_date));
+                    $notPaidTransaction->bank_name = $notPaidTransaction->tenant->bank_name;
+                    $notPaidTransaction->account_holder = $notPaidTransaction->tenant->account_holder;
+                    $notPaidTransaction->account_number = $notPaidTransaction->tenant->bank_account;
+                    $notPaidTransaction->makeHidden('tenant');
+
+                    $arrResponse = ["status" => "success", "data" => $notPaidTransaction];
+                } else {
+                    $arrResponse = ["status" => "wrongtenant"];
+                }
+            } else {
+                $arrResponse = ["status" => "empty"];
             }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
