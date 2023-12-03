@@ -268,7 +268,7 @@ class TransactionController extends Controller
                     $transaction->payment_proof_url = "";
                     $transaction->payment_confirm_date = "";
                 }
-                if ($transaction->tenant->type = 'product') {
+                if ($transaction->tenant->type == 'product') {
                     foreach ($transaction->products as $tpro) {
                         $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'pricePer'=>"", 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
                     }
