@@ -251,9 +251,16 @@ class TransactionController extends Controller
                 if ($transaction->pickup_date != null) {
                     $transaction->pickup_date = date("d-m-Y H:i", strtotime($transaction->pickup_date));
                 }
+                else{
+                    $transaction->pickup_date = "";
+                }
                 if ($transaction->payment == 'transfer') {
-                    $transaction->payment_proof_url = "";
+                    $transaction->payment_proof_url = Helper::$base_url . 'transactions/transfer-proofs/' . $transaction->payment_proof_url;
                     $transaction->payment_confirm_date = date("d-m-Y H:i", strtotime($transaction->payment_confirm_date));;
+                }
+                else{
+                    $transaction->payment_proof_url = "";
+                    $transaction->payment_confirm_date = "";
                 }
                 if ($transaction->tenant->type = 'product') {
                     foreach ($transaction->products as $tpro) {
@@ -266,6 +273,9 @@ class TransactionController extends Controller
                 }
                 $transaction->tenant_type = $transaction->tenant->type;
                 $transaction->svc_type = $transaction->tenant->service_type;
+                if ($transaction->svc_type == null) {
+                    $transaction->svc_type = "";
+                }
                 $transaction->items = $items;
                 $transaction->makeHidden('products');
                 $transaction->makeHidden('tenant');
