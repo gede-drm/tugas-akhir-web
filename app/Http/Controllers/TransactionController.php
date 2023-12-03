@@ -220,7 +220,7 @@ class TransactionController extends Controller
                         $trx->itemcount = count($trx->services) - 1;
                         $trx->makeHidden('services');
                     } else {
-                        $trx->item = ['name' => $trx->products[0]->name, 'image' => Helper::$base_url . 'tenants/product/' . $trx->products[0]->photo_url, 'quantity' => $trx->products[0]->pivot->quantity];
+                        $trx->item = ['name' => $trx->products[0]->name, 'image' => Helper::$base_url . 'tenants/product/' . $trx->products[0]->photo_url, 'quantity' => $trx->products[0]->pivot->quantity. ' Barang'];
                         $trx->itemcount = count($trx->products) - 1;
                         $trx->makeHidden('products');
                     }
