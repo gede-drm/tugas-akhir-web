@@ -246,8 +246,14 @@ class TransactionController extends Controller
             $transaction = Transaction::select('id', 'transaction_date', 'delivery', 'payment', 'total_payment', 'payment_proof_url', 'payment_confirm_date', 'finish_date', 'pickup_date', 'status', 'tenant_id')->where('id', $transaction_id)->first();
             if ($transaction != null) {
                 $items = [];
+                $transaction->tenant_name = $transaction->tenant->name;
                 $transaction->transaction_date = date("d-m-Y H:i", strtotime($transaction->transaction_date));
                 $transaction->finish_date = date("d-m-Y H:i", strtotime($transaction->finish_date));
+                $transaction->tenant_type = $transaction->tenant->type;
+                $transaction->svc_type = $transaction->tenant->service_type;
+                if ($transaction->svc_type == null) {
+                    $transaction->svc_type = "";
+                }
                 if ($transaction->pickup_date != null) {
                     $transaction->pickup_date = date("d-m-Y H:i", strtotime($transaction->pickup_date));
                 }
@@ -277,11 +283,6 @@ class TransactionController extends Controller
                         }
                         $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
                     }
-                }
-                $transaction->tenant_type = $transaction->tenant->type;
-                $transaction->svc_type = $transaction->tenant->service_type;
-                if ($transaction->svc_type == null) {
-                    $transaction->svc_type = "";
                 }
                 $transaction->items = $items;
                 $transaction->makeHidden('products');
