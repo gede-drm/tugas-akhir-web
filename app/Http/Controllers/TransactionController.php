@@ -220,7 +220,7 @@ class TransactionController extends Controller
                         $trx->itemcount = count($trx->services) - 1;
                         $trx->makeHidden('services');
                     } else {
-                        $trx->item = ['name' => $trx->products[0]->name, 'image' => Helper::$base_url . 'tenants/products/' . $trx->products[0]->photo_url, 'quantity' => $trx->products[0]->pivot->quantity. ' Barang'];
+                        $trx->item = ['name' => $trx->products[0]->name, 'image' => Helper::$base_url . 'tenants/products/' . $trx->products[0]->photo_url, 'quantity' => $trx->products[0]->pivot->quantity . ' Barang'];
                         $trx->itemcount = count($trx->products) - 1;
                         $trx->makeHidden('products');
                     }
@@ -256,37 +256,40 @@ class TransactionController extends Controller
                 }
                 if ($transaction->pickup_date != null) {
                     $transaction->pickup_date = date("d-m-Y H:i", strtotime($transaction->pickup_date));
-                }
-                else{
+                } else {
                     $transaction->pickup_date = "";
                 }
                 if ($transaction->payment == 'transfer') {
-                    $transaction->payment_proof_url = Helper::$base_url . 'transactions/transfer-proofs/' . $transaction->payment_proof_url;
-                    $transaction->payment_confirm_date = date("d-m-Y H:i", strtotime($transaction->payment_confirm_date));;
-                }
-                else{
+                    if ($transaction->paymet_proof_url != null) {
+                        $transaction->payment_proof_url = Helper::$base_url . 'transactions/transfer-proofs/' . $transaction->payment_proof_url;
+                        $transaction->payment_confirm_date = date("d-m-Y H:i", strtotime($transaction->payment_confirm_date));;
+                    }
+                    else{
+                        $transaction->paymet_proof_url = "";
+                        $transaction->payment_confirm_date = "";
+                    }
+                } else {
                     $transaction->payment_proof_url = "";
                     $transaction->payment_confirm_date = "";
                 }
                 if ($transaction->tenant->type == 'product') {
                     foreach ($transaction->products as $tpro) {
-                        $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'pricePer'=>"", 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
+                        $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'pricePer' => "", 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
                     }
                 } else {
                     foreach ($transaction->services as $tsvc) {
                         $pricePer = $tsvc->pricePer;
-                        if($pricePer == 'hour'){
+                        if ($pricePer == 'hour') {
                             $pricePer = 'Jam';
-                        }
-                        else{
+                        } else {
                             $pricePer = 'Paket';
                         }
-                        $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'pricePer'=>$pricePer, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
+                        $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'pricePer' => $pricePer, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
                     }
                 }
                 $transaction->status = TransactionStatus::select('status')->where('transaction_id', $transaction->id)->first()->status;
                 $transaction->items = $items;
-                foreach($transaction->statuses as $st){
+                foreach ($transaction->statuses as $st) {
                     unset($st->id);
                     unset($st->transaction_id);
                     unset($st->status);
