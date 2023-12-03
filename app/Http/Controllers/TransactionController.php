@@ -211,13 +211,12 @@ class TransactionController extends Controller
                     $trx->tenant_name = $trx->tenant->name;
                     if ($trx->tenant->type == 'service') {
                         $pricePer = $trx->services[0]->pricePer;
-                        if($pricePer == 'hour'){
+                        if ($pricePer == 'hour') {
                             $pricePer = 'Jam';
-                        }
-                        else{
+                        } else {
                             $pricePer = 'Paket';
                         }
-                        $trx->item = ['name' => $trx->services[0]->name, 'image' => Helper::$base_url . 'tenants/services/' . $trx->services[0]->photo_url, 'quantity' => $trx->services[0]->pivot->quantity.' '.$pricePer];
+                        $trx->item = ['name' => $trx->services[0]->name, 'image' => Helper::$base_url . 'tenants/services/' . $trx->services[0]->photo_url, 'quantity' => $trx->services[0]->pivot->quantity . ' ' . $pricePer];
                         $trx->itemcount = count($trx->services) - 1;
                         $trx->makeHidden('services');
                     } else {
@@ -227,7 +226,7 @@ class TransactionController extends Controller
                     }
                     $trx->makeHidden('tenant');
                 }
-                $arrResponse = ["status" => "success", "data"=>$transactions];
+                $arrResponse = ["status" => "success", "data" => $transactions];
             } else {
                 $arrResponse = ["status" => "empty"];
             }
@@ -236,7 +235,7 @@ class TransactionController extends Controller
         }
         return $arrResponse;
     }
-    public function rdtTrxProductDetail(Request $request)
+    public function rdtTrxDetail(Request $request)
     {
         $transaction_id = $request->get('transaction_id');
         $token = $request->get('token');
@@ -244,21 +243,36 @@ class TransactionController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            // TODO
-        } else {
-            $arrResponse = ["status" => "notauthenticated"];
-        }
-        return $arrResponse;
-    }
-    public function rdtTrxServiceDetail(Request $request)
-    {
-        $transaction_id = $request->get('transaction_id');
-        $token = $request->get('token');
-        $tokenValidation = Helper::validateToken($token);
-
-        $arrResponse = [];
-        if ($tokenValidation == true) {
-            // TODO
+            $transaction = Transaction::select('id', 'transaction_date', 'delivery', 'payment', 'total_payment', 'payment_proof_url', 'payment_confirm_date', 'finish_date', 'pickup_date', 'status', 'tenant_id')->where('id', $transaction_id)->first();
+            if ($transaction != null) {
+                $items = [];
+                $transaction->transaction_date = date("d-m-Y H:i", strtotime($transaction->transaction_date));
+                $transaction->finish_date = date("d-m-Y H:i", strtotime($transaction->finish_date));
+                if ($transaction->pickup_date != null) {
+                    $transaction->pickup_date = date("d-m-Y H:i", strtotime($transaction->pickup_date));
+                }
+                if ($transaction->payment == 'transfer') {
+                    $transaction->payment_proof_url = "";
+                    $transaction->payment_confirm_date = date("d-m-Y H:i", strtotime($transaction->payment_confirm_date));;
+                }
+                if ($transaction->tenant->type = 'product') {
+                    foreach ($transaction->products as $tpro) {
+                        $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
+                    }
+                } else {
+                    foreach ($transaction->services as $tsvc) {
+                        $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
+                    }
+                }
+                $transaction->tenant_type = $transaction->tenant->type;
+                $transaction->svc_type = $transaction->tenant->service_type;
+                $transaction->items = $items;
+                $transaction->makeHidden('products');
+                $transaction->makeHidden('tenant');
+                $arrResponse = ["status" => "success", "data" => $transaction];
+            } else {
+                $arrResponse = ["status" => "empty"];
+            }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
