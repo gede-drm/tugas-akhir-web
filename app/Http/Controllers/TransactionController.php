@@ -197,12 +197,13 @@ class TransactionController extends Controller
     public function rdtTransactionList(Request $request)
     {
         $unit_id = $request->get('unit_id');
+        $searchQuery = '%' . $request->get('search') . '%';
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $transactions = Transaction::select('id', 'transaction_date', 'total_payment', 'tenant_id')->where('unit_id', $unit_id)->orderBy('transaction_date', 'desc')->get();
+            $transactions = Transaction::select('id', 'transaction_date', 'total_payment', 'tenant_id')->whereRelation('tenant', 'name', 'like', $searchQuery)->where('unit_id', $unit_id)->orderBy('transaction_date', 'desc')->get();
             if (count($transactions) > 0) {
                 foreach ($transactions as $trx) {
                     $trx->transaction_date = date('d-m-Y H:i', strtotime($trx->transaction_date));
