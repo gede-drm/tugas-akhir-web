@@ -264,10 +264,17 @@ class TransactionController extends Controller
                 }
                 if ($transaction->tenant->type = 'product') {
                     foreach ($transaction->products as $tpro) {
-                        $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
+                        $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'priceper'=>"", 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
                     }
                 } else {
                     foreach ($transaction->services as $tsvc) {
+                        $pricePer = $tsvc->pricePer;
+                        if($pricePer == 'hour'){
+                            $pricePer = 'Jam';
+                        }
+                        else{
+                            $pricePer = 'Paket';
+                        }
                         $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
                     }
                 }
