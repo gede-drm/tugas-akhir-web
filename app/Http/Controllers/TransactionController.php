@@ -260,17 +260,17 @@ class TransactionController extends Controller
                     $transaction->pickup_date = "";
                 }
                 if ($transaction->payment == 'transfer') {
-                    if ($transaction->paymet_proof_url != null) {
+                    if ($transaction->payment_proof_url != null) {
                         $transaction->payment_proof_url = Helper::$base_url . 'transactions/transfer-proofs/' . $transaction->payment_proof_url;
                         $transaction->payment_confirm_date = date("d-m-Y H:i", strtotime($transaction->payment_confirm_date));;
                     }
                     else{
-                        $transaction->paymet_proof_url = "no";
-                        $transaction->payment_confirm_date = "no";
+                        $transaction->payment_proof_url = "";
+                        $transaction->payment_confirm_date = "";
                     }
                 } else {
-                    $transaction->payment_proof_url = "no";
-                    $transaction->payment_confirm_date = "no";
+                    $transaction->payment_proof_url = "";
+                    $transaction->payment_confirm_date = "";
                 }
                 if ($transaction->tenant->type == 'product') {
                     foreach ($transaction->products as $tpro) {
