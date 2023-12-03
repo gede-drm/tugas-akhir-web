@@ -243,7 +243,7 @@ class TransactionController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $transaction = Transaction::select('id', 'transaction_date', 'delivery', 'payment', 'total_payment', 'payment_proof_url', 'payment_confirm_date', 'finish_date', 'pickup_date', 'status', 'tenant_id')->where('id', $transaction_id)->first();
+            $transaction = Transaction::select('id', 'transaction_date', 'delivery', 'payment', 'total_payment', 'payment_proof_url', 'payment_confirm_date', 'finish_date', 'pickup_date', 'status', 'tenant_id')->where('id', $transaction_id)->with('statuses')->first();
             if ($transaction != null) {
                 $items = [];
                 $transaction->tenant_name = $transaction->tenant->name;
@@ -270,7 +270,7 @@ class TransactionController extends Controller
                 }
                 if ($transaction->tenant->type = 'product') {
                     foreach ($transaction->products as $tpro) {
-                        $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'priceper'=>"", 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
+                        $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'pricePer'=>"", 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
                     }
                 } else {
                     foreach ($transaction->services as $tsvc) {
@@ -281,10 +281,17 @@ class TransactionController extends Controller
                         else{
                             $pricePer = 'Paket';
                         }
-                        $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
+                        $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'pricePer'=>$pricePer, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
                     }
                 }
+                $transaction->status = TransactionStatus::select('status')->where('transaction_id', $transaction->id)->first()->status;
                 $transaction->items = $items;
+                foreach($transaction->statuses as $st){
+                    unset($st->id);
+                    unset($st->transaction_id);
+                    unset($st->status);
+                    $st->date = date("d-m-Y H:i", strtotime($st->date));
+                }
                 $transaction->makeHidden('products');
                 $transaction->makeHidden('tenant');
                 $arrResponse = ["status" => "success", "data" => $transaction];
