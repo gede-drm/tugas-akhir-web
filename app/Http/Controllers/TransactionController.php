@@ -265,12 +265,12 @@ class TransactionController extends Controller
                         $transaction->payment_confirm_date = date("d-m-Y H:i", strtotime($transaction->payment_confirm_date));;
                     }
                     else{
-                        $transaction->paymet_proof_url = "";
-                        $transaction->payment_confirm_date = "";
+                        $transaction->paymet_proof_url = "no";
+                        $transaction->payment_confirm_date = "no";
                     }
                 } else {
-                    $transaction->payment_proof_url = "";
-                    $transaction->payment_confirm_date = "";
+                    $transaction->payment_proof_url = "no";
+                    $transaction->payment_confirm_date = "no";
                 }
                 if ($transaction->tenant->type == 'product') {
                     foreach ($transaction->products as $tpro) {
