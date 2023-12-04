@@ -423,8 +423,7 @@ class TransactionController extends Controller
                     $npt->makeHidden('tenant');
                 }
                 if (count($notPaidTransactions) > 0) {
-                    $notPaidTransactions = $notPaidTransactions->toArray();
-                    $arrResponse = ["status" => "success", "data" => $notPaidTransactions];
+                    $arrResponse = ["status" => "success", "data" => $notPaidTransactions->values()];
                 } else {
                     $arrResponse = ["status" => "empty"];
                 }
