@@ -53,7 +53,7 @@
             <div class="authentication-inner">
                 <!-- Register -->
                 @if ($errors->any())
-                    <div class="card">
+                    <div class="card mb-3
                         <div class="card-body">
                             <div class="alert alert-danger" role="alert">
                                 <p class="mb-0"><strong>Maaf, terjadi kesalahan!</strong></p>
