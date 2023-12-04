@@ -13,7 +13,7 @@
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" href="{{asset('assets/ApartemenKu-icon.png')}}" />
+    <link rel="icon" href="{{ asset('assets/ApartemenKu-icon.png') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -52,16 +52,20 @@
         <div class="authentication-wrapper authentication-basic container-p-y">
             <div class="authentication-inner">
                 <!-- Register -->
-                <div class="card">
-                    <div class="card-body">
-                        @if ($errors->any())
+                @if ($errors->any())
+                    <div class="card">
+                        <div class="card-body">
                             <div class="alert alert-danger" role="alert">
                                 <p class="mb-0"><strong>Maaf, terjadi kesalahan!</strong></p>
                                 @foreach ($errors->all() as $error)
                                     <p class="mt-0 mb-1">{{ $error }}</p>
                                 @endforeach
                             </div>
-                        @endif
+                        </div>
+                    </div>
+                @endif
+                <div class="card">
+                    <div class="card-body">
                         <h4 class="mt-2 mb-2 text-center fw-bold">ApartemenKu</h4>
                         <p class="mb-4 text-center">Login Sistem</p>
                         <form id="formAuthentication" class="mb-3" action="{{ route('login') }}" method="POST">
