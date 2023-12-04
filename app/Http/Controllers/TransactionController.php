@@ -422,6 +422,7 @@ class TransactionController extends Controller
                     $npt->account_number = $npt->tenant->bank_account;
                     $npt->makeHidden('tenant');
                 }
+                $notPaidTransactions = collect($notPaidTransactions);
                 if (count($notPaidTransactions) > 0) {
                     $arrResponse = ["status" => "success", "data" => $notPaidTransactions];
                 } else {
