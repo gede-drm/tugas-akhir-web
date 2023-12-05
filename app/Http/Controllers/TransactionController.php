@@ -413,7 +413,7 @@ class TransactionController extends Controller
             if (count($transactions) > 0) {
                 foreach ($transactions as $trx) {
                     $trx->transaction_date = date('d-m-Y H:i', strtotime($trx->transaction_date));
-                    $trx->status = TransactionStatus::select('description')->where('transaction_id', $trx->id)->orderBy('date', 'desc')->first()->description;
+                    $trx->status = TransactionStatus::select('description')->where('transaction_id', $trx->id)->orderBy('id', 'desc')->first()->description;
                     $trx->tenant_name = $trx->tenant->name;
                     if ($trx->tenant->type == 'service') {
                         $pricePer = $trx->services[0]->pricePer;
@@ -506,7 +506,7 @@ class TransactionController extends Controller
                     $transaction->permission_status = $permission_status;
                     $transaction->makeHidden('services');
                 }
-                $transaction->status = TransactionStatus::select('status')->where('transaction_id', $transaction->id)->first()->status;
+                $transaction->status = TransactionStatus::select('status')->where('transaction_id', $transaction->id)->orderBy('id', 'desc')->first()->status;
                 $transaction->items = $items;
                 foreach ($transaction->statuses as $st) {
                     unset($st->id);
