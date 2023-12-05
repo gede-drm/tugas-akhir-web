@@ -233,82 +233,75 @@ class TransactionController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $transaction_id = $request->get('transaction_id');
-            $token = $request->get('token');
-            $tokenValidation = Helper::validateToken($token);
-
-            $arrResponse = [];
-            if ($tokenValidation == true) {
-                $transaction = Transaction::select('id', 'transaction_date', 'delivery', 'payment', 'total_payment', 'payment_proof_url', 'payment_confirm_date', 'finish_date', 'pickup_date', 'status', 'unit_id', 'tenant_id')->where('id', $transaction_id)->with('statuses')->first();
-                if ($transaction != null) {
-                    if ($transaction->tenant->type == "service") {
-                        $items = [];
-                        $transaction->makeHidden('tenant');
-                        $transaction->unit_apart = $transaction->unit->unit_no . " (" . $transaction->unit->holder_name . ")";
-                        $transaction->unit_phone = $transaction->unit->holder_ph_number;
-                        $transaction->transaction_date = date("d-m-Y H:i", strtotime($transaction->transaction_date));
-                        $transaction->finish_date = date("d-m-Y H:i", strtotime($transaction->finish_date));
-                        if ($transaction->pickup_date != null) {
-                            $transaction->pickup_date = date("d-m-Y H:i", strtotime($transaction->pickup_date));
-                        } else {
-                            $transaction->pickup_date = "";
-                        }
-                        if ($transaction->payment == 'transfer') {
-                            if ($transaction->payment_proof_url != null) {
-                                $transaction->payment_proof_url = Helper::$base_url . 'transactions/transfer-proofs/' . $transaction->payment_proof_url;
-                                $transaction->payment_confirm_date = date("d-m-Y H:i", strtotime($transaction->payment_confirm_date));;
-                            } else {
-                                $transaction->payment_proof_url = "";
-                                $transaction->payment_confirm_date = "";
-                            }
+            $transaction = Transaction::select('id', 'transaction_date', 'delivery', 'payment', 'total_payment', 'payment_proof_url', 'payment_confirm_date', 'finish_date', 'pickup_date', 'status', 'unit_id', 'tenant_id')->where('id', $transaction_id)->with('statuses')->first();
+            if ($transaction != null) {
+                if ($transaction->tenant->type == "service") {
+                    $items = [];
+                    $transaction->makeHidden('tenant');
+                    $transaction->unit_apart = $transaction->unit->unit_no . " (" . $transaction->unit->holder_name . ")";
+                    $transaction->unit_phone = $transaction->unit->holder_ph_number;
+                    $transaction->transaction_date = date("d-m-Y H:i", strtotime($transaction->transaction_date));
+                    $transaction->finish_date = date("d-m-Y H:i", strtotime($transaction->finish_date));
+                    if ($transaction->pickup_date != null) {
+                        $transaction->pickup_date = date("d-m-Y H:i", strtotime($transaction->pickup_date));
+                    } else {
+                        $transaction->pickup_date = "";
+                    }
+                    if ($transaction->payment == 'transfer') {
+                        if ($transaction->payment_proof_url != null) {
+                            $transaction->payment_proof_url = Helper::$base_url . 'transactions/transfer-proofs/' . $transaction->payment_proof_url;
+                            $transaction->payment_confirm_date = date("d-m-Y H:i", strtotime($transaction->payment_confirm_date));;
                         } else {
                             $transaction->payment_proof_url = "";
                             $transaction->payment_confirm_date = "";
                         }
-                        foreach ($transaction->services as $tsvc) {
-                            $pricePer = $tsvc->pricePer;
-                            if ($pricePer == 'hour') {
-                                $pricePer = 'Jam';
-                            } else {
-                                $pricePer = 'Paket';
-                            }
-                            $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'pricePer' => $pricePer, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
-                        }
-                        $transaction->status = TransactionStatus::select('description')->where('transaction_id', $transaction->id)->orderBy('date', 'desc')->first()->description;
-                        $transaction->items = $items;
-                        foreach ($transaction->statuses as $st) {
-                            unset($st->id);
-                            unset($st->transaction_id);
-                            unset($st->status);
-                            $st->date = date("Y-m-d H:i", strtotime($st->date));
-                        }
-
-                        $transaction->permission_need = $transaction->services[0]->permit_need;
-                        if ($transaction->permission_need == 1) {
-                            $permission_status = Permission::select('status')->where('service_transaction_id', $transaction->id)->first();
-                            if ($permission_status == null) {
-                                $permission_status = "notproposed";
-                            } else {
-                                $permission_status = $permission_status->status;
-                            }
-                        } else {
-                            $permission_status = "noneed";
-                        }
-                        $transaction->permission_status = $permission_status;
-                        $transaction->makeHidden('services');
-                        $transaction->makeHidden('unit');
-                        $arrResponse = ["status" => "success", "data" => $transaction];
                     } else {
-                        $arrResponse = ["status" => "wrongtransaction"];
+                        $transaction->payment_proof_url = "";
+                        $transaction->payment_confirm_date = "";
                     }
+                    foreach ($transaction->services as $tsvc) {
+                        $pricePer = $tsvc->pricePer;
+                        if ($pricePer == 'hour') {
+                            $pricePer = 'Jam';
+                        } else {
+                            $pricePer = 'Paket';
+                        }
+                        $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'pricePer' => $pricePer, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
+                    }
+                    $transaction->status = TransactionStatus::select('description')->where('transaction_id', $transaction->id)->orderBy('date', 'desc')->first()->description;
+                    $transaction->items = $items;
+                    foreach ($transaction->statuses as $st) {
+                        unset($st->id);
+                        unset($st->transaction_id);
+                        unset($st->status);
+                        $st->date = date("Y-m-d H:i", strtotime($st->date));
+                    }
+
+                    $transaction->permission_need = $transaction->services[0]->permit_need;
+                    if ($transaction->permission_need == 1) {
+                        $permission_status = Permission::select('status')->where('service_transaction_id', $transaction->id)->first();
+                        if ($permission_status == null) {
+                            $permission_status = "notproposed";
+                        } else {
+                            $permission_status = $permission_status->status;
+                        }
+                    } else {
+                        $permission_status = "noneed";
+                    }
+                    $transaction->permission_status = $permission_status;
+                    $transaction->makeHidden('services');
+                    $transaction->makeHidden('unit');
+                    $arrResponse = ["status" => "success", "data" => $transaction];
                 } else {
-                    $arrResponse = ["status" => "empty"];
+                    $arrResponse = ["status" => "wrongtransaction"];
                 }
             } else {
-                $arrResponse = ["status" => "notauthenticated"];
+                $arrResponse = ["status" => "empty"];
             }
-            return $arrResponse;
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
         }
+        return $arrResponse;
     }
 
     public function tenChangeTransactionStatus(Request $request)
