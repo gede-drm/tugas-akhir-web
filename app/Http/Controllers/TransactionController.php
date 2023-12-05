@@ -340,7 +340,7 @@ class TransactionController extends Controller
         return $arrResponse;
     }
 
-    public function tenCancelTransactionStatus(Request $request)
+    public function tenCancelTransaction(Request $request)
     {
         $transaction_id = $request->get('transaction_id');
         $token = $request->get('token');
@@ -356,7 +356,7 @@ class TransactionController extends Controller
                 $trxStatus->status = "cancelled";
                 $trxStatus->description = "Dibatalkan";
                 $trxStatus->transaction_id = $transaction_id;
-                
+
                 $transaction->save();
                 $trxStatus->save();
 
