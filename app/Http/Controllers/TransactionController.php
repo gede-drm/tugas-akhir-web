@@ -383,7 +383,7 @@ class TransactionController extends Controller
                 $transaction->save();
 
                 $trxStatus = new TransactionStatus();
-                $trxStatus->date = date("Y-m-d H:i:s");
+                $trxStatus->date = date("Y-m-d H:i:s", strtotime('-2 seconds'));
                 $trxStatus->status = "transferconfirmed";
                 $trxStatus->description = "Pembayaran dikonfirmasi";
                 $trxStatus->transaction_id = $transaction_id;
