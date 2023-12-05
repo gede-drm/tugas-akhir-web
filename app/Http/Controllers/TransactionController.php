@@ -369,6 +369,36 @@ class TransactionController extends Controller
         return $arrResponse;
     }
 
+    public function tenValidateTFProof(Request $request)
+    {
+        $transaction_id = $request->get('transaction_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $transaction = Transaction::find($transaction_id);
+            if ($transaction != null) {
+                $transaction->payment_confirm_date = date("Y-m-d H:i:s");
+                $transaction->save();
+
+                $trxStatus = new TransactionStatus();
+                $trxStatus->date = date("Y-m-d H:i:s");
+                $trxStatus->status = "transferconfirmed";
+                $trxStatus->description = "Pembayaran dikonfirmasi";
+                $trxStatus->transaction_id = $transaction_id;
+                $trxStatus->save();
+                $arrResponse = ["status" => "success"];
+            }
+            else{
+                $arrResponse = ["status" => "notfound"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
     // Resident's App API
     public function rdtTransactionList(Request $request)
     {
