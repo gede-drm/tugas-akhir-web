@@ -73,7 +73,7 @@ class TransactionController extends Controller
                     foreach ($runningSvcTrx as $rt) {
                         $rt->unit_no = $rt->unit->unit_no;
                         unset($rt->unit_id);
-                        $rt->status = TransactionStatus::select('description')->where('transaction_id', $rt->id)->orderBy('date', 'desc')->first()->description;
+                        $rt->status = TransactionStatus::select('description')->where('transaction_id', $rt->id)->orderBy('id', 'desc')->first()->description;
                         $rt->item = ['name' => $rt->services[0]->name, 'image' => Helper::$base_url . 'tenants/services/' . $rt->services[0]->photo_url, 'quantity' => $rt->services[0]->pivot->quantity];
                         $rt->itemcount = count($rt->services) - 1;
                     }
@@ -110,7 +110,7 @@ class TransactionController extends Controller
                     foreach ($historyProTrx as $rt) {
                         $rt->unit_no = $rt->unit->unit_no;
                         unset($rt->unit_id);
-                        $rt->status = TransactionStatus::select('description')->where('transaction_id', $rt->id)->orderBy('date', 'desc')->first()->description;
+                        $rt->status = TransactionStatus::select('description')->where('transaction_id', $rt->id)->orderBy('id', 'desc')->first()->description;
                         $rt->item = ['name' => $rt->products[0]->name, 'image' => Helper::$base_url . 'tenants/products/' . $rt->products[0]->photo_url, 'quantity' => $rt->products[0]->pivot->quantity];
                         $rt->itemcount = count($rt->products) - 1;
                     }
@@ -202,7 +202,7 @@ class TransactionController extends Controller
                     foreach ($transaction->products as $tpro) {
                         $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'pricePer' => "", 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
                     }
-                    $transaction->status = TransactionStatus::select('description')->where('transaction_id', $transaction->id)->orderBy('date', 'desc')->first()->description;
+                    $transaction->status = TransactionStatus::select('description')->where('transaction_id', $transaction->id)->orderBy('id', 'desc')->first()->description;
                     $transaction->items = $items;
                     foreach ($transaction->statuses as $st) {
                         unset($st->id);
@@ -269,7 +269,7 @@ class TransactionController extends Controller
                         }
                         $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'pricePer' => $pricePer, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
                     }
-                    $transaction->status = TransactionStatus::select('description')->where('transaction_id', $transaction->id)->orderBy('date', 'desc')->first()->description;
+                    $transaction->status = TransactionStatus::select('description')->where('transaction_id', $transaction->id)->orderBy('id', 'desc')->first()->description;
                     $transaction->items = $items;
                     foreach ($transaction->statuses as $st) {
                         unset($st->id);
