@@ -324,6 +324,11 @@ class TransactionController extends Controller
                 $trxStatus->transaction_id = $transaction_id;
                 $trxStatus->save();
 
+                if($statusName == "done"){
+                    $transaction->status = 1;
+                    $transaction->save();
+                }
+
                 $arrResponse = ["status" => "success"];
             } else {
                 $arrResponse = ["status" => "notfound"];
