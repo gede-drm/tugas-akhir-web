@@ -379,7 +379,7 @@ class TransactionController extends Controller
         if ($tokenValidation == true) {
             $transaction = Transaction::find($transaction_id);
             if ($transaction != null) {
-                $transaction->payment_confirm_date = date("Y-m-d H:i:s");
+                $transaction->payment_confirm_date = date("Y-m-d H:i:s", strtotime('-2 seconds'));
                 $transaction->save();
 
                 $trxStatus = new TransactionStatus();
