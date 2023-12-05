@@ -629,7 +629,7 @@ class TransactionController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $transactionData = Transaction::select('id', 'payment_proof_url')->where('id', $transaction_id)->whereNull('payment_proof_url')->first();
+            $transactionData = Transaction::select('id', 'delivery', 'payment_proof_url', 'tenant_id')->where('id', $transaction_id)->whereNull('payment_proof_url')->first();
             if ($transactionData != null) {
                 $date = date('Y-m-d H:i:s');
                 $img = str_replace('data:image/jpeg;base64,', '', $base64Image);
@@ -643,8 +643,23 @@ class TransactionController extends Controller
 
                 $trxStatus = new TransactionStatus();
                 $trxStatus->date = $date;
-                $trxStatus->status = 'order';
-                $trxStatus->description = 'Belum dikonfirmasi';
+                if ($transactionData->tenant->type == "product") {
+                    $trxStatus->status = 'order';
+                    $trxStatus->description = 'Belum dikonfirmasi';
+                } else {
+                    if ($transactionData->tenant->service_type == "other") {
+                        $trxStatus->status = 'waiting';
+                        $trxStatus->description = 'Menunggu Pengerjaan';
+                    } else {
+                        if ($transactionData->delivery == "delivery") {
+                            $trxStatus->status = 'waiting';
+                            $trxStatus->description = 'Menunggu Pengambilan';
+                        } else {
+                            $trxStatus->status = 'waiting';
+                            $trxStatus->description = 'Menunggu Laundry';
+                        }
+                    }
+                }
                 $trxStatus->transaction_id = $transactionData->id;
                 $trxStatus->save();
 
