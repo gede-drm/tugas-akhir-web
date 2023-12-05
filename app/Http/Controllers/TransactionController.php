@@ -321,8 +321,8 @@ class TransactionController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $transaction = Transaction::find($transaction_id)->count();
-            if ($transaction == 1) {
+            $transaction = Transaction::find($transaction_id);
+            if ($transaction != null) {
                 $trxStatus = new TransactionStatus();
                 $trxStatus->date = date("Y-m-d H:i:s");
                 $trxStatus->status = $statusName;
