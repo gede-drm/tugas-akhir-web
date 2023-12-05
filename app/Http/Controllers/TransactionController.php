@@ -356,6 +356,8 @@ class TransactionController extends Controller
                 $trxStatus->status = "cancelled";
                 $trxStatus->description = "Dibatalkan";
                 $trxStatus->transaction_id = $transaction_id;
+                
+                $transaction->save();
                 $trxStatus->save();
 
                 $arrResponse = ["status" => "success"];
