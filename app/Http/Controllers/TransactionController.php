@@ -238,6 +238,7 @@ class TransactionController extends Controller
                 if ($transaction->tenant->type == "service") {
                     $items = [];
                     $transaction->makeHidden('tenant');
+                    $transaction->svc_type = $transaction->tenant->service_type;
                     $transaction->unit_apart = $transaction->unit->unit_no . " (" . $transaction->unit->holder_name . ")";
                     $transaction->unit_phone = $transaction->unit->holder_ph_number;
                     $transaction->transaction_date = date("d-m-Y H:i", strtotime($transaction->transaction_date));
