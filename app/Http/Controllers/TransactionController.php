@@ -288,8 +288,7 @@ class TransactionController extends Controller
                             $permission_status = Permission::select('status')->where('service_transaction_id', $transaction->id)->first();
                             if ($permission_status == null) {
                                 $permission_status = "notproposed";
-                            }
-                            else{
+                            } else {
                                 $permission_status = $permission_status->status;
                             }
                         } else {
@@ -310,6 +309,63 @@ class TransactionController extends Controller
             }
             return $arrResponse;
         }
+    }
+
+    public function tenChangeTransactionStatus(Request $request)
+    {
+        $transaction_id = $request->get('transaction_id');
+        $statusName = $request->get('statusname');
+        $status = $request->get('status');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $transaction = Transaction::find($transaction_id)->count();
+            if ($transaction == 1) {
+                $trxStatus = new TransactionStatus();
+                $trxStatus->date = date("Y-m-d H:i:s");
+                $trxStatus->status = $statusName;
+                $trxStatus->description = $status;
+                $trxStatus->transaction_id = $transaction_id;
+                $trxStatus->save();
+
+                $arrResponse = ["status" => "success"];
+            } else {
+                $arrResponse = ["status" => "notfound"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function tenCancelTransactionStatus(Request $request)
+    {
+        $transaction_id = $request->get('transaction_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $transaction = Transaction::find($transaction_id);
+            if ($transaction != null) {
+                $transaction->status = 1;
+                $trxStatus = new TransactionStatus();
+                $trxStatus->date = date("Y-m-d H:i:s");
+                $trxStatus->status = "cancelled";
+                $trxStatus->description = "Dibatalkan";
+                $trxStatus->transaction_id = $transaction_id;
+                $trxStatus->save();
+
+                $arrResponse = ["status" => "success"];
+            } else {
+                $arrResponse = ["status" => "notfound"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
     }
 
     // Resident's App API
