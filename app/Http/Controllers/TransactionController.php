@@ -324,7 +324,7 @@ class TransactionController extends Controller
                 $trxStatus->transaction_id = $transaction_id;
                 $trxStatus->save();
 
-                if($statusName == "done"){
+                if ($statusName == "done") {
                     $transaction->status = 1;
                     $transaction->save();
                 }
@@ -389,8 +389,7 @@ class TransactionController extends Controller
                 $trxStatus->transaction_id = $transaction_id;
                 $trxStatus->save();
                 $arrResponse = ["status" => "success"];
-            }
-            else{
+            } else {
                 $arrResponse = ["status" => "notfound"];
             }
         } else {
@@ -759,10 +758,8 @@ class TransactionController extends Controller
                         $transactionStatus->status = 'order';
                         $transactionStatus->description = 'Belum dikonfirmasi';
                     } else {
-                        if ($service->permit_need == 1) {
-                            $transactionStatus->status = 'order';
-                            $transactionStatus->description = 'Belum dikonfirmasi';
-                        }
+                        $transactionStatus->status = 'order';
+                        $transactionStatus->description = 'Belum dikonfirmasi';
                     }
                     $transactionStatus->save();
 
