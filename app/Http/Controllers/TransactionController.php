@@ -199,7 +199,7 @@ class TransactionController extends Controller
                 foreach ($transaction->products as $tpro) {
                     $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'pricePer' => "", 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
                 }
-                $transaction->status = TransactionStatus::select('status')->where('transaction_id', $transaction->id)->first()->status;
+                $transaction->status = TransactionStatus::select('description')->where('transaction_id', $transaction->id)->first()->status;
                 $transaction->items = $items;
                 foreach ($transaction->statuses as $st) {
                     unset($st->id);
