@@ -208,7 +208,7 @@ class TransactionController extends Controller
                         unset($st->id);
                         unset($st->transaction_id);
                         unset($st->status);
-                        $st->date = date("d-m-Y H:i", strtotime($st->date));
+                        $st->date = date("Y-m-d H:i", strtotime($st->date));
                     }
                     $transaction->makeHidden('products');
                     $transaction->makeHidden('unit');
@@ -280,7 +280,7 @@ class TransactionController extends Controller
                             unset($st->id);
                             unset($st->transaction_id);
                             unset($st->status);
-                            $st->date = date("d-m-Y H:i", strtotime($st->date));
+                            $st->date = date("Y-m-d H:i", strtotime($st->date));
                         }
 
                         $transaction->permission_need = $transaction->services[0]->permit_need;
