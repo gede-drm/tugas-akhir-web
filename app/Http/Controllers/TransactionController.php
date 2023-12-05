@@ -762,9 +762,6 @@ class TransactionController extends Controller
                         if ($service->permit_need == 1) {
                             $transactionStatus->status = 'order';
                             $transactionStatus->description = 'Belum dikonfirmasi';
-                        } else {
-                            $transactionStatus->status = 'notransferproof';
-                            $transactionStatus->description = 'Belum Pembayaran';
                         }
                     }
                     $transactionStatus->save();
