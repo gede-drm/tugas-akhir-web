@@ -172,7 +172,47 @@ class TransactionController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            // TODO
+            $transaction = Transaction::select('id', 'transaction_date', 'delivery', 'payment', 'total_payment', 'payment_proof_url', 'payment_confirm_date', 'finish_date', 'pickup_date', 'status', 'unit_id')->where('id', $transaction_id)->with('statuses')->first();
+            if ($transaction != null) {
+                $items = [];
+                $transaction->unit_apart = $transaction->unit->unit_no . " (" . $transaction->unit->holder_name .")";
+                $transaction->unit_phone = $transaction->unit->holder_ph_number;
+                $transaction->transaction_date = date("d-m-Y H:i", strtotime($transaction->transaction_date));
+                $transaction->finish_date = date("d-m-Y H:i", strtotime($transaction->finish_date));
+                if ($transaction->pickup_date != null) {
+                    $transaction->pickup_date = date("d-m-Y H:i", strtotime($transaction->pickup_date));
+                } else {
+                    $transaction->pickup_date = "";
+                }
+                if ($transaction->payment == 'transfer') {
+                    if ($transaction->payment_proof_url != null) {
+                        $transaction->payment_proof_url = Helper::$base_url . 'transactions/transfer-proofs/' . $transaction->payment_proof_url;
+                        $transaction->payment_confirm_date = date("d-m-Y H:i", strtotime($transaction->payment_confirm_date));;
+                    } else {
+                        $transaction->payment_proof_url = "";
+                        $transaction->payment_confirm_date = "";
+                    }
+                } else {
+                    $transaction->payment_proof_url = "";
+                    $transaction->payment_confirm_date = "";
+                }
+                foreach ($transaction->products as $tpro) {
+                    $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'pricePer' => "", 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
+                }
+                $transaction->status = TransactionStatus::select('status')->where('transaction_id', $transaction->id)->first()->status;
+                $transaction->items = $items;
+                foreach ($transaction->statuses as $st) {
+                    unset($st->id);
+                    unset($st->transaction_id);
+                    unset($st->status);
+                    $st->date = date("d-m-Y H:i", strtotime($st->date));
+                }
+                $transaction->makeHidden('products');
+                $transaction->makeHidden('unit');
+                $arrResponse = ["status" => "success", "data" => $transaction];
+            } else {
+                $arrResponse = ["status" => "empty"];
+            }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
@@ -263,8 +303,7 @@ class TransactionController extends Controller
                     if ($transaction->payment_proof_url != null) {
                         $transaction->payment_proof_url = Helper::$base_url . 'transactions/transfer-proofs/' . $transaction->payment_proof_url;
                         $transaction->payment_confirm_date = date("d-m-Y H:i", strtotime($transaction->payment_confirm_date));;
-                    }
-                    else{
+                    } else {
                         $transaction->payment_proof_url = "";
                         $transaction->payment_confirm_date = "";
                     }
@@ -276,6 +315,7 @@ class TransactionController extends Controller
                     foreach ($transaction->products as $tpro) {
                         $items[] = ['id' => $tpro->id, 'name' => $tpro->name, 'photo_url' => Helper::$base_url . 'tenants/products/' . $tpro->photo_url, 'price' => $tpro->pivot->price, 'quantity' => $tpro->pivot->quantity, 'pricePer' => "", 'subtotal' => ($tpro->pivot->price * $tpro->pivot->quantity)];
                     }
+                    $transaction->makeHidden('products');
                 } else {
                     foreach ($transaction->services as $tsvc) {
                         $pricePer = $tsvc->pricePer;
@@ -286,6 +326,7 @@ class TransactionController extends Controller
                         }
                         $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'pricePer' => $pricePer, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
                     }
+                    $transaction->makeHidden('services');
                 }
                 $transaction->status = TransactionStatus::select('status')->where('transaction_id', $transaction->id)->first()->status;
                 $transaction->items = $items;
@@ -295,7 +336,6 @@ class TransactionController extends Controller
                     unset($st->status);
                     $st->date = date("d-m-Y H:i", strtotime($st->date));
                 }
-                $transaction->makeHidden('products');
                 $transaction->makeHidden('tenant');
                 $arrResponse = ["status" => "success", "data" => $transaction];
             } else {
