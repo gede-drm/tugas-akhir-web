@@ -456,7 +456,18 @@ class TransactionController extends Controller
                         }
                         $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'pricePer' => $pricePer, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
                     }
-                    $transaction->permit_need = $transaction->services[0]->permit_need;
+                    $transaction->permission_need = $transaction->services[0]->permit_need;
+                    if ($transaction->permission_need == 1) {
+                        $permission_status = Permission::select('status')->where('service_transaction_id', $transaction->id)->first();
+                        if ($permission_status == null) {
+                            $permission_status = "notproposed";
+                        } else {
+                            $permission_status = $permission_status->status;
+                        }
+                    } else {
+                        $permission_status = "noneed";
+                    }
+                    $transaction->permission_status = $permission_status;
                     $transaction->makeHidden('services');
                 }
                 $transaction->status = TransactionStatus::select('status')->where('transaction_id', $transaction->id)->first()->status;
