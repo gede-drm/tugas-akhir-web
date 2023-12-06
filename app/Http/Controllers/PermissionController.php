@@ -62,6 +62,18 @@ class PermissionController extends Controller
         $trxStatus->transaction_id = $permission->serviceTransaction->id;
         $trxStatus->save();
 
+        $trxStatus = new TransactionStatus();
+        $trxStatus->date = date("Y-m-d H:i:s");
+        if ($permission->serviceTransaction->payment == "transfer") {
+            $trxStatus->status = "notransferproof";
+            $trxStatus->description = "Belum Pembayaran";
+        } else {
+            $trxStatus->status = "waiting";
+            $trxStatus->description = "Menunggu Pengerjaan";
+        }
+        $trxStatus->transaction_id = $permission->serviceTransaction->id;
+        $trxStatus->save();
+
         return redirect()->route('permission.detail', $permission->id)->with('status', 'Persetujuan Perizinan Berhasil dilakukan!');
     }
 
