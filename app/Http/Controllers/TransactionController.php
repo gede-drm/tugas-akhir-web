@@ -813,4 +813,107 @@ class TransactionController extends Controller
         }
         return $arrResponse;
     }
+
+    public function rdtGetItemsToRate(Request $request)
+    {
+        $transaction_id = $request->get('transaction_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $transaction = Transaction::find($transaction_id);
+            if ($transaction != null) {
+                $items = [];
+                if ($transaction->tenant->type == "product") {
+                    foreach ($transaction->products as $pro) {
+                        $items[] = ["id" => $pro->id, "name" => $pro->name];
+                    }
+                } else {
+                    foreach ($transaction->services as $svc) {
+                        $items[] = ["id" => $svc->id, "name" => $svc->name];
+                    }
+                }
+                if (count($items) > 0) {
+                    $arrResponse = ["status" => "success", "data" => $items];
+                } else {
+                    $arrResponse = ["status" => "empty"];
+                }
+            } else {
+                $arrResponse = ["status" => "notfound"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function rdtSubmitItemsRate(Request $request)
+    {
+        $transaction_id = $request->get('transaction_id');
+        $items_id = $request->get('items_id');
+        $items_rating = $request->get('items_rating');
+        $items_review = $request->get('items_review');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $transaction = Transaction::find($transaction_id);
+            if ($transaction != null) {
+                if (isset($transaction_id) && isset($items_id) && isset($items_rating) && isset($items_review)) {
+                    if ($transaction->tenant->type == "product") {
+                        if ($transaction->status == 0) {
+                            foreach ($items_id as $key => $id) {
+                                $transaction->products()->updateExistingPivot(
+                                    $id,
+                                    [
+                                        "rating" => $items_rating[$key],
+                                        "review" => $items_review[$key]
+                                    ]
+                                );
+
+                                $newRating = DB::select(DB::raw("select round(avg(rating),2) as 'rating' from product_transaction_detail where product_id='" . $id . "' and rating is not null"))[0]->rating;
+                                DB::update("update products set rating='" . $newRating . "' where id='" . $id . "'");
+                            }
+                            $transaction->status = 1;
+                            $transaction->save();
+
+                            $trxStatus = new TransactionStatus();
+                            $trxStatus->date = date("Y-m-d H:i:s");
+                            $trxStatus->status = 'done';
+                            $trxStatus->description = 'Selesai';
+                            $trxStatus->transaction_id = $transaction->id;
+                            $trxStatus->save();
+
+                            $arrResponse = ["status" => "success"];
+                        } else {
+                            $arrResponse = ["status" => "finish"];
+                        }
+                    } else {
+                        foreach ($items_id as $key => $id) {
+                            $transaction->services()->updateExistingPivot(
+                                $id,
+                                [
+                                    "rating" => $items_rating[$key],
+                                    "review" => $items_review[$key]
+                                ]
+                            );
+
+                            $newRating = DB::select(DB::raw("select round(avg(rating),2) as 'rating' from service_transaction_detail where service_id='" . $id . "' and rating is not null"))[0]->rating;
+                            DB::update("update services set rating='" . $newRating . "' where id='" . $id . "'");
+                        }
+                        $arrResponse = ["status" => "success"];
+                    }
+                } else {
+                    $arrResponse = ["status" => "error"];
+                }
+            } else {
+                $arrResponse = ["status" => "notfound"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
 }
