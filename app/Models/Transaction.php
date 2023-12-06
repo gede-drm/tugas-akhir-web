@@ -17,7 +17,7 @@ class Transaction extends Model
         return $this->belongsTo(Tenant::class);
     }
     public function servicePermission(){
-        return $this->hasOne(Permission::class);
+        return $this->hasOne(Permission::class, 'service_transaction_id');
     }
     public function products(){
         return $this->belongsToMany(Product::class, 'product_transaction_detail', 'transaction_id', 'product_id')->withPivot('quantity', 'price', 'rating', 'review');

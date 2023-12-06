@@ -72,6 +72,7 @@ Route::post('tenant/transaction/trxsvcdetail', [TransactionController::class, 't
 Route::post('tenant/transaction/changestatus', [TransactionController::class, 'tenChangeTransactionStatus']);
 Route::post('tenant/transaction/cancel', [TransactionController::class, 'tenCancelTransaction']);
 Route::post('tenant/transaction/validatetransfer', [TransactionController::class, 'tenValidateTFProof']);
+Route::post('tenant/transaction/proposepermission', [PermissionController::class, 'tenProposePermission']);
 
 // Resident's App API
 Route::post('resident/login', [UserController::class, 'residentLogin']);

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Helper;
 use App\Models\Permission;
 use App\Models\Permit;
+use App\Models\Transaction;
+use App\Models\Worker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
@@ -96,7 +98,7 @@ class PermissionController extends Controller
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $permissions = Permission::select('id', 'description', 'start_date', 'end_date', 'number_of_worker','service_transaction_id')->where('status', 'accept')->whereRaw('(date(start_date) <=\'' . date('Y-m-d') . '\') and (date(end_date) >=\'' . date('Y-m-d') . '\')')->get();
+            $permissions = Permission::select('id', 'description', 'start_date', 'end_date', 'number_of_worker', 'service_transaction_id')->where('status', 'accept')->whereRaw('(date(start_date) <=\'' . date('Y-m-d') . '\') and (date(end_date) >=\'' . date('Y-m-d') . '\')')->get();
             if (count($permissions) > 0) {
                 foreach ($permissions as $key => $permission) {
                     if ($permission->serviceTransaction->unit->tower_id != $tower) {
@@ -236,7 +238,7 @@ class PermissionController extends Controller
             $statusSecurity = Helper::checkSecurityShift($officer_id, $tower_id);
             if ($statusSecurity == 'exist') {
                 $date = date('Y-m-d H:i:s');
-                foreach($workers_ids as $key=>$worker_id){
+                foreach ($workers_ids as $key => $worker_id) {
                     $permit = new Permit();
                     $permit->date = $date;
                     $permit->permission_id = $idPermission;
@@ -246,15 +248,70 @@ class PermissionController extends Controller
 
                     $arrResponse = ["status" => "success"];
                 }
-            }
-            else{
+            } else {
                 $arrResponse = ['status' => 'securityprob', 'securitystatus' => $statusSecurity];
             }
-        }
-        else{
+        } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
 
+        return $arrResponse;
+    }
+
+    // Tenants' App API
+    public function tenProposePermission(Request $request)
+    {
+        $transaction_id = $request->get('transaction_id');
+        $description = $request->get('description');
+        $end_date = $request->get('end_date');
+        $workers_name = $request->get('workers_name');
+        $workers_nik = $request->get('workers_nik');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            if (isset($transaction_id) && isset($workers_name) && isset($workers_nik)) {
+                $transaction = Transaction::select('id', 'finish_date', 'tenant_id')->where('id', $transaction_id)->first();
+                if ($transaction != null) {
+                    if ($transaction->tenant->type == "service") {
+                        if ($transaction->services[0]->permit_need == 1) {
+                            if ($transaction->servicePermission == null) {
+                                $permission = new Permission();
+                                $permission->proposal_date = date('Y-m-d H:i:s');
+                                $permission->description = $description;
+                                $permission->start_date = $transaction->finish_date;
+                                $permission->end_date = $end_date;
+                                $permission->number_of_worker = count($workers_name);
+                                $permission->service_transaction_id = $transaction->id;
+                                $permission->save();
+
+                                foreach ($workers_name as $key => $wname) {
+                                    $worker = new Worker();
+                                    $worker->worker_name = $wname;
+                                    $worker->idcard_number = $workers_nik[$key];
+                                    $worker->permission_id = $permission->id;
+                                    $worker->save();
+                                }
+                                $arrResponse = ["status" => "success"];
+                            } else {
+                                $arrResponse = ["status" => "exist"];
+                            }
+                        } else {
+                            $arrResponse = ["status" => "wrongtransaction"];
+                        }
+                    } else {
+                        $arrResponse = ["status" => "wrongtransaction"];
+                    }
+                } else {
+                    $arrResponse = ["status" => "wrongtransaction"];
+                }
+            } else {
+                $arrResponse = ["status" => "error"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
         return $arrResponse;
     }
 }
