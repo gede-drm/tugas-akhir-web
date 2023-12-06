@@ -241,10 +241,10 @@ class TransactionController extends Controller
                     $transaction->svc_type = $transaction->tenant->service_type;
                     $transaction->unit_apart = $transaction->unit->unit_no . " (" . $transaction->unit->holder_name . ")";
                     $transaction->unit_phone = $transaction->unit->holder_ph_number;
-                    $transaction->transaction_date = date("d-m-Y H:i", strtotime($transaction->transaction_date));
-                    $transaction->finish_date = date("d-m-Y H:i", strtotime($transaction->finish_date));
+                    $transaction->transaction_date = date("Y-m-d H:i", strtotime($transaction->transaction_date));
+                    $transaction->finish_date = date("Y-m-d H:i", strtotime($transaction->finish_date));
                     if ($transaction->pickup_date != null) {
-                        $transaction->pickup_date = date("d-m-Y H:i", strtotime($transaction->pickup_date));
+                        $transaction->pickup_date = date("Y-m-d H:i", strtotime($transaction->pickup_date));
                     } else {
                         $transaction->pickup_date = "";
                     }
