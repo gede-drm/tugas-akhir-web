@@ -505,7 +505,7 @@ class TransactionController extends Controller
                     $transaction->permission_status = $permission_status;
                     $transaction->makeHidden('services');
                 }
-                $transaction->status = TransactionStatus::select('status')->where('transaction_id', $transaction->id)->orderBy('id', 'desc')->first()->status;
+                $transaction->status = TransactionStatus::select('description')->where('transaction_id', $transaction->id)->orderBy('id', 'desc')->first()->description;
                 $transaction->items = $items;
                 foreach ($transaction->statuses as $st) {
                     unset($st->id);
