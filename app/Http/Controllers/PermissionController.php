@@ -59,7 +59,7 @@ class PermissionController extends Controller
         $trxStatus->date = date("Y-m-d H:i:s");
         $trxStatus->status = "permissionaccepted";
         $trxStatus->description = "Perizinan diterima";
-        $trxStatus->transaction_id = $permission->transaction->id;
+        $trxStatus->transaction_id = $permission->serviceTransaction->id;
         $trxStatus->save();
 
         return redirect()->route('permission.detail', $permission->id)->with('status', 'Persetujuan Perizinan Berhasil dilakukan!');
@@ -89,16 +89,16 @@ class PermissionController extends Controller
         $trxStatus->date = date("Y-m-d H:i:s");
         $trxStatus->status = "permissionaccepted";
         $trxStatus->description = "Perizinan ditolak";
-        $trxStatus->transaction_id = $permission->transaction->id;
+        $trxStatus->transaction_id = $permission->serviceTransaction->id;
         $trxStatus->save();
 
-        $transaction = Transaction::find($permission->transaction->id);
+        $transaction = Transaction::find($permission->serviceTransaction->id);
         $transaction->status = 1;
         $trxStatus = new TransactionStatus();
         $trxStatus->date = date("Y-m-d H:i:s");
         $trxStatus->status = "cancelled";
         $trxStatus->description = "Dibatalkan";
-        $trxStatus->transaction_id = $permission->transaction->id;
+        $trxStatus->transaction_id = $permission->serviceTransaction->id;
         $transaction->save();
         $trxStatus->save();
 
