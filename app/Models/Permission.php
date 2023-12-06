@@ -11,7 +11,7 @@ class Permission extends Model
     public $timestamps = false;
     
     public function serviceTransaction(){
-        return $this->belongsTo(Transaction::class);
+        return $this->belongsTo(Transaction::class, 'service_transaction_id');
     }
     public function managementApproval(){
         return $this->belongsTo(User::class, 'management_id');

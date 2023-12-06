@@ -55,6 +55,13 @@ class PermissionController extends Controller
         $permission->approval_letter_url = $letterFileName;
         $permission->save();
 
+        $trxStatus = new TransactionStatus();
+        $trxStatus->date = date("Y-m-d H:i:s");
+        $trxStatus->status = "permissionaccepted";
+        $trxStatus->description = "Perizinan diterima";
+        $trxStatus->transaction_id = $permission->transaction->id;
+        $trxStatus->save();
+
         return redirect()->route('permission.detail', $permission->id)->with('status', 'Persetujuan Perizinan Berhasil dilakukan!');
     }
 
@@ -77,6 +84,23 @@ class PermissionController extends Controller
 
         $permission->approval_letter_url = $letterFileName;
         $permission->save();
+
+        $trxStatus = new TransactionStatus();
+        $trxStatus->date = date("Y-m-d H:i:s");
+        $trxStatus->status = "permissionaccepted";
+        $trxStatus->description = "Perizinan ditolak";
+        $trxStatus->transaction_id = $permission->transaction->id;
+        $trxStatus->save();
+
+        $transaction = Transaction::find($permission->transaction->id);
+        $transaction->status = 1;
+        $trxStatus = new TransactionStatus();
+        $trxStatus->date = date("Y-m-d H:i:s");
+        $trxStatus->status = "cancelled";
+        $trxStatus->description = "Dibatalkan";
+        $trxStatus->transaction_id = $permission->transaction->id;
+        $transaction->save();
+        $trxStatus->save();
 
         return redirect()->route('permission.detail', $permission->id)->with('status', 'Persetujuan Perizinan Berhasil dilakukan!');
     }
@@ -301,7 +325,7 @@ class PermissionController extends Controller
                                 $trxStatus->description = "Pengajuan Perizinan";
                                 $trxStatus->transaction_id = $transaction->id;
                                 $trxStatus->save();
-                                
+
                                 $arrResponse = ["status" => "success"];
                             } else {
                                 $arrResponse = ["status" => "exist"];
