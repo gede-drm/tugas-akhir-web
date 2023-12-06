@@ -491,6 +491,11 @@ class TransactionController extends Controller
                         }
                         $items[] = ['id' => $tsvc->id, 'name' => $tsvc->name, 'photo_url' => Helper::$base_url . 'tenants/services/' . $tsvc->photo_url, 'price' => $tsvc->pivot->price, 'quantity' => $tsvc->pivot->quantity, 'pricePer' => $pricePer, 'subtotal' => ($tsvc->pivot->price * $tsvc->pivot->quantity)];
                     }
+                    if ($transaction->services[0]->pivot->rating != null) {
+                        $transaction->rating_done = 1;
+                    } else {
+                        $transaction->rating_done = 0;
+                    }
                     $transaction->permission_need = $transaction->services[0]->permit_need;
                     if ($transaction->permission_need == 1) {
                         $permission_status = Permission::select('status')->where('service_transaction_id', $transaction->id)->first();
