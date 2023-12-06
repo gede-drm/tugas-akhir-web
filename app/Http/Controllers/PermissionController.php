@@ -6,6 +6,7 @@ use App\Models\Helper;
 use App\Models\Permission;
 use App\Models\Permit;
 use App\Models\Transaction;
+use App\Models\TransactionStatus;
 use App\Models\Worker;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -293,6 +294,14 @@ class PermissionController extends Controller
                                     $worker->permission_id = $permission->id;
                                     $worker->save();
                                 }
+
+                                $trxStatus = new TransactionStatus();
+                                $trxStatus->date = date("Y-m-d H:i:s");
+                                $trxStatus->status = "permissionproposed";
+                                $trxStatus->description = "Pengajuan Perizinan";
+                                $trxStatus->transaction_id = $transaction->id;
+                                $trxStatus->save();
+                                
                                 $arrResponse = ["status" => "success"];
                             } else {
                                 $arrResponse = ["status" => "exist"];
