@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
@@ -99,3 +100,5 @@ Route::post('resident/transaction/list', [TransactionController::class, 'rdtTran
 Route::post('resident/transaction/detail', [TransactionController::class, 'rdtTrxDetail']);
 Route::post('resident/transaction/getitemtorate', [TransactionController::class, 'rdtGetItemsToRate']);
 Route::post('resident/transaction/rateitem', [TransactionController::class, 'rdtSubmitItemsRate']);
+
+Route::post('resident/announcement/get', [AnnouncementController::class, 'rdtGetLatestAnnouncement']);
