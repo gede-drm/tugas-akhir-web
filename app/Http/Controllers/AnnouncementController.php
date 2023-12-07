@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Announcement;
+use App\Models\Helper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,5 +26,27 @@ class AnnouncementController extends Controller
         // KURANG WMA
         
         return redirect()->route('announcement.index')->with('status', 'Pemberitahuan Baru Berhasil ditambahkan!');
+    }
+
+    // API
+    // Residents' App API
+    public function rdtGetLatestAnnouncement(Request $request){
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $announcement = Announcement::select('date', 'title', 'description')->orderBy('date', 'desc')->first();
+            if($announcement != null){
+                $announcement->date = date("d-m-Y H:i", strtotime($announcement->date));
+                $arrResponse = ["status"=>"success", "data"=>$announcement];
+            }
+            else{
+                $arrResponse = ["status" => "empty"];                
+            }
+        } else {
+        $arrResponse = ["status" => "notauthenticated"];
+    }
+    return $arrResponse;
     }
 }
