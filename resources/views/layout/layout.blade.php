@@ -130,6 +130,14 @@
                         </a>
                     </li>
 
+                    {{-- Pemberitahuan --}}
+                    <li class="menu-item {{ request()->is('pemberitahuan*') ? ' active' : '' }}">
+                        <a href="{{ route('announcement.index') }}" class="menu-link">
+                            <i class="menu-icon tf-icons bx bx-info-circle"></i>
+                            <div>Pemberitahuan</div>
+                        </a>
+                    </li>
+
                     {{-- Setting --}}
                     <li class="menu-item {{ request()->is('setting*') ? ' active' : '' }}">
                         <a href="{{ route('setting.index') }}" class="menu-link">

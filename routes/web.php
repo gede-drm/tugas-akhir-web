@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\PackageController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SecurityOfficerController;
@@ -27,7 +28,7 @@ Route::get('/', function () {
         return redirect('/login');
     } else {
         if (Auth::user()->role === 'management') {
-            return redirect('/satpam');
+            return redirect('/satpam/checkin');
         }
         else{
             Auth::logout();
@@ -83,6 +84,9 @@ Route::middleware(['auth', 'management'])->group(function () {
     Route::put('tower/update/{tower}', [UnitController::class, 'towerUpdate'])->name('tower.update');
     Route::post('tower/deactivate', [UnitController::class, 'deactivateTower'])->name('tower.deactivate');
     Route::post('tower/activate', [UnitController::class, 'activateTower'])->name('tower.activate');
+    
+    Route::get('pemberitahuan', [AnnouncementController::class, 'index'])->name('announcement.index');
+    Route::post('pemberitahuan', [AnnouncementController::class, 'store'])->name('announcement.store');
     
     Route::get('setting', [SystemSettingController::class, 'index'])->name('setting.index');
     Route::post('setting/update', [SystemSettingController::class, 'updateSetting'])->name('setting.update');
