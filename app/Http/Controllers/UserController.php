@@ -157,7 +157,7 @@ class UserController extends Controller
         $arrResponse = [];
         if ($tokenValidation == true) {
             $unitUserId = Unit::select('user_id')->where('id', $unit_id)->first();
-            $user = User::where('id', $unitUserId->user_id);
+            $user = User::where('id', $unitUserId->user_id)->first();
             $user->fcm_token = $fcm_token;
             $user->save();
 
