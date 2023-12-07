@@ -507,7 +507,7 @@ class TransactionController extends Controller
                             $permission_status = "notproposed";
                         } else {
                             $permission_status = $permission->status;
-                            $transaction->permission_approval_date = $permission->approval_date;
+                            $transaction->permission_approval_date = date('d-m-Y H:i', strtotime($permission->approval_date));
                             $transaction->permission_letter = Helper::$base_url."/permissions/approval-letter/".$permission->approval_letter_url;
                             $transaction->permission_qr = Helper::$base_url."/permissions/qr-code/".$permission->qr_url;
                         }
