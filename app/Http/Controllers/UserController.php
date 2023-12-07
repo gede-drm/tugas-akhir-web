@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Helper;
 use App\Models\SecurityOfficerCheckin;
+use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -116,7 +117,7 @@ class UserController extends Controller
         $username = $request->get('username');
         $password = $request->get('password');
 
-        $userResident = User::select('id', 'password', 'role')->where('username', $username)->first();
+        $userResident = User::select('id', 'password', 'role', 'fcm_token')->where('username', $username)->first();
         $arrResponse = [];
         if ($userResident != null) {
             if ($userResident->role == 'resident') {
@@ -125,7 +126,12 @@ class UserController extends Controller
                         $token = Helper::generateToken();
                         $userResident->api_token = $token;
                         $userResident->save();
-                        $arrResponse = ['status' => 'success', 'data' => ['resident_id' => $userResident->unit->id, 'unit_no' => $userResident->unit->unit_no, 'holder_name' => $userResident->unit->holder_name, 'token' => $token]];
+
+                        $fcm_token = $userResident->fcm_token;
+                        if($fcm_token == null){
+                            $fcm_token = "";
+                        }
+                        $arrResponse = ['status' => 'success', 'data' => ['resident_id' => $userResident->unit->id, 'unit_no' => $userResident->unit->unit_no, 'holder_name' => $userResident->unit->holder_name, 'token' => $token, 'fcm_token'=>$fcm_token]];
                     } else {
                         $arrResponse = ['status' => 'wrongpass'];
                     }
@@ -137,6 +143,27 @@ class UserController extends Controller
             }
         } else {
             $arrResponse = ['status' => 'failed'];
+        }
+        return $arrResponse;
+    }
+
+    public function rdtRegisterFCMToken(Request $request){
+        $unit_id = $request->get('unit_id');
+        $fcm_token = $request->get('fcm_token');
+        $token = $request->get('token');
+
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $unitUserId = Unit::select('user_id')->where('id', $unit_id)->first();
+            $user = User::where('id', $unitUserId->user_id);
+            $user->fcm_token = $fcm_token;
+            $user->save();
+
+            $arrResponse = ["status" => "success"];
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
     }

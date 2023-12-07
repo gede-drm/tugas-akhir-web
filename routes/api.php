@@ -77,6 +77,7 @@ Route::post('tenant/transaction/proposepermission', [PermissionController::class
 
 // Resident's App API
 Route::post('resident/login', [UserController::class, 'residentLogin']);
+Route::post('resident/registerfcm', [UserController::class, 'rdtRegisterFCMToken']);
 
 Route::post('resident/package/list', [PackageController::class, 'rdtPackageList']);
 Route::post('resident/package/detail', [PackageController::class, 'rdtPackageDetail']);
