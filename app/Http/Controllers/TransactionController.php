@@ -548,6 +548,7 @@ class TransactionController extends Controller
         if ($tokenValidation == true) {
             if (isset($unit_id) && isset($product_ids) && isset($product_qtys) && isset($product_prices) && isset($product_tenants) && isset($tenant_ids) && isset($tenant_deliveries) && isset($tenant_datetimes) && isset($tenant_paymethods)) {
                 $temp = [];
+                $transferTrxIds = [];
                 foreach ($tenant_ids as $key1 => $tenId) {
                     $tenProdArr = [];
                     foreach ($product_ids as $key2 => $proId) {
@@ -577,6 +578,10 @@ class TransactionController extends Controller
                         $transaction->tenant_id = $tmp['tenant_id'];
                         $transaction->save();
 
+                        if ($transaction->payment == "transfer") {
+                            $transferTrxIds[] = ["id"=>$transaction->id];
+                        }
+
                         foreach ($tmp['cart'] as $cart) {
                             $product = Product::select('id', 'stock')->where('id', $cart['product_id'])->first();
                             if ($product->stock >= $cart['quantity']) {
@@ -603,7 +608,12 @@ class TransactionController extends Controller
                         $transactionStatus->save();
                     }
                     DB::commit();
-                    $arrResponse = ["status" => "success"];
+
+                    if (count($transferTrxIds) > 0) {
+                        $arrResponse = ["status" => "success", "tf"=>"yes", "tf_ids" => $transferTrxIds];
+                    } else {
+                        $arrResponse = ["status" => "success", "tf"=>"no"];
+                    }
                 } catch (Exception $e) {
                     DB::rollBack();
                     if ($e->getMessage() == 'nostock') {
@@ -624,12 +634,13 @@ class TransactionController extends Controller
     public function rdtGetUnpaidTransferProTrx(Request $request)
     {
         $unit_id = $request->get('unit_id');
+        $transaction_ids = $request->get('transaction_ids');
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
 
         $arrResponse = [];
         if ($tokenValidation == true) {
-            $notPaidTransactions = Transaction::select('id', 'transaction_date', 'total_payment', 'finish_date', 'tenant_id')->where('payment', 'transfer')->whereNull('payment_proof_url')->where('status', 0)->where('unit_id', $unit_id)->get();
+            $notPaidTransactions = Transaction::select('id', 'transaction_date', 'total_payment', 'finish_date', 'tenant_id')->where('payment', 'transfer')->whereNull('payment_proof_url')->where('status', 0)->whereIn('id', $transaction_ids)->where('unit_id', $unit_id)->get();
             if (count($notPaidTransactions) > 0) {
                 foreach ($notPaidTransactions as $key => $npt) {
                     if ($npt->tenant->type == 'service') {
@@ -855,6 +866,7 @@ class TransactionController extends Controller
 
     public function rdtSubmitItemsRate(Request $request)
     {
+        // KURANG WMA
         $transaction_id = $request->get('transaction_id');
         $items_id = $request->get('items_id');
         $items_rating = $request->get('items_rating');
