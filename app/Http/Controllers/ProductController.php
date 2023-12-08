@@ -264,7 +264,7 @@ class ProductController extends Controller
 
                     $tenant_delivery = collect($tenant_delivery);
                     $tenant_delivery = $tenant_delivery->unique("id");
-                    $tenant_delivery = collect($tenant_delivery);
+                    $tenant_delivery = collect($tenant_delivery)->toArray();
                     $arrResponse = ["status" => "success", "emptyStatus" => $emptyStatus, "emptyids" => $empty, "data" => $data, "total" => $total, "delivery"=>$tenant_delivery];
                 } else {
                     $arrResponse = ["status" => "allempty"];
