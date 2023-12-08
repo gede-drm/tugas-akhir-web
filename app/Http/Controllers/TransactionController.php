@@ -9,6 +9,9 @@ use App\Models\Service;
 use App\Models\Tenant;
 use App\Models\Transaction;
 use App\Models\TransactionStatus;
+use App\Models\Unit;
+use App\Models\User;
+use App\Notifications\SendNotification;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -287,8 +290,8 @@ class TransactionController extends Controller
                         } else {
                             $permission_status = $permission->status;
                             $transaction->permission_approval_date = $permission->approval_date;
-                            $transaction->permission_letter = Helper::$base_url."/permissions/approval-letter/".$permission->approval_letter_url;
-                            $transaction->permission_qr = Helper::$base_url."/permissions/qr-code/".$permission->qr_url;
+                            $transaction->permission_letter = Helper::$base_url . "/permissions/approval-letter/" . $permission->approval_letter_url;
+                            $transaction->permission_qr = Helper::$base_url . "/permissions/qr-code/" . $permission->qr_url;
                         }
                     } else {
                         $permission_status = "noneed";
@@ -508,8 +511,8 @@ class TransactionController extends Controller
                         } else {
                             $permission_status = $permission->status;
                             $transaction->permission_approval_date = date('d-m-Y H:i', strtotime($permission->approval_date));
-                            $transaction->permission_letter = Helper::$base_url."/permissions/approval-letter/".$permission->approval_letter_url;
-                            $transaction->permission_qr = Helper::$base_url."/permissions/qr-code/".$permission->qr_url;
+                            $transaction->permission_letter = Helper::$base_url . "/permissions/approval-letter/" . $permission->approval_letter_url;
+                            $transaction->permission_qr = Helper::$base_url . "/permissions/qr-code/" . $permission->qr_url;
                         }
                     } else {
                         $permission_status = "noneed";
@@ -586,7 +589,7 @@ class TransactionController extends Controller
                         $transaction->save();
 
                         if ($transaction->payment == "transfer") {
-                            $transferTrxIds[] = ["id"=>$transaction->id];
+                            $transferTrxIds[] = ["id" => $transaction->id];
                         }
 
                         foreach ($tmp['cart'] as $cart) {
@@ -616,10 +619,21 @@ class TransactionController extends Controller
                     }
                     DB::commit();
 
+                    foreach ($temp as $tmp) {
+                        $ten = Tenant::select('id', 'user_id')->where('id', $tmp['tenant_id'])->first();
+                        $tenUser = User::select('id', 'fcm_token')->whereNotNull('fcm_token')->where('id', $ten->user_id)->first();
+                        $unit = Unit::select('id', 'unit_no')->where('id', $unit_id)->first();
+                        if ($tenUser != null) {
+                            $notifTitle = "Anda Mendapat Pesanan Baru!";
+                            $notifBody = "Pesanan " . count($tmp['cart']) . " jenis Barang dari Unit " . $unit->unit_no;
+                            $tenUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                        }
+                    }
+
                     if (count($transferTrxIds) > 0) {
-                        $arrResponse = ["status" => "success", "tf"=>"yes", "tf_ids" => $transferTrxIds];
+                        $arrResponse = ["status" => "success", "tf" => "yes", "tf_ids" => $transferTrxIds];
                     } else {
-                        $arrResponse = ["status" => "success", "tf"=>"no"];
+                        $arrResponse = ["status" => "success", "tf" => "no"];
                     }
                 } catch (Exception $e) {
                     DB::rollBack();
@@ -787,6 +801,16 @@ class TransactionController extends Controller
                     $transactionStatus->save();
 
                     DB::commit();
+
+                    $ten = Tenant::select('id', 'user_id')->where('id', $service->tenant_id)->first();
+                    $tenUser = User::select('id', 'fcm_token')->whereNotNull('fcm_token')->where('id', $ten->user_id)->first();
+                    $unit = Unit::select('id', 'unit_no')->where('id', $unit_id)->first();
+                    if ($tenUser != null) {
+                        $notifTitle = "Anda Mendapat Pesanan Baru!";
+                        $notifBody = "Pesanan dari Unit " . $unit->unit_no;
+                        $tenUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                    }
+
                     $arrResponse = ["status" => "success", "id" => $transaction->id];
                 } catch (Exception $e) {
                     DB::rollBack();
