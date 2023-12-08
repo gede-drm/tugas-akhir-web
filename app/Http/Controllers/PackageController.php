@@ -6,6 +6,7 @@ use App\Models\Helper;
 use App\Models\IncomingPackage;
 use App\Models\SecurityOfficer;
 use App\Models\Unit;
+use App\Notifications\SendNotification;
 use Illuminate\Http\Request;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -91,7 +92,7 @@ class PackageController extends Controller
         if ($tokenValidation == true) {
             $statusSecurity = Helper::checkSecurityShift($officer_id, $tower_id);
             if ($statusSecurity == 'exist') {
-                $unitId = Unit::select('id')->where('unit_no', $unit_no)->where('tower_id', $tower_id)->first();
+                $unitId = Unit::select('id', 'user_id')->where('unit_no', $unit_no)->where('tower_id', $tower_id)->first();
 
                 if ($unitId != null) {
                     $unitId = $unitId->id;
@@ -120,6 +121,14 @@ class PackageController extends Controller
                     $incomingPackage->unit_id = $unitId;
                     $incomingPackage->receiving_security_officer_id = $officer_id;
                     $incomingPackage->save();
+
+                    $senderName = explode("Nama Pengirim: ", $description);
+                    $senderName = $senderName[1];
+                    $senderName = explode("Nama Penerima: ", $senderName);
+                    $senderName = $senderName[0];
+                    $notifTitle = "Anda Mendapat Paket Baru!";
+                    $notifBody = "Paket dari ".$senderName;
+                    $unitId->user->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
 
                     $arrResponse = ['status' => 'success'];
                 } else {
