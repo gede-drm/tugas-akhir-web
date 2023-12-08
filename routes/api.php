@@ -45,6 +45,7 @@ Route::post('security/permission/addpermits', [PermissionController::class, 'sec
 
 // Tenant's App API
 Route::post('tenant/login', [UserController::class, 'tenantLogin']);
+Route::post('tenant/registerfcm', [UserController::class, 'tenRegisterFCMToken']);
 
 Route::post('tenant/getprofile', [TenantController::class, 'getTenantProfile']);
 Route::post('tenant/getstatus', [TenantController::class, 'getTenantStatus']);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Helper;
 use App\Models\SecurityOfficerCheckin;
+use App\Models\Tenant;
 use App\Models\Unit;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -95,7 +96,13 @@ class UserController extends Controller
                         $token = Helper::generateToken();
                         $userTenant->api_token = $token;
                         $userTenant->save();
-                        $arrResponse = ['status' => 'success', 'data' => ['tenant_id' => $userTenant->tenant->id, 'tenant_name' => $userTenant->tenant->name, 'tenant_type' => $userTenant->tenant->type, 'token' => $token]];
+
+                        $fcm_token = $userTenant->fcm_token;
+                        if($fcm_token == null){
+                            $fcm_token = "";
+                        }
+
+                        $arrResponse = ['status' => 'success', 'data' => ['tenant_id' => $userTenant->tenant->id, 'tenant_name' => $userTenant->tenant->name, 'tenant_type' => $userTenant->tenant->type, 'token' => $token, 'fcm_token'=>$fcm_token]];
                     } else {
                         $arrResponse = ['status' => 'failed'];
                     }
@@ -107,6 +114,26 @@ class UserController extends Controller
             }
         } else {
             $arrResponse = ['status' => 'failed'];
+        }
+        return $arrResponse;
+    }
+    public function tenRegisterFCMToken(Request $request){
+        $tenant_id = $request->get('tenant_id');
+        $fcm_token = $request->get('fcm_token');
+        $token = $request->get('token');
+
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $tenantUserId = Tenant::select('user_id')->where('id', $tenant_id)->first();
+            $user = User::where('id', $tenantUserId->user_id)->first();
+            $user->fcm_token = $fcm_token;
+            $user->save();
+
+            $arrResponse = ["status" => "success"];
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
     }
