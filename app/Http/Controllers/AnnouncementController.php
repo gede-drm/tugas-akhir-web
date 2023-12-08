@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Announcement;
 use App\Models\Helper;
+use App\Models\User;
+use App\Notifications\SendNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -23,7 +25,10 @@ class AnnouncementController extends Controller
         $announcement->management_id = Auth::user()->id;
         $announcement->save();
 
-        // KURANG WMA
+        $userResidents = User::select('id', 'fcm_token')->whereNotNull('fcm_token')->where('role', 'resident')->get();
+        foreach($userResidents as $user){
+            $user->notify(new SendNotification("Pemberitahuan Baru dari Manajemen", $announcement->title));
+        }
         
         return redirect()->route('announcement.index')->with('status', 'Pemberitahuan Baru Berhasil ditambahkan!');
     }

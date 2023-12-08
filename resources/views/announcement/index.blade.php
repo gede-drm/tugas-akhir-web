@@ -71,11 +71,26 @@
                         </div>
                         <div class="row mb-3">
                             <div class="col-12">
-                                <button type="submit" class="btn btn-primary">Simpan</button>
+                                <button type="submit" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticLoadingBackdrop">Simpan</button>
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Loading --}}
+    <div class="modal fade" id="staticLoadingBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="spinner-border spinner-border-lg text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h4 class="mt-4 text-primary text-center">Sedang Menyimpan Pemberitahuan dan Mengirimkannya ke Seluruh Penghuni</h4>
                 </div>
             </div>
         </div>
