@@ -10,32 +10,29 @@ use NotificationChannels\Fcm\Resources\AndroidNotification;
 
 class SendNotification extends Notification
 {
-    private $notifTitle;
-    private $notifBody;
+    protected $arrNotif;
 
-    public function __construct(String $notifTitle, String $notifBody)
+    public function __construct(array $arrNotif)
     {
-        $this->notifTitle = $notifTitle;
-        $this->notifBody = $notifBody;
+        $this->arrNotif = $arrNotif;
     }
 
-    public function via($notifiable)
-    {
-        return [SendNotification::class];
-    }
+    // public function via($notifiable)
+    // {
+    //     return [SendNotification::class];
+    // }
 
     public function toFcm($notifiable)
     {
-        dd($this->notifTitle, $this->notifBody);
-        // return FcmMessage::create()
-        //     ->setNotification(\NotificationChannels\Fcm\Resources\Notification::create()
-        //         ->setTitle($this->title)
-        //         ->setBody($this->body))
-        //     ->setAndroid(
-        //         AndroidConfig::create()
-        //             ->setFcmOptions(AndroidFcmOptions::create()->setAnalyticsLabel('analytics'))
-        //             ->setNotification(AndroidNotification::create()->setColor('#002147'))
-        //     );
+        return FcmMessage::create()
+            ->setNotification(\NotificationChannels\Fcm\Resources\Notification::create()
+                ->setTitle($this->arrNotif['title'])
+                ->setBody($this->arrNotif['body']))
+            ->setAndroid(
+                AndroidConfig::create()
+                    ->setFcmOptions(AndroidFcmOptions::create()->setAnalyticsLabel('analytics'))
+                    ->setNotification(AndroidNotification::create()->setColor('#002147'))
+            );
     }
 
     /**
