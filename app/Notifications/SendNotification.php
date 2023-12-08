@@ -10,13 +10,13 @@ use NotificationChannels\Fcm\Resources\AndroidNotification;
 
 class SendNotification extends Notification
 {
-    private $title;
-    private $body;
+    private $notifTitle;
+    private $notifBody;
 
-    public function __construct(String $title, String $body)
+    public function __construct(String $notifTitle, String $notifBody)
     {
-        $this->title = $title;
-        $this->body = $body;
+        $this->notifTitle = $notifTitle;
+        $this->notifBody = $notifBody;
     }
 
     public function via($notifiable)
@@ -26,7 +26,7 @@ class SendNotification extends Notification
 
     public function toFcm($notifiable)
     {
-        dd($this->title, $this->body);
+        dd($this->notifTitle, $this->notifBody);
         // return FcmMessage::create()
         //     ->setNotification(\NotificationChannels\Fcm\Resources\Notification::create()
         //         ->setTitle($this->title)
