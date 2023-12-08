@@ -625,7 +625,7 @@ class TransactionController extends Controller
                         $unit = Unit::select('id', 'unit_no')->where('id', $unit_id)->first();
                         if ($tenUser != null) {
                             $notifTitle = "Anda Mendapat Pesanan Baru!";
-                            $notifBody = "Pesanan " . count($tmp['cart']) . " jenis Barang dari Unit " . $unit->unit_no;
+                            $notifBody = "Pesanan " . count($tmp['cart']) . " Jenis Barang dari Unit " . $unit->unit_no;
                             $tenUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
                         }
                     }
