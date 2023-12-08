@@ -27,6 +27,7 @@ class AnnouncementController extends Controller
 
         $userResidents = User::select('id', 'fcm_token')->whereNotNull('fcm_token')->where('role', 'resident')->get();
         foreach($userResidents as $user){
+            dd($announcement->title);
             $user->notify(new SendNotification("Pemberitahuan Baru dari Manajemen", $announcement->title));
         }
         
