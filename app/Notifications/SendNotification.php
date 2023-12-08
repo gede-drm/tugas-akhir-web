@@ -17,6 +17,8 @@ class SendNotification extends Notification
     {
         $this->title = $title;
         $this->body = $body;
+
+        dd($title, $body);
     }
 
     public function via($notifiable)
