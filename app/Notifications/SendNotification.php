@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use Illuminate\Notifications\Notification;
+use NotificationChannels\Fcm\FcmChannel;
 use NotificationChannels\Fcm\FcmMessage;
 use NotificationChannels\Fcm\Resources\AndroidConfig;
 use NotificationChannels\Fcm\Resources\AndroidFcmOptions;
@@ -19,7 +20,7 @@ class SendNotification extends Notification
 
     public function via($notifiable)
     {
-        return [SendNotification::class];
+        return [FcmChannel::class];
     }
 
     public function toFcm($notifiable)
