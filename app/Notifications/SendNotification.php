@@ -44,6 +44,6 @@ class SendNotification extends Notification
      */
     public function fcmProject($notifiable, $message)
     {
-        return 'ApartemenKu';
+        return 'app';
     }
 }
