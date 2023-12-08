@@ -17,8 +17,6 @@ class SendNotification extends Notification
     {
         $this->title = $title;
         $this->body = $body;
-
-        dd($title, $body);
     }
 
     public function via($notifiable)
@@ -28,15 +26,16 @@ class SendNotification extends Notification
 
     public function toFcm($notifiable)
     {
-        return FcmMessage::create()
-            ->setNotification(\NotificationChannels\Fcm\Resources\Notification::create()
-                ->setTitle($this->title)
-                ->setBody($this->body))
-            ->setAndroid(
-                AndroidConfig::create()
-                    ->setFcmOptions(AndroidFcmOptions::create()->setAnalyticsLabel('analytics'))
-                    ->setNotification(AndroidNotification::create()->setColor('#002147'))
-            );
+        dd($this->title, $this->body);
+        // return FcmMessage::create()
+        //     ->setNotification(\NotificationChannels\Fcm\Resources\Notification::create()
+        //         ->setTitle($this->title)
+        //         ->setBody($this->body))
+        //     ->setAndroid(
+        //         AndroidConfig::create()
+        //             ->setFcmOptions(AndroidFcmOptions::create()->setAnalyticsLabel('analytics'))
+        //             ->setNotification(AndroidNotification::create()->setColor('#002147'))
+        //     );
     }
 
     /**
