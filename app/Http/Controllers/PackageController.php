@@ -95,7 +95,6 @@ class PackageController extends Controller
                 $unitId = Unit::select('id', 'user_id')->where('unit_no', $unit_no)->where('tower_id', $tower_id)->first();
 
                 if ($unitId != null) {
-                    $unitId = $unitId->id;
                     $incomingPackage = new IncomingPackage();
                     $incomingPackage->receive_date = $date;
                     $incomingPackage->description = $description;
@@ -118,7 +117,7 @@ class PackageController extends Controller
 
                     $incomingPackage->verification_code = $verificationCode;
                     $incomingPackage->qr_url = $qrFileName;
-                    $incomingPackage->unit_id = $unitId;
+                    $incomingPackage->unit_id = $unitId->id;
                     $incomingPackage->receiving_security_officer_id = $officer_id;
                     $incomingPackage->save();
 
@@ -128,7 +127,9 @@ class PackageController extends Controller
                     $senderName = $senderName[0];
                     $notifTitle = "Anda Mendapat Paket Baru!";
                     $notifBody = "Paket dari ".$senderName;
-                    $unitId->user->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
+
+                    $userUnit = $unitId->user;
+                    $userUnit->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
 
                     $arrResponse = ['status' => 'success'];
                 } else {
