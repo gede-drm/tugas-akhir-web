@@ -27,8 +27,8 @@ class AnnouncementController extends Controller
 
         $userResidents = User::select('id', 'fcm_token')->whereNotNull('fcm_token')->where('role', 'resident')->get();
         foreach($userResidents as $user){
-            dd($announcement->title);
-            $user->notify(new SendNotification("Pemberitahuan Baru dari Manajemen", $announcement->title));
+            $title = "Pemberitahuan Baru dari Manajemen";
+            $user->notify(new SendNotification($title, $announcement->title));
         }
         
         return redirect()->route('announcement.index')->with('status', 'Pemberitahuan Baru Berhasil ditambahkan!');
