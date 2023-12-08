@@ -17,10 +17,10 @@ class SendNotification extends Notification
         $this->arrNotif = $arrNotif;
     }
 
-    // public function via($notifiable)
-    // {
-    //     return [SendNotification::class];
-    // }
+    public function via($notifiable)
+    {
+        return [SendNotification::class];
+    }
 
     public function toFcm($notifiable)
     {
