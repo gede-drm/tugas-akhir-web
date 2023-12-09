@@ -1074,7 +1074,8 @@ class TransactionController extends Controller
             $body = "Beli " . $productName->name . " Sekarang!";
             if ($userResident->fcm_token != null) {
                 try {
-                    $userResident->notify(new SendWMA(['title' => $title, 'body' => $body, 'delay' => $resultWMA]));
+                    $delay = now()->addSeconds($resultWMA);
+                    $userResident->notify((new SendNotification(['title' => $title, 'body' => $body]))->delay($delay));
                 } catch (Exception $e) {
                     Helper::clearFCMToken($userResident->id);
                 }
