@@ -32,7 +32,8 @@ class AnnouncementController extends Controller
         foreach ($userResidents as $user) {
             $title = "Pemberitahuan Baru dari Manajemen";
             try {
-                $user->notify(new SendNotification(["title" => $title, "body" => $announcement->title]));
+                $delay = now()->addSeconds(20);
+                $user->notify((new SendNotification(["title" => $title, "body" => $announcement->title]))->delay($delay));
             } catch (Exception $e) {
                 Helper::clearFCMToken($user->id);
             }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -17,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'username', 'password','role', 'api_token', 'fcm_token'
+        'username', 'password', 'role', 'api_token', 'fcm_token'
     ];
 
     /**
@@ -39,17 +40,25 @@ class User extends Authenticatable
     ];
 
     public $timestamps = false;
-    public function unit(){
+    public function unit()
+    {
         return $this->hasOne(Unit::class);
     }
-    public function security(){
+    public function security()
+    {
         return $this->hasOne(SecurityOfficer::class);
     }
-    public function tenant(){
+    public function tenant()
+    {
         return $this->hasOne(Tenant::class);
     }
     public function routeNotificationForFcm()
     {
-        return $this->fcm_token;
+        try {
+            return $this->fcm_token;
+        } catch (Exception $e) {
+            $this->fcm_token = null;
+            $this->save();
+        }
     }
 }
