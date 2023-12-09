@@ -332,6 +332,7 @@ class TransactionController extends Controller
                 $trxStatus->save();
 
                 if ($statusName == "done") {
+                    $transaction->pickup_date = date("Y-m-d H:i:s");
                     $transaction->status = 1;
                     $transaction->save();
                 }
@@ -897,7 +898,6 @@ class TransactionController extends Controller
 
     public function rdtSubmitItemsRate(Request $request)
     {
-        // KURANG WMA
         $transaction_id = $request->get('transaction_id');
         $items_id = $request->get('items_id');
         $items_rating = $request->get('items_rating');
@@ -924,6 +924,7 @@ class TransactionController extends Controller
                                 $newRating = DB::select(DB::raw("select round(avg(rating),2) as 'rating' from product_transaction_detail where product_id='" . $id . "' and rating is not null"))[0]->rating;
                                 DB::update("update products set rating='" . $newRating . "' where id='" . $id . "'");
                             }
+                            $transaction->pickup_date = date('Y-m-d H:i:s');
                             $transaction->status = 1;
                             $transaction->save();
 
@@ -963,5 +964,11 @@ class TransactionController extends Controller
             $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
+    }
+
+    private function wmaForecasting($unit_id, $product_id){
+        $unit = Unit::select('id', 'wma_preference', 'user_id')->where('id', $unit_id)->first();
+        
+        $proTrxData = 
     }
 }
