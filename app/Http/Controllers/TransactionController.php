@@ -12,6 +12,7 @@ use App\Models\TransactionStatus;
 use App\Models\Unit;
 use App\Models\User;
 use App\Notifications\SendNotification;
+use App\Notifications\SendWMA;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -986,7 +987,7 @@ class TransactionController extends Controller
 
                         $residentUser = $transaction->unit->user;
                         $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
-                        
+
                         $arrResponse = ["status" => "success"];
                     }
                 } else {
@@ -1001,10 +1002,40 @@ class TransactionController extends Controller
         return $arrResponse;
     }
 
-    private function wmaForecasting($unit_id, $product_id)
+    public function wmaForecasting($unit_id, $product_id, $quantity)
     {
         $unit = Unit::select('id', 'wma_preference', 'user_id')->where('id', $unit_id)->first();
 
-        $proTrxData = "";
+        $proTrxData = DB::select(DB::raw("select ptd.product_id, sum(ptd.quantity) as 'qty', t.pickup_date from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id where t.pickup_date is not null and ptd.product_id = '" . $product_id . "' and t.unit_id='" . $unit->id . "' group by t.pickup_date, ptd.product_id limit " . $unit->wma_preference . ";"));
+        if (count($proTrxData) == $unit->wma_preference) {
+            $datetimediff = [];
+            foreach ($proTrxData as $key => $data) {
+                if ($key < count($proTrxData) - 1) {
+                    $datetimediff[] = ((strtotime($data->pickup_date)) - (strtotime($proTrxData[$key + 1]->pickup_date))) / $data->qty;
+                } else {
+                    $datetimediff[] = ((strtotime($data->pickup_date)) - (strtotime(date('Y-m-d H:i:s')))) / $data->qty;
+                }
+            }
+
+            $totalWMA = 0;
+            $totalWeight = 0;
+            for ($i = 1; $i <= $unit->wma_preference; $i++) {
+                $totalWeight = $totalWeight + $i;
+            }
+
+            for ($i = 1; $i <= $unit->wma_preference; $i++) {
+                $totalWMA = $totalWMA + ($i * ($datetimediff[$i - 1] * -1));
+            }
+
+            $resultWMA = floor($totalWMA / $totalWeight) * $quantity;
+
+            $userResident = $unit->user;
+            $productName = Product::select('name')->where('id', $product_id)->first();
+            $title = "Jangan Lupa untuk Beli Kebutuhanmu";
+            $body = "Beli " . $productName->name . " Sekarang!";
+            if ($userResident->fcm_token != null) {
+                $userResident->notify(new SendWMA(['title' => $title, 'body' => $body, 'delay' => $resultWMA]));
+            }
+        }
     }
 }
