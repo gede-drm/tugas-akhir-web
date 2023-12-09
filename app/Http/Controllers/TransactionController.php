@@ -337,8 +337,8 @@ class TransactionController extends Controller
                     $transaction->status = 1;
                     $transaction->save();
 
-                    $notifTitle = "Pengerjaan Jasa dari ". $transaction->tenant->name ." Sudah Selesai";
-                    $notifBody = "Mohon untuk memberikan rating dari pengerjaan jasa tersebut";
+                    $notifTitle = "Pengerjaan Jasa Sudah Selesai";
+                    $notifBody = $transaction->tenant->name . " telah selesai melakukan pengerjaan, mohon untuk memberikan rating dari pengerjaan jasa tersebut";
 
                     $residentUser = $transaction->unit->user;
                     $residentUser->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
@@ -346,15 +346,15 @@ class TransactionController extends Controller
 
                 // Notify User Pro Trx
                 if($status == "Sudah diantar"){
-                    $notifTitle = "Barang dari ". $transaction->tenant->name ." Sudah Selesai diantar";
-                    $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli";
+                    $notifTitle = "Barang Sudah Selesai diantar";
+                    $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli dari " . $transaction->tenant->name;
 
                     $residentUser = $transaction->unit->user;
                     $residentUser->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
                 }
                 else if($status == "Sudah diambil"){
-                    $notifTitle = "Barang dari ". $transaction->tenant->name ." Sudah Selesai diambil";
-                    $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli";
+                    $notifTitle = "Barang Sudah Selesai Anda Ambil";
+                    $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli dari " . $transaction->tenant->name;
 
                     $residentUser = $transaction->unit->user;
                     $residentUser->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
