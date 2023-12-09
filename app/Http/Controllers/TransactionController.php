@@ -341,23 +341,22 @@ class TransactionController extends Controller
                     $notifBody = $transaction->tenant->name . " telah selesai melakukan pengerjaan, mohon untuk memberikan rating dari pengerjaan jasa tersebut";
 
                     $residentUser = $transaction->unit->user;
-                    $residentUser->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
+                    $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
                 }
 
                 // Notify User Pro Trx
-                if($status == "Sudah diantar"){
+                if ($status == "Sudah diantar") {
                     $notifTitle = "Barang Sudah Selesai diantar";
                     $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli dari " . $transaction->tenant->name;
 
                     $residentUser = $transaction->unit->user;
-                    $residentUser->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
-                }
-                else if($status == "Sudah diambil"){
+                    $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                } else if ($status == "Sudah diambil") {
                     $notifTitle = "Barang Sudah Selesai Anda Ambil";
                     $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli dari " . $transaction->tenant->name;
 
                     $residentUser = $transaction->unit->user;
-                    $residentUser->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
+                    $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
                 }
 
                 $arrResponse = ["status" => "success"];
@@ -958,6 +957,12 @@ class TransactionController extends Controller
                             $trxStatus->transaction_id = $transaction->id;
                             $trxStatus->save();
 
+                            $notifTitle = "Transaksi Berhasil diselesaikan";
+                            $notifBody = "Terima kasih telah berbelanja! Terima kasih juga untuk rating yang telah anda berikan";
+
+                            $residentUser = $transaction->unit->user;
+                            $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+
                             $arrResponse = ["status" => "success"];
                         } else {
                             $arrResponse = ["status" => "finish"];
@@ -975,6 +980,13 @@ class TransactionController extends Controller
                             $newRating = DB::select(DB::raw("select round(avg(rating),2) as 'rating' from service_transaction_detail where service_id='" . $id . "' and rating is not null"))[0]->rating;
                             DB::update("update services set rating='" . $newRating . "' where id='" . $id . "'");
                         }
+
+                        $notifTitle = "Rating diterima";
+                        $notifBody = "Terima kasih telah berbelanja! Terima kasih juga untuk rating yang telah anda berikan";
+
+                        $residentUser = $transaction->unit->user;
+                        $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                        
                         $arrResponse = ["status" => "success"];
                     }
                 } else {
@@ -989,9 +1001,10 @@ class TransactionController extends Controller
         return $arrResponse;
     }
 
-    private function wmaForecasting($unit_id, $product_id){
+    private function wmaForecasting($unit_id, $product_id)
+    {
         $unit = Unit::select('id', 'wma_preference', 'user_id')->where('id', $unit_id)->first();
-        
+
         $proTrxData = "";
     }
 }
