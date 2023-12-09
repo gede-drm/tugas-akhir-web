@@ -29,7 +29,7 @@ class Helper extends Model
     }
     public static function checkSecurityShift($securityId, $towerId)
     {
-        $userSecurity = User::whereRelation('security','id', $securityId)->first();
+        $userSecurity = User::whereRelation('security', 'id', $securityId)->first();
         if ($userSecurity != null) {
             $shift = SecurityOfficerCheckin::whereRaw("(timestampdiff(minute, now(), check_in) < 0 and timestampdiff(minute, now(), check_out)>0)")->whereRelation('tower', 'tower_id', $towerId)->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
             $status = "";
@@ -52,6 +52,13 @@ class Helper extends Model
             $status = 'notfound';
         }
         return $status;
+    }
+
+    public static function clearFCMToken($id)
+    {
+        $user = User::find($id);
+        $user->fcm_token = null;
+        $user->save();
     }
     public static $base_url = "https://gede-darma.my.id/";
 }

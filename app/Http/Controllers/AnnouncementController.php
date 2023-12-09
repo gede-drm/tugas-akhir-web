@@ -34,8 +34,7 @@ class AnnouncementController extends Controller
             try {
                 $user->notify(new SendNotification(["title" => $title, "body" => $announcement->title]));
             } catch (Exception $e) {
-                $user->fcm_token = null;
-                $user->save();
+                Helper::clearFCMToken($user->id);
             }
         }
 

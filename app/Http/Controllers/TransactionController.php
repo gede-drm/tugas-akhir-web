@@ -16,6 +16,7 @@ use App\Notifications\SendWMA;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PHPUnit\TextUI\Help;
 
 class TransactionController extends Controller
 {
@@ -342,7 +343,13 @@ class TransactionController extends Controller
                     $notifBody = $transaction->tenant->name . " telah selesai melakukan pengerjaan, mohon untuk memberikan rating dari pengerjaan jasa tersebut";
 
                     $residentUser = $transaction->unit->user;
-                    $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                    if ($residentUser->fcm_token != null) {
+                        try {
+                            $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                        } catch (Exception $e) {
+                            Helper::clearFCMToken($residentUser->id);
+                        }
+                    }
                 }
 
                 // Notify User Pro Trx
@@ -351,13 +358,25 @@ class TransactionController extends Controller
                     $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli dari " . $transaction->tenant->name;
 
                     $residentUser = $transaction->unit->user;
-                    $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                    if ($residentUser->fcm_token != null) {
+                        try {
+                            $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                        } catch (Exception $e) {
+                            Helper::clearFCMToken($residentUser->id);
+                        }
+                    }
                 } else if ($status == "Sudah diambil") {
                     $notifTitle = "Barang Sudah Selesai Anda Ambil";
                     $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli dari " . $transaction->tenant->name;
 
                     $residentUser = $transaction->unit->user;
-                    $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                    if ($residentUser->fcm_token != null) {
+                        try {
+                            $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                        } catch (Exception $e) {
+                            Helper::clearFCMToken($residentUser->id);
+                        }
+                    }
                 }
 
                 $arrResponse = ["status" => "success"];
@@ -650,7 +669,11 @@ class TransactionController extends Controller
                         if ($tenUser != null) {
                             $notifTitle = "Anda Mendapat Pesanan Baru!";
                             $notifBody = "Pesanan " . count($tmp['cart']) . " Jenis Barang dari Unit " . $unit->unit_no;
-                            $tenUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                            try {
+                                $tenUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                            } catch (Exception $e) {
+                                Helper::clearFCMToken($tenUser->id);
+                            }
                         }
                     }
 
@@ -832,7 +855,11 @@ class TransactionController extends Controller
                     if ($tenUser != null) {
                         $notifTitle = "Anda Mendapat Pesanan Baru!";
                         $notifBody = "Pesanan dari Unit " . $unit->unit_no;
-                        $tenUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                        try {
+                            $tenUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                        } catch (Exception $e) {
+                            Helper::clearFCMToken($tenUser->id);
+                        }
                     }
 
                     $arrResponse = ["status" => "success", "id" => $transaction->id];
@@ -961,8 +988,14 @@ class TransactionController extends Controller
                             $notifTitle = "Transaksi Berhasil diselesaikan";
                             $notifBody = "Terima kasih telah berbelanja! Terima kasih juga untuk rating yang telah anda berikan";
 
-                            $residentUser = $transaction->unit->user;
-                            $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                            try {
+                                $residentUser = $transaction->unit->user;
+                                $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                            } catch (Exception $e) {
+                                $residentUser = User::find($transaction->unit->user->id);
+                                $residentUser->fcm_token = null;
+                                $residentUser->save();
+                            }
 
                             $arrResponse = ["status" => "success"];
                         } else {
@@ -986,7 +1019,13 @@ class TransactionController extends Controller
                         $notifBody = "Terima kasih telah berbelanja! Terima kasih juga untuk rating yang telah anda berikan";
 
                         $residentUser = $transaction->unit->user;
-                        $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                        if ($residentUser->fcm_token != null) {
+                            try {
+                                $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+                            } catch (Exception $e) {
+                                Helper::clearFCMToken($residentUser->id);
+                            }
+                        }
 
                         $arrResponse = ["status" => "success"];
                     }
@@ -1034,7 +1073,11 @@ class TransactionController extends Controller
             $title = "Jangan Lupa untuk Beli Kebutuhanmu";
             $body = "Beli " . $productName->name . " Sekarang!";
             if ($userResident->fcm_token != null) {
-                $userResident->notify(new SendWMA(['title' => $title, 'body' => $body, 'delay' => $resultWMA]));
+                try {
+                    $userResident->notify(new SendWMA(['title' => $title, 'body' => $body, 'delay' => $resultWMA]));
+                } catch (Exception $e) {
+                    Helper::clearFCMToken($userResident->id);
+                }
             }
         }
     }
