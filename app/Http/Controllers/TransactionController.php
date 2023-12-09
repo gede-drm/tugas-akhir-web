@@ -333,7 +333,7 @@ class TransactionController extends Controller
 
                 $notifTitle = "";
                 $notifBody = "";
-                
+
                 // Done SvcTrx
                 if ($statusName == "done") {
                     $transaction->pickup_date = date("Y-m-d H:i:s");
@@ -989,6 +989,6 @@ class TransactionController extends Controller
     private function wmaForecasting($unit_id, $product_id){
         $unit = Unit::select('id', 'wma_preference', 'user_id')->where('id', $unit_id)->first();
         
-        $proTrxData = 
+        $proTrxData = "";
     }
 }
