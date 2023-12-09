@@ -331,9 +331,6 @@ class TransactionController extends Controller
                 $trxStatus->transaction_id = $transaction_id;
                 $trxStatus->save();
 
-                $notifTitle = "";
-                $notifBody = "";
-
                 // Done SvcTrx
                 if ($statusName == "done") {
                     $transaction->pickup_date = date("Y-m-d H:i:s");
@@ -342,20 +339,26 @@ class TransactionController extends Controller
 
                     $notifTitle = "Pengerjaan Jasa dari ". $transaction->tenant->name ." Sudah Selesai";
                     $notifBody = "Mohon untuk memberikan rating dari pengerjaan jasa tersebut";
+
+                    $residentUser = $transaction->unit->user;
+                    $residentUser->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
                 }
 
                 // Notify User Pro Trx
                 if($status == "Sudah diantar"){
                     $notifTitle = "Barang dari ". $transaction->tenant->name ." Sudah Selesai diantar";
                     $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli";
+
+                    $residentUser = $transaction->unit->user;
+                    $residentUser->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
                 }
                 else if($status == "Sudah diambil"){
                     $notifTitle = "Barang dari ". $transaction->tenant->name ." Sudah Selesai diambil";
                     $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli";
-                }
 
-                $residentUser = $transaction->unit->user;
-                $residentUser->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
+                    $residentUser = $transaction->unit->user;
+                    $residentUser->notify(new SendNotification(["title"=>$notifTitle, "body"=>$notifBody]));
+                }
 
                 $arrResponse = ["status" => "success"];
             } else {
