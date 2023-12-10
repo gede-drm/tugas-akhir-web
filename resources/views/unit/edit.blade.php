@@ -30,8 +30,8 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col-12">
-                        <label for="txtOwnerName" class="form-label">Nama Penghuni</label>
-                        <input type="text" class="form-control" id="txtHolderName" name="owner_name"
+                        <label for="txtOwnerName" class="form-label">Nama Pemilik</label>
+                        <input type="text" class="form-control" id="txtOwnerName" name="owner_name"
                             value="{{ $unit->owner_name }}" required>
                     </div>
                 </div>
