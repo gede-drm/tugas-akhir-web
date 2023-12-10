@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class WMALog extends Model
 {
     use HasFactory;
+    public $table = "wma_logs";
     public $timestamps = false;
     
     public function unit(){

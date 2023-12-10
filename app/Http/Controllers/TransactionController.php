@@ -366,6 +366,10 @@ class TransactionController extends Controller
                             Helper::clearFCMToken($residentUser->id);
                         }
                     }
+
+                    foreach($transaction->products as $tPro){
+                        $this->wmaForecasting($transaction->unit_id, $tPro->id, $tPro->pivot->quantity);
+                    }
                 } else if ($status == "Sudah diambil") {
                     $notifTitle = "Barang Sudah Selesai Anda Ambil";
                     $notifBody = "Mohon untuk menyelesaikan transaksi dan memberikan rating dari barang-barang yang anda beli dari " . $transaction->tenant->name;
@@ -377,6 +381,10 @@ class TransactionController extends Controller
                         } catch (Exception $e) {
                             Helper::clearFCMToken($residentUser->id);
                         }
+                    }
+
+                    foreach($transaction->products as $tPro){
+                        $this->wmaForecasting($transaction->unit_id, $tPro->id, $tPro->pivot->quantity);
                     }
                 }
 
@@ -1042,7 +1050,7 @@ class TransactionController extends Controller
         return $arrResponse;
     }
 
-    public function wmaForecasting($unit_id, $product_id, $quantity)
+    private function wmaForecasting($unit_id, $product_id, $quantity)
     {
         $unit = Unit::select('id', 'wma_preference', 'user_id')->where('id', $unit_id)->first();
 
@@ -1081,7 +1089,7 @@ class TransactionController extends Controller
                     $wmaLog = new WMALog();
                     $wmaLog->date = date('Y-m-d H:i:s');
                     $wmaLog->send_date = date('Y-m-d H:i:s', (strtotime(date('Y-m-d H:i:s'))+$resultWMA));
-                    $wmaLog->description = "";
+                    $wmaLog->description = "Sudah Saatnya untuk membeli " . $productName->name. " kembali!";
                     $wmaLog->unit_id = $unit_id;
                     $wmaLog->save();
                 } catch (Exception $e) {
