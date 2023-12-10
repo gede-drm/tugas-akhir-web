@@ -200,6 +200,7 @@ class UnitController extends Controller
             $unit = Unit::find($unit_id);
             if ($wma != $unit->wma_preference) {
                 $unit->wma_preference = $wma;
+                $unit->save();
 
                 $arrResponse = ["status" => "success"];
             } else {
