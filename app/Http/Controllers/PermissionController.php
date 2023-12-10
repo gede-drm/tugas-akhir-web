@@ -8,10 +8,12 @@ use App\Models\Permit;
 use App\Models\Transaction;
 use App\Models\TransactionStatus;
 use App\Models\Worker;
+use App\Notifications\SendNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Exception;
 
 class PermissionController extends Controller
 {
@@ -74,6 +76,30 @@ class PermissionController extends Controller
         $trxStatus->transaction_id = $permission->serviceTransaction->id;
         $trxStatus->save();
 
+        $resident = $permission->serviceTransaction->unit;
+        if ($resident->user->fcm_token != null) {
+            try {
+                $residentUser = $resident->user;
+                $notifTitle = "Perizinan disetujui";
+                $notifBody = "Perizinan untuk pengerjaan " . $permission->serviceTransaction->services[0]->name . " disetujui oleh manajemen";
+                $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+            } catch (Exception $e) {
+                Helper::clearFCMToken($residentUser->id);
+            }
+        }
+
+        $tenant = $permission->serviceTransaction->services[0]->tenant;
+        if ($tenant->user->fcm_token != null) {
+            try {
+                $tenantUser = $permission->serviceTransaction->unit->user;
+                $notifTitle = "Perizinan disetujui";
+                $notifBody = "Perizinan untuk pengerjaan pada unit " . $resident->unit_no . " disetujui oleh manajemen";
+                $tenantUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+            } catch (Exception $e) {
+                Helper::clearFCMToken($tenantUser->id);
+            }
+        }
+
         return redirect()->route('permission.detail', $permission->id)->with('status', 'Persetujuan Perizinan Berhasil dilakukan!');
     }
 
@@ -113,6 +139,30 @@ class PermissionController extends Controller
         $trxStatus->transaction_id = $permission->serviceTransaction->id;
         $transaction->save();
         $trxStatus->save();
+
+        $resident = $permission->serviceTransaction->unit;
+        if ($resident->user->fcm_token != null) {
+            try {
+                $residentUser = $resident->user;
+                $notifTitle = "Maaf, Perizinan ditolak";
+                $notifBody = "Perizinan untuk pengerjaan " . $permission->serviceTransaction->services[0]->name . " ditolak oleh manajemen";
+                $residentUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+            } catch (Exception $e) {
+                Helper::clearFCMToken($residentUser->id);
+            }
+        }
+
+        $tenant = $permission->serviceTransaction->services[0]->tenant;
+        if ($tenant->user->fcm_token != null) {
+            try {
+                $tenantUser = $permission->serviceTransaction->unit->user;
+                $notifTitle = "Maaf, Perizinan ditolak";
+                $notifBody = "Perizinan untuk pengerjaan pada unit " . $resident->unit_no . " ditolak oleh manajemen";
+                $tenantUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
+            } catch (Exception $e) {
+                Helper::clearFCMToken($tenantUser->id);
+            }
+        }
 
         return redirect()->route('permission.detail', $permission->id)->with('status', 'Persetujuan Perizinan Berhasil dilakukan!');
     }
