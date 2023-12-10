@@ -221,6 +221,9 @@ class UnitController extends Controller
         if ($tokenValidation == true) {
             $wmalogs = WMALog::select('send_date', 'description')->whereRaw('timestampdiff(day, now(), send_date) < 3')->where('unit_id', $unit_id)->limit(3)->get();
             if(count($wmalogs) > 0){
+                foreach($wmalogs as $wmalog){
+                    $wmalog->send_date = date('d-m-Y', strtotime($wmalog->send_date));
+                }
                 $arrResponse = ["status" => "success", "data"=>$wmalogs];    
             }
             else{
