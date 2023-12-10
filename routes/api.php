@@ -82,6 +82,7 @@ Route::post('resident/registerfcm', [UserController::class, 'rdtRegisterFCMToken
 
 Route::post('resident/unitinfo', [UnitController::class, 'rdtGetUnitInfo']);
 Route::post('resident/changewmapref', [UnitController::class, 'rdtChangeWMAPref']);
+Route::post('resident/getwmalogs', [UnitController::class, 'rdtGetWMALogs']);
 
 Route::post('resident/package/list', [PackageController::class, 'rdtPackageList']);
 Route::post('resident/package/detail', [PackageController::class, 'rdtPackageDetail']);

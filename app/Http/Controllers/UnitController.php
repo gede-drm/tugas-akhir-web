@@ -6,6 +6,7 @@ use App\Models\Helper;
 use App\Models\Tower;
 use App\Models\Unit;
 use App\Models\User;
+use App\Models\WMALog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -205,6 +206,25 @@ class UnitController extends Controller
                 $arrResponse = ["status" => "success"];
             } else {
                 $arrResponse = ["status" => "nothingchanged"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+    public function rdtGetWMALogs(Request $request)
+    {
+        $unit_id = $request->get('unit_id');
+        $token = $request->get('token');
+
+        $tokenValidation = Helper::validateToken($token);
+        if ($tokenValidation == true) {
+            $wmalogs = WMALog::select('send_date', 'description')->whereRaw('timestampdiff(day, now(), send_date) < 3')->where('unit_id', $unit_id)->limit(3)->get();
+            if(count($wmalogs) > 0){
+                $arrResponse = ["status" => "success", "data"=>$wmalogs];    
+            }
+            else{
+                $arrResponse = ["status" => "empty"];    
             }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
