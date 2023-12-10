@@ -367,7 +367,7 @@ class TransactionController extends Controller
                         }
                     }
 
-                    foreach($transaction->products as $tPro){
+                    foreach ($transaction->products as $tPro) {
                         $this->wmaForecasting($transaction->unit_id, $tPro->id, $tPro->pivot->quantity);
                     }
                 } else if ($status == "Sudah diambil") {
@@ -383,7 +383,7 @@ class TransactionController extends Controller
                         }
                     }
 
-                    foreach($transaction->products as $tPro){
+                    foreach ($transaction->products as $tPro) {
                         $this->wmaForecasting($transaction->unit_id, $tPro->id, $tPro->pivot->quantity);
                     }
                 }
@@ -1055,45 +1055,47 @@ class TransactionController extends Controller
         $unit = Unit::select('id', 'wma_preference', 'user_id')->where('id', $unit_id)->first();
 
         $proTrxData = DB::select(DB::raw("select ptd.product_id, sum(ptd.quantity) as 'qty', t.pickup_date from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id where t.pickup_date is not null and ptd.product_id = '" . $product_id . "' and t.unit_id='" . $unit->id . "' group by t.pickup_date, ptd.product_id limit " . $unit->wma_preference . ";"));
-        if (count($proTrxData) == $unit->wma_preference) {
-            $datetimediff = [];
-            foreach ($proTrxData as $key => $data) {
-                if ($key < count($proTrxData) - 1) {
-                    $datetimediff[] = ((strtotime($data->pickup_date)) - (strtotime($proTrxData[$key + 1]->pickup_date))) / $data->qty;
-                } else {
-                    $datetimediff[] = ((strtotime($data->pickup_date)) - (strtotime(date('Y-m-d H:i:s')))) / $data->qty;
+        if ($unit->wma_preference > 0) {
+            if (count($proTrxData) == $unit->wma_preference) {
+                $datetimediff = [];
+                foreach ($proTrxData as $key => $data) {
+                    if ($key < count($proTrxData) - 1) {
+                        $datetimediff[] = ((strtotime($data->pickup_date)) - (strtotime($proTrxData[$key + 1]->pickup_date))) / $data->qty;
+                    } else {
+                        $datetimediff[] = ((strtotime($data->pickup_date)) - (strtotime(date('Y-m-d H:i:s')))) / $data->qty;
+                    }
                 }
-            }
 
-            $totalWMA = 0;
-            $totalWeight = 0;
-            for ($i = 1; $i <= $unit->wma_preference; $i++) {
-                $totalWeight = $totalWeight + $i;
-            }
+                $totalWMA = 0;
+                $totalWeight = 0;
+                for ($i = 1; $i <= $unit->wma_preference; $i++) {
+                    $totalWeight = $totalWeight + $i;
+                }
 
-            for ($i = 1; $i <= $unit->wma_preference; $i++) {
-                $totalWMA = $totalWMA + ($i * ($datetimediff[$i - 1] * -1));
-            }
+                for ($i = 1; $i <= $unit->wma_preference; $i++) {
+                    $totalWMA = $totalWMA + ($i * ($datetimediff[$i - 1] * -1));
+                }
 
-            $resultWMA = floor($totalWMA / $totalWeight) * $quantity;
+                $resultWMA = floor($totalWMA / $totalWeight) * $quantity;
 
-            $userResident = $unit->user;
-            $productName = Product::select('name')->where('id', $product_id)->first();
-            $title = "Jangan Lupa untuk Beli Kebutuhanmu";
-            $body = "Beli " . $productName->name . " Sekarang!";
-            if ($userResident->fcm_token != null) {
-                try {
-                    $delay = now()->addSeconds($resultWMA);
-                    $userResident->notify((new SendNotification(['title' => $title, 'body' => $body]))->delay($delay));
+                $userResident = $unit->user;
+                $productName = Product::select('name')->where('id', $product_id)->first();
+                $title = "Jangan Lupa untuk Beli Kebutuhanmu";
+                $body = "Beli " . $productName->name . " Sekarang!";
+                if ($userResident->fcm_token != null) {
+                    try {
+                        $delay = now()->addSeconds($resultWMA);
+                        $userResident->notify((new SendNotification(['title' => $title, 'body' => $body]))->delay($delay));
 
-                    $wmaLog = new WMALog();
-                    $wmaLog->date = date('Y-m-d H:i:s');
-                    $wmaLog->send_date = date('Y-m-d H:i:s', (strtotime(date('Y-m-d H:i:s'))+$resultWMA));
-                    $wmaLog->description = "Sudah Saatnya untuk membeli " . $productName->name. " kembali!";
-                    $wmaLog->unit_id = $unit_id;
-                    $wmaLog->save();
-                } catch (Exception $e) {
-                    Helper::clearFCMToken($userResident->id);
+                        $wmaLog = new WMALog();
+                        $wmaLog->date = date('Y-m-d H:i:s');
+                        $wmaLog->send_date = date('Y-m-d H:i:s', (strtotime(date('Y-m-d H:i:s')) + $resultWMA));
+                        $wmaLog->description = "Sudah Saatnya untuk membeli " . $productName->name . " kembali!";
+                        $wmaLog->unit_id = $unit_id;
+                        $wmaLog->save();
+                    } catch (Exception $e) {
+                        Helper::clearFCMToken($userResident->id);
+                    }
                 }
             }
         }
