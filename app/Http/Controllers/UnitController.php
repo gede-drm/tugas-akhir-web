@@ -166,8 +166,46 @@ class UnitController extends Controller
             } else {
                 $arrResponse = ["status" => "empty"];
             }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
         }
-        else{
+        return $arrResponse;
+    }
+
+    // Residents' App API
+    public function rdtGetUnitInfo(Request $request)
+    {
+        $unit_id = $request->get('unit_id');
+        $token = $request->get('token');
+
+        $tokenValidation = Helper::validateToken($token);
+        if ($tokenValidation == true) {
+            $unit = Unit::find($unit_id);
+            $arrData = ["unit_no" => $unit->unit_no, "owner_name" => $unit->owner_name, "holder_name" => $unit->holder_name, "holder_ph_number" => $unit->holder_ph_number, "wma_preference" => $unit->wma_preference];
+
+            $arrResponse = ["status" => "success", "data" => $arrData];
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+    public function rdtChangeWMAPref(Request $request)
+    {
+        $unit_id = $request->get('unit_id');
+        $wma = $request->get('wma_preference');
+        $token = $request->get('token');
+
+        $tokenValidation = Helper::validateToken($token);
+        if ($tokenValidation == true) {
+            $unit = Unit::find($unit_id);
+            if ($wma != $unit->wma_preference) {
+                $unit->wma_preference = $wma;
+
+                $arrResponse = ["status" => "success"];
+            } else {
+                $arrResponse = ["status" => "nothingchanged"];
+            }
+        } else {
             $arrResponse = ["status" => "notauthenticated"];
         }
         return $arrResponse;
