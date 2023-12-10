@@ -11,6 +11,7 @@ use App\Models\Transaction;
 use App\Models\TransactionStatus;
 use App\Models\Unit;
 use App\Models\User;
+use App\Models\WMALog;
 use App\Notifications\SendNotification;
 use App\Notifications\SendWMA;
 use Exception;
@@ -1076,6 +1077,13 @@ class TransactionController extends Controller
                 try {
                     $delay = now()->addSeconds($resultWMA);
                     $userResident->notify((new SendNotification(['title' => $title, 'body' => $body]))->delay($delay));
+
+                    $wmaLog = new WMALog();
+                    $wmaLog->date = date('Y-m-d H:i:s');
+                    $wmaLog->send_date = date('Y-m-d H:i:s', (strtotime(date('Y-m-d H:i:s'))+$resultWMA));
+                    $wmaLog->description = "";
+                    $wmaLog->unit_id = $unit_id;
+                    $wmaLog->save();
                 } catch (Exception $e) {
                     Helper::clearFCMToken($userResident->id);
                 }
