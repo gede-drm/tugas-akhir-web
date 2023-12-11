@@ -31,13 +31,13 @@ class Helper extends Model
     {
         $userSecurity = User::whereRelation('security', 'id', $securityId)->first();
         if ($userSecurity != null) {
-            $shift = SecurityOfficerCheckin::whereRaw("(timestampdiff(minute, now(), check_in) < 0 and timestampdiff(minute, now(), check_out)>0)")->whereRelation('tower', 'tower_id', $towerId)->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
+            $shift = SecurityOfficerCheckin::whereRaw("(timestampdiff(second, now(), check_in) < 0 and timestampdiff(second, now(), check_out)>0)")->whereRelation('tower', 'tower_id', $towerId)->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
             $status = "";
 
             if ($shift != null) {
                 $status = 'exist';
             } else {
-                $otherShift = SecurityOfficerCheckin::whereRaw("(timestampdiff(minute, now(), check_in) < 0 and timestampdiff(minute, now(), check_out)>0)")->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
+                $otherShift = SecurityOfficerCheckin::whereRaw("(timestampdiff(second, now(), check_in) < 0 and timestampdiff(second, now(), check_out)>0)")->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
                 if ($otherShift != null) {
                     $status = 'othershift';
                     $userSecurity->api_token = null;
