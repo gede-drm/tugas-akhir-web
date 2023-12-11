@@ -43,7 +43,7 @@ class UserController extends Controller
         if ($userSecurity != null) {
             if ($userSecurity->role == 'security') {
                 if (Hash::check($password, $userSecurity->password)) {
-                    $shift = SecurityOfficerCheckin::whereRaw("(timestampdiff(minute, now(), check_in) < 0 and timestampdiff(minute, now(), check_out)>0)")->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
+                    $shift = SecurityOfficerCheckin::whereRaw("(timestampdiff(second, now(), check_in) < 0 and timestampdiff(second, now(), check_out)>0)")->orderBy('check_in', 'desc')->where('security_officer_id', $userSecurity->security->id)->first();
                     if ($shift != null) {
                         $token = Helper::generateToken();
                         $userSecurity->api_token = $token;
