@@ -44,10 +44,9 @@ class TenantController extends Controller
         }
         if ($request->get('type') == 'service') {
             $newTenant->type = 'service';
-            if($request->get('svc_type') == 'laundry'){
+            if ($request->get('svc_type') == 'laundry') {
                 $newTenant->service_type = 'laundry';
-            }
-            else{
+            } else {
                 $newTenant->service_type = 'other';
             }
         }
@@ -97,11 +96,10 @@ class TenantController extends Controller
         $tenant->name = $request->get('tenant_name');
         $tenant->address = $request->get('tenant_address');
         $tenant->phone_number = $request->get('phone_number');
-        if($tenant->type == 'service'){
-            if($request->get('svc_type') == 'laundry'){
+        if ($tenant->type == 'service') {
+            if ($request->get('svc_type') == 'laundry') {
                 $tenant->service_type = 'laundry';
-            }
-            else{
+            } else {
                 $tenant->service_type = 'other';
             }
         }
@@ -217,6 +215,66 @@ class TenantController extends Controller
                 }
             } else {
                 $arrResponse = ["status" => "notfound"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function tenGetRevenueSummary(Request $request)
+    {
+        $tenant_id = $request->get('tenant_id');
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $tenant = Tenant::find($tenant_id);
+            if ($tenant != null) {
+                $totalRevenue = 0;
+                $totalSold = 0;
+                $monthRevenue = 0;
+                $monthSold = 0;
+                $todayRevenue = 0;
+                $todaySold = 0;
+                if ($tenant->type = "product") {
+                    $queryTotal = DB::select(DB::raw("select sum(ptd.quantity * ptd.price) as 'revenue', sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done';"))[0];
+                    $queryMonth = DB::select(DB::raw("select sum(ptd.quantity * ptd.price) as 'revenue', sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done' and month(t.pickup_date) = month(now());"))[0];
+                    $queryToday = DB::select(DB::raw("select sum(ptd.quantity * ptd.price) as 'revenue', sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done' and date(t.pickup_date) =curdate();"))[0];
+                } else {
+                    $queryTotal = DB::select(DB::raw("select sum(std.quantity * std.price) as 'revenue', sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done';"))[0];
+                    $queryMonth = DB::select(DB::raw("select sum(std.quantity * std.price) as 'revenue', sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done' and month(t.pickup_date) = month(now());"))[0];
+                    $queryToday = DB::select(DB::raw("select sum(std.quantity * std.price) as 'revenue', sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done' and date(t.pickup_date) = curdate();"))[0];
+                }
+
+                if ($queryTotal->revenue != null) {
+                    $totalRevenue = $queryTotal->revenue;
+                    $totalSold = $queryTotal->sold;
+                } else {
+                    $totalRevenue = 0;
+                    $totalSold = 0;
+                }
+
+                if ($queryMonth->revenue != null) {
+                    $monthRevenue = $queryMonth->revenue;
+                    $monthSold = $queryMonth->sold;
+                } else {
+                    $monthRevenue = 0;
+                    $monthSold = 0;
+                }
+
+                if ($queryToday->revenue != null) {
+                    $todayRevenue = $queryToday->revenue;
+                    $todaySold = $queryToday->sold;
+                } else {
+                    $todayRevenue = 0;
+                    $todaySold = 0;
+                }
+
+                $arrResponse = ["status" => "success", "total_revenue" => $totalRevenue, "total_sold" => $totalSold, "month_revenue" => $monthRevenue, "month_sold" => $monthSold, "today_revenue" => $todayRevenue, "today_sold" => $todaySold];
+            } else {
+                $arrResponse = ["status" => "wrongtenant"];
             }
         } else {
             $arrResponse = ["status" => "notauthenticated"];

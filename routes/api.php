@@ -50,6 +50,7 @@ Route::post('tenant/registerfcm', [UserController::class, 'tenRegisterFCMToken']
 Route::post('tenant/getprofile', [TenantController::class, 'getTenantProfile']);
 Route::post('tenant/getstatus', [TenantController::class, 'getTenantStatus']);
 Route::post('tenant/changestatus', [TenantController::class, 'changeTenantStatus']);
+Route::post('tenant/revenuesummary', [TenantController::class, 'tenGetRevenueSummary']);
 
 Route::post('tenant/getproducts', [ProductController::class, 'tenProductsList']);
 Route::post('tenant/addproduct', [ProductController::class, 'tenAddProduct']);
