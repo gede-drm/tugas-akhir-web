@@ -109,3 +109,4 @@ Route::post('resident/transaction/getitemtorate', [TransactionController::class,
 Route::post('resident/transaction/rateitem', [TransactionController::class, 'rdtSubmitItemsRate']);
 
 Route::post('resident/announcement/get', [AnnouncementController::class, 'rdtGetLatestAnnouncement']);
+Route::post('resident/announcement/getoneweek', [AnnouncementController::class, 'rdtGetOneWeekLatestAnnouncement']);

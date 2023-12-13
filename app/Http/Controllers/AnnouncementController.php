@@ -62,4 +62,26 @@ class AnnouncementController extends Controller
         }
         return $arrResponse;
     }
+
+    public function rdtGetOneWeekLatestAnnouncement(Request $request)
+    {
+        $token = $request->get('token');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $announcements = Announcement::select('date', 'title', 'description')->whereRaw('(timestampdiff(day, date(`date`), date(now())) between 0 and 7)')->orderBy('date', 'desc')->get();
+            if (count($announcements) > 0) {
+                foreach ($announcements as $ann) {
+                    $ann->date = date("d-m-Y H:i", strtotime($ann->date));
+                }
+                $arrResponse = ["status" => "success", "data" => $announcements];
+            } else {
+                $arrResponse = ["status" => "empty"];
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
 }
