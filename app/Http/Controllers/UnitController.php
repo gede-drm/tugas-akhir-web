@@ -219,7 +219,7 @@ class UnitController extends Controller
 
         $tokenValidation = Helper::validateToken($token);
         if ($tokenValidation == true) {
-            $wmalogs = WMALog::select('send_date', 'description')->whereRaw('timestampdiff(day, now(), send_date) < 3')->where('unit_id', $unit_id)->limit(3)->get();
+            $wmalogs = WMALog::select('send_date', 'description')->whereRaw('(timestampdiff(day, date(now()), date(send_date)) between 0 and 3)')->where('unit_id', $unit_id)->get();
             if(count($wmalogs) > 0){
                 foreach($wmalogs as $wmalog){
                     $wmalog->send_date = date('d-m-Y', strtotime($wmalog->send_date));
