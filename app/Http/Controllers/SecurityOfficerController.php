@@ -88,7 +88,7 @@ class SecurityOfficerController extends Controller
         $security_id = $request->get('satpam_id');
         $security_name = SecurityOfficer::select('name')->where('id', $security_id)->first()->name;
 
-        $date = date('Y-m-d H:i');
+        $date = date('Y-m-d H:i:s');
         $shift_duration = SystemSetting::select('value')->where('configuration_name', 'security_shift')->first();
         $checkin = new SecurityOfficerCheckin();
         $checkin->check_in = $date;
