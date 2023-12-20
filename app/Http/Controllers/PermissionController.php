@@ -91,7 +91,7 @@ class PermissionController extends Controller
         $tenant = $permission->serviceTransaction->services[0]->tenant;
         if ($tenant->user->fcm_token != null) {
             try {
-                $tenantUser = $permission->serviceTransaction->unit->user;
+                $tenantUser = $tenant->user;
                 $notifTitle = "Perizinan disetujui";
                 $notifBody = "Perizinan untuk pengerjaan pada unit " . $resident->unit_no . " disetujui oleh manajemen";
                 $tenantUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
@@ -155,7 +155,7 @@ class PermissionController extends Controller
         $tenant = $permission->serviceTransaction->services[0]->tenant;
         if ($tenant->user->fcm_token != null) {
             try {
-                $tenantUser = $permission->serviceTransaction->unit->user;
+                $tenantUser = $tenant->user;
                 $notifTitle = "Maaf, Perizinan ditolak";
                 $notifBody = "Perizinan untuk pengerjaan pada unit " . $resident->unit_no . " ditolak oleh manajemen";
                 $tenantUser->notify(new SendNotification(["title" => $notifTitle, "body" => $notifBody]));
