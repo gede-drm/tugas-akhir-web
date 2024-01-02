@@ -1085,6 +1085,7 @@ class TransactionController extends Controller
                 foreach ($proTrxData as $key => $data) {
                     if ($key == 0) {
                         $datetimediff[] = ((strtotime(date('Y-m-d H:i:s'))) - (strtotime($data->date))) / $data->qty;
+                        $datetimediff[] = ((strtotime($data->date)) - (strtotime($proTrxData[$key + 1]->date))) / $data->qty;
                     } else {
                         if ($key < count($proTrxData)-1) {
                             $datetimediff[] = ((strtotime($data->date)) - (strtotime($proTrxData[$key + 1]->date))) / $data->qty;
@@ -1102,7 +1103,7 @@ class TransactionController extends Controller
                     $totalWMA = $totalWMA + ($i * ($datetimediff[$i - 1] * -1));
                 }
 
-                $resultWMA = floor($totalWMA / $totalWeight) * $quantity;
+                $resultWMA = round($totalWMA / $totalWeight) * $quantity;
 
                 $userResident = $unit->user;
                 $productName = Product::select('name')->where('id', $product_id)->first();
