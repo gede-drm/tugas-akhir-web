@@ -1079,9 +1079,9 @@ class TransactionController extends Controller
     {
         $unit = Unit::select('id', 'wma_preference', 'user_id')->where('id', $unit_id)->first();
 
-        $proTrxData = DB::select(DB::raw("select ptd.product_id, sum(ptd.quantity) as 'qty', ts.date from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where (ts.status='pickedup' or ts.status='delivered') and ptd.product_id = '" . $product_id . "' and t.unit_id='" . $unit_id . "' group by ts.date, ptd.product_id order by date desc limit " . ($unit->wma_preference+1) . ";"));
+        $proTrxData = DB::select(DB::raw("select ptd.product_id, sum(ptd.quantity) as 'qty', ts.date from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where (ts.status='pickedup' or ts.status='delivered') and ptd.product_id = '" . $product_id . "' and t.unit_id='" . $unit_id . "' group by ts.date, ptd.product_id order by date desc limit " . $unit->wma_preference . ";"));
         if ($unit->wma_preference > 0) {
-            if (count($proTrxData) == ($unit->wma_preference+1)) {
+            if (count($proTrxData) == $unit->wma_preference) {
                 $datetimediff = [];
                 foreach ($proTrxData as $key => $data) {
                     if ($key < count($proTrxData) - 1) {
