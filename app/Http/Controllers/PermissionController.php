@@ -70,8 +70,8 @@ class PermissionController extends Controller
             $trxStatus->status = "notransferproof";
             $trxStatus->description = "Belum Pembayaran";
         } else {
-            $trxStatus->status = "payment";
-            $trxStatus->description = "Pembayaran Belum dikonfirmasi";
+            $trxStatus->status = "waiting";
+            $trxStatus->description = "Menunggu Pengerjaan";
         }
         $trxStatus->transaction_id = $permission->serviceTransaction->id;
         $trxStatus->save();
