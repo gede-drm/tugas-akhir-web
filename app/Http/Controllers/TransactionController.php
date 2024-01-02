@@ -464,15 +464,14 @@ class TransactionController extends Controller
                         $trxStatus->transaction_id = $transaction_id;
                         $trxStatus->save();
                     } else {
-                        if($transaction->delivery == "delivery"){
+                        if ($transaction->delivery == "delivery") {
                             $trxStatus = new TransactionStatus();
                             $trxStatus->date = date("Y-m-d H:i:s", strtotime('-1 seconds'));
                             $trxStatus->status = "waiting";
                             $trxStatus->description = "Menunggu Pengambilan";
                             $trxStatus->transaction_id = $transaction_id;
                             $trxStatus->save();
-                        }
-                        else{
+                        } else {
                             $trxStatus = new TransactionStatus();
                             $trxStatus->date = date("Y-m-d H:i:s", strtotime('-1 seconds'));
                             $trxStatus->status = "waiting";
@@ -1084,10 +1083,10 @@ class TransactionController extends Controller
             if (count($proTrxData) == $unit->wma_preference) {
                 $datetimediff = [];
                 foreach ($proTrxData as $key => $data) {
-                    if ($key < count($proTrxData) - 1) {
-                        $datetimediff[] = ((strtotime($data->date)) - (strtotime($proTrxData[$key + 1]->date))) / $data->qty;
+                    if ($key == 0) {
+                        $datetimediff[] = ((strtotime(date('Y-m-d H:i:s'))) - (strtotime($data->date))) / $data->qty;
                     } else {
-                        $datetimediff[] = ((strtotime($data->date)) - (strtotime(date('Y-m-d H:i:s')))) / $data->qty;
+                        $datetimediff[] = ((strtotime($data->date)) - (strtotime($proTrxData[$key + 1]->date))) / $data->qty;
                     }
                 }
 
