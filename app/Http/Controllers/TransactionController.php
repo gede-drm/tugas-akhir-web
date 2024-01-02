@@ -1103,7 +1103,7 @@ class TransactionController extends Controller
                     $totalWMA = $totalWMA + ($i * ($datetimediff[$i - 1]));
                 }
 
-                $resultWMA = round($totalWMA / $totalWeight) * $quantity;
+                $resultWMA = floor($totalWMA / $totalWeight) * $quantity;
 
                 $userResident = $unit->user;
                 $productName = Product::select('name')->where('id', $product_id)->first();
