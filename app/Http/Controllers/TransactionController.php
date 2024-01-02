@@ -1084,11 +1084,11 @@ class TransactionController extends Controller
                 $datetimediff = [];
                 foreach ($proTrxData as $key => $data) {
                     if ($key == 0) {
-                        $datetimediff[] = ((strtotime(date('Y-m-d H:i:s'))) - (strtotime($data->date))) / $data->qty;
-                        $datetimediff[] = ((strtotime($data->date)) - (strtotime($proTrxData[$key + 1]->date))) / $data->qty;
+                        $datetimediff[] = ((strtotime(date('Y-m-d'))) - (strtotime(date('Y-m-d', strtotime($data->date))))) / $data->qty;
+                        $datetimediff[] = ((strtotime(date('Y-m-d',strtotime($data->date)))) - (strtotime(date('Y-m-d', strtotime($proTrxData[$key + 1]->date))))) / $data->qty;
                     } else {
                         if ($key < count($proTrxData)-1) {
-                            $datetimediff[] = ((strtotime($data->date)) - (strtotime($proTrxData[$key + 1]->date))) / $data->qty;
+                            $datetimediff[] = (strtotime(date('Y-m-d',(strtotime($data->date)))) - (strtotime(date('Y-m-d',strtotime($proTrxData[$key + 1]->date))))) / $data->qty;
                         }
                     }
                 }
