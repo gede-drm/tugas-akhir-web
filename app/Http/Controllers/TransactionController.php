@@ -454,6 +454,34 @@ class TransactionController extends Controller
                 $trxStatus->description = "Pembayaran dikonfirmasi";
                 $trxStatus->transaction_id = $transaction_id;
                 $trxStatus->save();
+
+                if ($transaction->tenant->type == 'service') {
+                    if ($transaction->tenant->service_type == 'other') {
+                        $trxStatus = new TransactionStatus();
+                        $trxStatus->date = date("Y-m-d H:i:s", strtotime('-1 seconds'));
+                        $trxStatus->status = "waiting";
+                        $trxStatus->description = "Menunggu Pengerjaan";
+                        $trxStatus->transaction_id = $transaction_id;
+                        $trxStatus->save();
+                    } else {
+                        if($transaction->delivery == "delivery"){
+                            $trxStatus = new TransactionStatus();
+                            $trxStatus->date = date("Y-m-d H:i:s", strtotime('-1 seconds'));
+                            $trxStatus->status = "waiting";
+                            $trxStatus->description = "Menunggu Pengambilan";
+                            $trxStatus->transaction_id = $transaction_id;
+                            $trxStatus->save();
+                        }
+                        else{
+                            $trxStatus = new TransactionStatus();
+                            $trxStatus->date = date("Y-m-d H:i:s", strtotime('-1 seconds'));
+                            $trxStatus->status = "waiting";
+                            $trxStatus->description = "Menunggu Laundry";
+                            $trxStatus->transaction_id = $transaction_id;
+                            $trxStatus->save();
+                        }
+                    }
+                }
                 $arrResponse = ["status" => "success"];
             } else {
                 $arrResponse = ["status" => "notfound"];
@@ -781,18 +809,8 @@ class TransactionController extends Controller
                     $trxStatus->status = 'order';
                     $trxStatus->description = 'Belum dikonfirmasi';
                 } else {
-                    if ($transactionData->tenant->service_type == "other") {
-                        $trxStatus->status = 'waiting';
-                        $trxStatus->description = 'Menunggu Pengerjaan';
-                    } else {
-                        if ($transactionData->delivery == "delivery") {
-                            $trxStatus->status = 'waiting';
-                            $trxStatus->description = 'Menunggu Pengambilan';
-                        } else {
-                            $trxStatus->status = 'waiting';
-                            $trxStatus->description = 'Menunggu Laundry';
-                        }
-                    }
+                    $trxStatus->status = 'payment';
+                    $trxStatus->description = 'Pembayaran Belum dikonfirmasi';
                 }
                 $trxStatus->transaction_id = $transactionData->id;
                 $trxStatus->save();
