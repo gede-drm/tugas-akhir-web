@@ -1100,7 +1100,7 @@ class TransactionController extends Controller
                 }
 
                 for ($i = 1; $i <= $unit->wma_preference; $i++) {
-                    $totalWMA = $totalWMA + ($i * ($datetimediff[$i - 1] * -1));
+                    $totalWMA = $totalWMA + ($i * ($datetimediff[$i - 1]));
                 }
 
                 $resultWMA = round($totalWMA / $totalWeight) * $quantity;
