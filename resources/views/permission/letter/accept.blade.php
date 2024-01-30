@@ -9,7 +9,7 @@
     <style>
         * {
             font-family: 'Arial', 'Sans-serif';
-            font-size: 12pt;
+            font-size: 11pt;
             color: black;
             background: white;
             line-height: 14pt;
@@ -142,8 +142,8 @@
             </tr>
         </table>
         <p>Demikian surat ini dibuat untuk dapat digunakan dengan sebaik-baiknya. Terima kasih.</p>
-        <table style="width: 100%;">
-            <tr>
+        <table style="width: 100%; border: none;">
+            <tr class="border: none;">
                 <td style="width: 50%; text-align: center;">Tenant,</td>
                 <td style="width: 50%; text-align: center;">Manajemen,</td>
             </tr>
@@ -151,7 +151,7 @@
             <br>
             <br>
             <br>
-            <tr>
+            <tr class="border: none;">
                 <td style="width: 50%;"><div style="margin: auto; width: 80%; border-bottom: 1px solid black;"></div></td>
                 <td style="width: 50%;"><div style="margin: auto; width: 80%; border-bottom: 1px solid black;"></div></td>
             </tr>
