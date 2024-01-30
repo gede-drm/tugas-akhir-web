@@ -16,7 +16,7 @@
         }
 
         body {
-            margin: 50px 50px;
+            margin: 30px 30px;
         }
 
         .text-start {
