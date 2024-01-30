@@ -16,6 +16,14 @@
                 @endif
             </h4>
             <table class="table table-borderless">
+                @if ($permission->status != null)
+                    @if ($permission->status == 'accept')
+                    <tr>
+                        <td><strong>Nomor Surat</strong></td>
+                        <td>{{ $permission->perm_number }}</td>
+                    </tr>
+                    @endif
+                @endif
                 <tr>
                     <td><strong>Unit Pemohon</strong></td>
                     <td>{{ $permission->serviceTransaction->unit->unit_no }}</td>
