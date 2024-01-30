@@ -18,10 +18,10 @@
             <table class="table table-borderless">
                 @if ($permission->status != null)
                     @if ($permission->status == 'accept')
-                    <tr>
-                        <td><strong>Nomor Surat</strong></td>
-                        <td>{{ $permission->perm_number }}</td>
-                    </tr>
+                        <tr>
+                            <td><strong>Nomor Surat</strong></td>
+                            <td>{{ $permission->perm_number }}</td>
+                        </tr>
                     @endif
                 @endif
                 <tr>
@@ -97,7 +97,7 @@
                                         <th>Nama Pegawai</th>
                                         <th>Satpam yang Bertugas</th>
                                     </tr>
-                                    @if (count($permission->permits)>0)
+                                    @if (count($permission->permits) > 0)
                                         @foreach ($permission->permits as $key => $permit)
                                             <tr>
                                                 <td>{{ $key + 1 }}</td>
