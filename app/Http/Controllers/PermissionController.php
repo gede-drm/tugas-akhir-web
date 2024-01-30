@@ -49,6 +49,9 @@ class PermissionController extends Controller
         $permission->qr_url = $qrFileName;
 
         $tenant = $permission->serviceTransaction->services[0]->tenant;
+        $permNumber = 'PERM/A/'.date('Y').'/'.Helper::monthToRoman(date('m')).'/'.$tenant->id.'/'.$permisssionId;
+        $permission->perm_number = $permNumber;
+
         $letterFileName = 'permission-letter-' . $permission->id . md5($strCode) . '.pdf';
         $letterFileDirectory = '../public/permissions/approval-letter/' . $letterFileName;
         $data = ['permission' => $permission, 'tenant' => $tenant, 'date' => $date];

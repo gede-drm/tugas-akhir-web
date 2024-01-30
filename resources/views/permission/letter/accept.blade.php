@@ -64,6 +64,7 @@
 <body>
     <div class="text-center" style="font-size: 14pt;">
         <p><strong><u>SURAT PERSETUJUAN PERIZINAN RENOVASI</u></strong></p>
+        <p><strong>No. {{ $permission->perm_number }}</strong></p>
     </div>
     <br>
     <div class="text-justify">

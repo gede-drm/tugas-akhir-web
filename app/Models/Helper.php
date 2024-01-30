@@ -60,5 +60,10 @@ class Helper extends Model
         $user->fcm_token = null;
         $user->save();
     }
+    public static function monthToRoman($month){
+        $roman = ['I', 'II','III','IV','V','VI','VII','VIII','IX','X','XI','XII'];
+        $monthRoman = $roman[$month-1];
+        return $monthRoman;
+    }
     public static $base_url = "https://gede-darma.my.id/";
 }
