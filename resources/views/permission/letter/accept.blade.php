@@ -63,13 +63,13 @@
 
 <body>
     <div class="text-center" style="font-size: 14pt;">
-        <p class="mb-0"><strong><u>SURAT PERSETUJUAN PERIZINAN RENOVASI</u></strong></p>
+        <p class="mb-0"><strong><u>SURAT KONTRAK PENGERJAAN DAN IZIN RENOVASI</u></strong></p>
         <p class="mt-0"><strong>No. {{ $permission->perm_number }}</strong></p>
     </div>
     <br>
     <div class="text-justify">
         <p>Dengan surat ini, pada tanggal {{ date('d-m-Y') }} pihak manajemen apartemen <strong>menyetujui</strong> pengerjaan
-            renovasi yang telah diajukan pada tanggal {{ date('d-m-Y H:i', strtotime($permission->proposal_date)) }} dengan detail tertera di bawah ini.</p>
+            renovasi yang telah diajukan pada tanggal {{ date('d-m-Y H:i', strtotime($permission->proposal_date)) }} dengan detail kontrak tertera di bawah ini.</p>
         <p class="mb-0"><strong>Unit Apartemen</strong></p>
         <table style="width: 100%;" class="text-start">
             <tr>
@@ -141,7 +141,22 @@
                 </td>
             </tr>
         </table>
-        <p>Demikian surat persetujuan ini dibuat untuk dapat digunakan dengan sebaik-baiknya. Terima kasih.</p>
+        <p>Demikian surat ini dibuat untuk dapat digunakan dengan sebaik-baiknya. Terima kasih.</p>
+        <table style="width: 100%;">
+            <tr>
+                <td style="width: 50%; text-align: center;">Tenant,</td>
+                <td style="width: 50%; text-align: center;">Manajemen,</td>
+            </tr>
+            <br>
+            <br>
+            <br>
+            <br>
+            <tr>
+                <td style="width: 50%;"><div style="margin: auto; width: 80%; border-bottom: 1px solid black;"></div></td>
+                <td style="width: 50%;"><div style="margin: auto; width: 80%; border-bottom: 1px solid black;"></div></td>
+            </tr>
+        </table>
+        <br>
         <br>
         <br>
         <p class="mb-0"><strong>Catatan:</strong></p>
