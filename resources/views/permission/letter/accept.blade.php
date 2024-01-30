@@ -144,16 +144,16 @@
         <p>Demikian surat ini dibuat untuk dapat digunakan dengan sebaik-baiknya. Terima kasih.</p>
         <table style="width: 100%; border: none;">
             <tr class="border: none;">
-                <td style="width: 50%; text-align: center;">Tenant,</td>
-                <td style="width: 50%; text-align: center;">Manajemen,</td>
+                <td style="width: 50%; text-align: center; border: none;">Tenant,</td>
+                <td style="width: 50%; text-align: center; border: none;">Manajemen,</td>
             </tr>
             <br>
             <br>
             <br>
             <br>
             <tr class="border: none;">
-                <td style="width: 50%;"><div style="margin: auto; width: 80%; border-bottom: 1px solid black;"></div></td>
-                <td style="width: 50%;"><div style="margin: auto; width: 80%; border-bottom: 1px solid black;"></div></td>
+                <td style="width: 50%; border: none;"><div style="margin: auto; width: 80%; border-bottom: 1px solid black;"></div></td>
+                <td style="width: 50%; border: none;"><div style="margin: auto; width: 80%; border-bottom: 1px solid black;"></div></td>
             </tr>
         </table>
         <br>
