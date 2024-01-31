@@ -6,6 +6,7 @@ use App\Models\Helper;
 use App\Models\Product;
 use App\Models\Service;
 use App\Models\Tenant;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -239,13 +240,13 @@ class TenantController extends Controller
                 $todayRevenue = 0;
                 $todaySold = 0;
                 if ($tenant->type = "product") {
-                    $queryTotal = DB::select(DB::raw("select sum(ptd.quantity * ptd.price) as 'revenue', sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done';"))[0];
-                    $queryMonth = DB::select(DB::raw("select sum(ptd.quantity * ptd.price) as 'revenue', sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done' and month(t.pickup_date) = month(now());"))[0];
-                    $queryToday = DB::select(DB::raw("select sum(ptd.quantity * ptd.price) as 'revenue', sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done' and date(t.pickup_date) =curdate();"))[0];
+                    $queryTotal = DB::select(DB::raw("select sum(ptd.quantity * ptd.price) as 'revenue', sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '" . $tenant_id . "' and ts.status='done';"))[0];
+                    $queryMonth = DB::select(DB::raw("select sum(ptd.quantity * ptd.price) as 'revenue', sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '" . $tenant_id . "' and ts.status='done' and month(t.pickup_date) = month(now());"))[0];
+                    $queryToday = DB::select(DB::raw("select sum(ptd.quantity * ptd.price) as 'revenue', sum(ptd.quantity) as 'sold' from product_transaction_detail ptd inner join transactions t on ptd.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '" . $tenant_id . "' and ts.status='done' and date(t.pickup_date) =curdate();"))[0];
                 } else {
-                    $queryTotal = DB::select(DB::raw("select sum(std.quantity * std.price) as 'revenue', sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done';"))[0];
-                    $queryMonth = DB::select(DB::raw("select sum(std.quantity * std.price) as 'revenue', sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done' and month(t.pickup_date) = month(now());"))[0];
-                    $queryToday = DB::select(DB::raw("select sum(std.quantity * std.price) as 'revenue', sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '".$tenant_id."' and ts.status='done' and date(t.pickup_date) = curdate();"))[0];
+                    $queryTotal = DB::select(DB::raw("select sum(std.quantity * std.price) as 'revenue', sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '" . $tenant_id . "' and ts.status='done';"))[0];
+                    $queryMonth = DB::select(DB::raw("select sum(std.quantity * std.price) as 'revenue', sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '" . $tenant_id . "' and ts.status='done' and month(t.pickup_date) = month(now());"))[0];
+                    $queryToday = DB::select(DB::raw("select sum(std.quantity * std.price) as 'revenue', sum(std.quantity) as 'sold' from service_transaction_detail std inner join transactions t on std.transaction_id=t.id inner join transaction_statuses ts on ts.transaction_id=t.id where t.tenant_id = '" . $tenant_id . "' and ts.status='done' and date(t.pickup_date) = curdate();"))[0];
                 }
 
                 if ($queryTotal->revenue != null) {
@@ -424,6 +425,31 @@ class TenantController extends Controller
                 } else {
                     $arrResponse = ["status" => "empty"];
                 }
+            }
+        } else {
+            $arrResponse = ["status" => "notauthenticated"];
+        }
+        return $arrResponse;
+    }
+
+    public function rdtGetTenantReview(Request $request)
+    {
+        $token = $request->get('token');
+        $tenant_id = $request->get('tenant_id');
+        $tokenValidation = Helper::validateToken($token);
+
+        $arrResponse = [];
+        if ($tokenValidation == true) {
+            $ratings = Transaction::select('service_rating', 'service_review', 'unit_id')->where('tenant_id', $tenant_id)->get();
+
+            if (count($ratings) > 0) {
+                foreach ($ratings as $rt) {
+                    $rt->unit_no = $rt->unit->unit_no;
+                    $rt->makeHidden('unit');
+                }
+                $arrResponse = ["status" => "success", "data" => $ratings];
+            } else {
+                $arrResponse = ["status" => "empty"];
             }
         } else {
             $arrResponse = ["status" => "notauthenticated"];
