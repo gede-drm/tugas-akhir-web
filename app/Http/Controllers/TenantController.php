@@ -296,7 +296,7 @@ class TenantController extends Controller
                 foreach ($tenantsOpen as $to) {
                     $to->service_hour_start = date("H:i", strtotime($to->service_hour_start));
                     $to->service_hour_end = date("H:i", strtotime($to->service_hour_end));
-                    $rating = DB::select(DB::raw("select round(avg(nullif(rating, 0)), 2) as 'rating' from products where tenant_id='" . $to->id . "'"))[0];
+                    $rating = DB::select(DB::raw("select round(avg(nullif(service_rating, 0)), 2) as 'rating' from transactions where tenant_id='" . $to->id . "'"))[0];
                     if ($rating != null) {
                         $to->rating = $rating->rating ? $rating->rating : 0;
                     } else {
@@ -310,7 +310,7 @@ class TenantController extends Controller
                 foreach ($tenantsClose as $tc) {
                     $tc->service_hour_start = date("H:i", strtotime($tc->service_hour_start));
                     $tc->service_hour_end = date("H:i", strtotime($tc->service_hour_end));
-                    $rating = DB::select(DB::raw("select round(avg(nullif(rating, 0)), 2) as 'rating' from products where tenant_id='" . $tc->id . "'"))[0];
+                    $rating = DB::select(DB::raw("select round(avg(nullif(service_rating, 0)), 2) as 'rating' from transactions where tenant_id='" . $tc->id . "'"))[0];
                     if ($rating != null) {
                         $tc->rating = $rating->rating ? $rating->rating : 0;
                     } else {
@@ -343,7 +343,7 @@ class TenantController extends Controller
                 foreach ($tenantsOpen as $to) {
                     $to->service_hour_start = date("H:i", strtotime($to->service_hour_start));
                     $to->service_hour_end = date("H:i", strtotime($to->service_hour_end));
-                    $rating = DB::select(DB::raw("select round(avg(nullif(rating, 0)), 2) as 'rating' from services where tenant_id='" . $to->id . "'"))[0];
+                    $rating = DB::select(DB::raw("select round(avg(nullif(service_rating, 0)), 2) as 'rating' from transactions where tenant_id='" . $to->id . "'"))[0];
                     if ($rating != null) {
                         $to->rating = $rating->rating ? $rating->rating : 0;
                     } else {
@@ -357,7 +357,7 @@ class TenantController extends Controller
                 foreach ($tenantsClose as $tc) {
                     $tc->service_hour_start = date("H:i", strtotime($tc->service_hour_start));
                     $tc->service_hour_end = date("H:i", strtotime($tc->service_hour_end));
-                    $rating = DB::select(DB::raw("select round(avg(nullif(rating, 0)), 2) as 'rating' from services where tenant_id='" . $tc->id . "'"))[0];
+                    $rating = DB::select(DB::raw("select round(avg(nullif(service_rating, 0)), 2) as 'rating' from transactions where tenant_id='" . $tc->id . "'"))[0];
                     if ($rating != null) {
                         $tc->rating = $rating->rating ? $rating->rating : 0;
                     } else {
