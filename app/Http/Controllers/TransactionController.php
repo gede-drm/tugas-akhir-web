@@ -985,6 +985,8 @@ class TransactionController extends Controller
         $items_id = $request->get('items_id');
         $items_rating = $request->get('items_rating');
         $items_review = $request->get('items_review');
+        $service_rating = $request->get('service_rating');
+        $service_review = $request->get('service_review');
         $token = $request->get('token');
         $tokenValidation = Helper::validateToken($token);
 
@@ -1009,6 +1011,8 @@ class TransactionController extends Controller
                             }
                             $transaction->pickup_date = date('Y-m-d H:i:s');
                             $transaction->status = 1;
+                            $transaction->service_rating = $service_rating;
+                            $transaction->service_review = $service_review;
                             $transaction->save();
 
                             $trxStatus = new TransactionStatus();
